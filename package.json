@@ -18,7 +18,7 @@
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
-    "test": "jest"
+    "test": "mocha --compilers js:babel-core/register"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -31,25 +31,9 @@
     "babel-preset-stage-2": "^6.24.1",
     "eslint": "^4.6.1",
     "eslint-loader": "^1.9.0",
-    "jest-cli": "^21.0.2",
+    "mocha": "^3.5.3",
+    "chai": "^4.1.2",
     "webpack": "^3.5.5",
     "yargs": "^8.0.2"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "modulePathIgnorePatterns": [
-      "/dist/",
-      "/node_modules/"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "rootDir": "",
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    },
-    "roots": [
-      "<rootDir>/test"
-    ]
   }
 }

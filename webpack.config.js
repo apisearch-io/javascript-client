@@ -34,8 +34,8 @@ module.exports = {
     output: {
         path: DIST_DIR,
         filename: filename,
-        library: LIBRARY_NAME,
-        libraryTarget: 'umd',
+        library: 'EntryPoint',
+        libraryTarget: 'var',
         umdNamedDefine: true
     },
     module: {

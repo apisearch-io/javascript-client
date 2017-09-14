@@ -27,4 +27,4 @@ npm install apisearch --save
 * `npm run dev`: will start a watcher on *src/* and bundle the code 
 in every change.
 * `npm run build`: will bundle and minify all code.
-* `npm run test` or `npm t`: will run the test suite using Jest.
+* `npm run test` or `npm t`: will run the test suite using Mocha.

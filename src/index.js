@@ -1,21 +1,35 @@
 /**
  * Your code here
  */
-import Query from './Query';
+import Query from "./Query";
 import HttpRepository from "./Repository";
 
-const apisearch = {
-    repository: 'comment',
-    endpoint: 'http://127.0.0.1:9002/app.php',
-    secret: 'sandbox_comments_secret'
+var apisearch = {
+    repository: '',
+    endpoint: '',
+    secret: '',
+
+    client: function(repository, endpoint, secret) {
+        this.repository = repository;
+        this.endpoint = endpoint;
+        this.secret = secret;
+    },
+    query: function(queryText, page, size) {
+        let query = new Query();
+        return query.create(queryText, page, size);
+    },
+    search: function(query, callback) {
+        let repository = new HttpRepository(
+            this.endpoint,
+            this.secret
+        );
+
+        return repository
+            .query(query)
+            .then(
+                res => callback(res)
+            )
+        ;
+    }
 };
-
-let query = new Query();
-query.create('', 1, 10);
-
-let repository = new HttpRepository(
-    apisearch.endpoint,
-    apisearch.secret
-);
-
-repository.query(query).then(res => console.log(res));
+module.exports = apisearch;

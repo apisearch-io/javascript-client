@@ -36,6 +36,6 @@ export default class HttpRepository {
             };
             xhr.open("GET", composedQuery, true);
             xhr.send();
-        });
+        })
     }
 }
