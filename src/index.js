@@ -1,4 +1,6 @@
 /**
  * Your code here
  */
-export const bootstrap = () => 'Start coding your lib here.';
+import Query from './Query';
+
+Query.create('Hello apisarch');

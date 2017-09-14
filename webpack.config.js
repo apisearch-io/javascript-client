@@ -8,7 +8,7 @@ const ENV = require('yargs').argv.env;
 const SRC_DIR = path.resolve(__dirname, 'src');
 const DIST_DIR = path.resolve(__dirname, 'dist');
 
-const LIBRARY_NAME = 'cool-lib';
+const LIBRARY_NAME = 'apisearch';
 let plugins = [], filename;
 
 /**
@@ -17,12 +17,8 @@ let plugins = [], filename;
 if (ENV === 'build') {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
         minimize: true,
-        compress: {
-            warnings: false
-        },
-        output: {
-            comments: false
-        }
+        compress: {warnings: false},
+        output: {comments: false}
     }));
     filename = LIBRARY_NAME + '.min.js';
 } else {
