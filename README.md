@@ -23,6 +23,64 @@ npm install apisearch --save
 <script src="/your/assets/apisearch.min.js"></script>
 ```
 
+# Basic usage
+```javascript
+apisearch.client(
+    'repository_name', 
+    'https://apisearch.io/server/endpoint/', 
+    'your_api_key'
+);
+let query = apisearch.query.create('Your query text');
+apisearch.search(query, function (result) {
+   console.log(result) 
+});
+```
+
+# Query
+
+## Aggregations
+By default aggregations are enabled, so you can disable and enable it 
+again with the following chained methods.
+```javascript
+apisearch
+    .query
+    .createMatchAll()
+    .enableAggregations()
+    .disableAggregations()
+;
+```
+
+## Highlights
+By default highlights are disabled. You can enable or disable it with 
+the following chained methods.
+```javascript
+apisearch
+    .query
+    .create('ironman')
+    .enableHighlights()
+;
+```
+You can then access to the highlighted text with the property `highlights`
+in the resulted object like this.
+```javascript
+apisearch.search(query, function (result) {
+   console.log(result.highlights);
+});
+// result -> "Hey look! it's <pre>ironman</pre>!" 
+```
+
+## Suggestions
+Suggestions are also disabled by default. Enable or disable it using the
+following methods.
+```javascript
+apisearch
+    .query
+    .create('spiderm')
+    .enableSuggestions()
+    .disableSuggestions()
+;
+```
+
 # Developer resources:
 * `npm run dev`: will start a watcher on *src/* and bundle the code 
 in every change.

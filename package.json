@@ -18,7 +18,7 @@
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
-    "test": "mocha --compilers js:babel-core/register"
+    "test": "mocha --colors --compilers js:babel-core/register"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

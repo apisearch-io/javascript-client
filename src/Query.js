@@ -1,54 +1,33 @@
-import {AT_LEAST_ONE} from './Filter';
+import {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from './Filter';
+import Filter from "./Filter";
 
 /**
  * Query constants
  */
-const DEFAULT_PAGE = 1;
-const DEFAULT_SIZE = 10;
-const INFINITE_SIZE = 1000;
-
-class BaseQuery {
-    constructor() {
-        this.coordinate = null;
-        this.universe_filters = [];
-        this.filters = [];
-        this.items_promoted = [];
-        this.aggregations = [];
-        this.page = null;
-        this.from = null;
-        this.size = null;
-        this.suggesitons_enabled = false;
-        this.aggregations_enabled = false;
-        this.hightlights_enabled = false;
-        this.filter_fields = [];
-        this.user = null;
-    }
-}
+export const QUERY_DEFUALT_FROM = 0;
+export const QUERY_DEFAULT_PAGE = 1;
+export const QUERY_DEFAULT_SIZE = 10;
+export const QUERY_INFINITE_SIZE = 1000;
 
 /**
  * Query class
  */
-export default class Query extends BaseQuery {
-    constructor(props) {
-        super(props);
-    }
-
-    /**
-     * Initialize query creation
-     * @param queryText
-     * @param page
-     * @param size
-     * @returns {Query}
-     */
-    create(
-        queryText,
-        page = DEFAULT_PAGE,
-        size = DEFAULT_SIZE
-    ) {
-        this.q = queryText;
-        this.from = (page - 1) * size;
-        this.page = page;
-        this.size = size;
+export default class Query {
+    constructor(params) {
+        this.q = params.q;
+        this.coordinate = params.coordinate;
+        this.universe_filters = params.universe_filters || [];
+        this.filters = params.filters || [];
+        this.items_promoted = params.items_promoted || [];
+        this.aggregations = params.aggregations || [];
+        this.page = params.aggregations || QUERY_DEFAULT_PAGE;
+        this.size = params.size || QUERY_DEFAULT_SIZE;
+        this.from = params.from || QUERY_DEFUALT_FROM;
+        this.aggregations_enabled = params.aggregations_enabled || true;
+        this.suggestions_enabled = params.suggestions_enabled || false;
+        this.highlight_enabled = params.highlight_enabled || false;
+        this.filter_fields = params.filter_fields || [];
+        this.user = params.user;
 
         return this;
     }
@@ -56,9 +35,25 @@ export default class Query extends BaseQuery {
     filterUniverseBy(
         field,
         values,
-        applicationType = AT_LEAST_ONE
+        applicationType = FILTER_AT_LEAST_ONE
     ) {
+        if (typeof values !== 'object') {
+            throw new Error(`values must be type of "array", "${typeof values}" given.`);
+        }
 
+        let fieldPath = Filter.getFilterPathByField(field);
+        if (values.length !== 0) {
+            this.universe_filters[field] = new Filter(
+                fieldPath,
+                values,
+                applicationType,
+                FILTER_TYPE_FIELD
+            )
+        } else {
+            delete this.universe_filters[field]
+        }
+
+        return this;
     }
 
     enableAggregations() {
@@ -68,6 +63,26 @@ export default class Query extends BaseQuery {
 
     disableAggregations() {
         this.aggregations_enabled = false;
+        return this;
+    }
+
+    enableSuggestions() {
+        this.suggestions_enabled = true;
+        return this;
+    }
+
+    disableSuggestions() {
+        this.suggestions_enabled = false;
+        return this;
+    }
+
+    enableHighlights() {
+        this.highlight_enabled = true;
+        return this;
+    }
+
+    disableHighlights() {
+        this.highlight_enabled = false;
         return this;
     }
 }

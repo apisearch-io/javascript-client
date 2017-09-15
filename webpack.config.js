@@ -29,14 +29,13 @@ if (ENV === 'build') {
  * Webpack configuration
  */
 module.exports = {
-    entry: SRC_DIR + '/index.js',
+    entry: SRC_DIR + '/apisearch.js',
     devtool: 'source-map',
     output: {
         path: DIST_DIR,
         filename: filename,
-        library: 'EntryPoint',
         libraryTarget: 'var',
-        umdNamedDefine: true
+        library: 'apisearch',
     },
     module: {
         loaders: [
