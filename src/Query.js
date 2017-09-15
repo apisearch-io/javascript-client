@@ -1,10 +1,13 @@
-import {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from './Filter';
-import Filter from "./Filter";
+import Filter, {
+    FILTER_AT_LEAST_ONE,
+    FILTER_TYPE_FIELD
+} from "./Filter";
+import {AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
 
 /**
  * Query constants
  */
-export const QUERY_DEFUALT_FROM = 0;
+export const QUERY_DEFAULT_FROM = 0;
 export const QUERY_DEFAULT_PAGE = 1;
 export const QUERY_DEFAULT_SIZE = 10;
 export const QUERY_INFINITE_SIZE = 1000;
@@ -22,12 +25,48 @@ export default class Query {
         this.aggregations = params.aggregations || [];
         this.page = params.aggregations || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
-        this.from = params.from || QUERY_DEFUALT_FROM;
+        this.from = params.from || QUERY_DEFAULT_FROM;
         this.aggregations_enabled = params.aggregations_enabled || true;
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
         this.filter_fields = params.filter_fields || [];
         this.user = params.user;
+
+        return this;
+    }
+
+    filterBy(
+        filterName,
+        field,
+        values,
+        applicationType = FILTER_AT_LEAST_ONE,
+        aggregate = true,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC
+    ) {
+        if (typeof values !== 'object') {
+            throw new Error(`values must be type of "array", "${typeof values}" given.`);
+        }
+        if (typeof aggregationSort !== 'object') {
+            throw new Error(`values must be type of "array", "${typeof aggregationSort}" given.`);
+        }
+
+        let fieldPath = Filter.getFilterPathByField(field);
+        if (values.length !== 0) {
+            this.filters = {
+                ...this.filters,
+                [filterName]: new Filter(
+                    fieldPath,
+                    values,
+                    applicationType,
+                    FILTER_TYPE_FIELD
+                )
+            }
+        } else {
+            delete this.filters[field]
+        }
+
+        //@todo: aggregation conditional
+        // aggregate
 
         return this;
     }
@@ -43,12 +82,15 @@ export default class Query {
 
         let fieldPath = Filter.getFilterPathByField(field);
         if (values.length !== 0) {
-            this.universe_filters[field] = new Filter(
-                fieldPath,
-                values,
-                applicationType,
-                FILTER_TYPE_FIELD
-            )
+            this.universe_filters = {
+                ...this.universe_filters,
+                [field]: new Filter(
+                    fieldPath,
+                    values,
+                    applicationType,
+                    FILTER_TYPE_FIELD
+                )
+            }
         } else {
             delete this.universe_filters[field]
         }

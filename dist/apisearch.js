@@ -1090,7 +1090,15 @@ $export($export.S + $export.F * !__webpack_require__(5), 'Object', { definePrope
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.QUERY_INFINITE_SIZE = exports.QUERY_DEFAULT_SIZE = exports.QUERY_DEFAULT_PAGE = exports.QUERY_DEFUALT_FROM = undefined;
+exports.QUERY_INFINITE_SIZE = exports.QUERY_DEFAULT_SIZE = exports.QUERY_DEFAULT_PAGE = exports.QUERY_DEFAULT_FROM = undefined;
+
+var _defineProperty2 = __webpack_require__(102);
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _extends4 = __webpack_require__(103);
+
+var _extends5 = _interopRequireDefault(_extends4);
 
 var _typeof2 = __webpack_require__(56);
 
@@ -1108,12 +1116,14 @@ var _Filter = __webpack_require__(80);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
+var _Aggregation = __webpack_require__(101);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Query constants
  */
-var QUERY_DEFUALT_FROM = exports.QUERY_DEFUALT_FROM = 0;
+var QUERY_DEFAULT_FROM = exports.QUERY_DEFAULT_FROM = 0;
 var QUERY_DEFAULT_PAGE = exports.QUERY_DEFAULT_PAGE = 1;
 var QUERY_DEFAULT_SIZE = exports.QUERY_DEFAULT_SIZE = 10;
 var QUERY_INFINITE_SIZE = exports.QUERY_INFINITE_SIZE = 1000;
@@ -1134,7 +1144,7 @@ var Query = function () {
         this.aggregations = params.aggregations || [];
         this.page = params.aggregations || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
-        this.from = params.from || QUERY_DEFUALT_FROM;
+        this.from = params.from || QUERY_DEFAULT_FROM;
         this.aggregations_enabled = params.aggregations_enabled || true;
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
@@ -1145,17 +1155,43 @@ var Query = function () {
     }
 
     (0, _createClass3.default)(Query, [{
-        key: 'filterUniverseBy',
-        value: function filterUniverseBy(field, values) {
-            var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
+        key: "filterBy",
+        value: function filterBy(filterName, field, values) {
+            var applicationType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Filter.FILTER_AT_LEAST_ONE;
+            var aggregate = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+            var aggregationSort = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
 
-            if ((typeof values === 'undefined' ? 'undefined' : (0, _typeof3.default)(values)) !== 'object') {
-                throw new Error('values must be type of "array", "' + (typeof values === 'undefined' ? 'undefined' : (0, _typeof3.default)(values)) + '" given.');
+            if ((typeof values === "undefined" ? "undefined" : (0, _typeof3.default)(values)) !== 'object') {
+                throw new Error("values must be type of \"array\", \"" + (typeof values === "undefined" ? "undefined" : (0, _typeof3.default)(values)) + "\" given.");
+            }
+            if ((typeof aggregationSort === "undefined" ? "undefined" : (0, _typeof3.default)(aggregationSort)) !== 'object') {
+                throw new Error("values must be type of \"array\", \"" + (typeof aggregationSort === "undefined" ? "undefined" : (0, _typeof3.default)(aggregationSort)) + "\" given.");
             }
 
             var fieldPath = _Filter2.default.getFilterPathByField(field);
             if (values.length !== 0) {
-                this.universe_filters[field] = new _Filter2.default(fieldPath, values, applicationType, _Filter.FILTER_TYPE_FIELD);
+                this.filters = (0, _extends5.default)({}, this.filters, (0, _defineProperty3.default)({}, filterName, new _Filter2.default(fieldPath, values, applicationType, _Filter.FILTER_TYPE_FIELD)));
+            } else {
+                delete this.filters[field];
+            }
+
+            //@todo: aggregation conditional
+            // aggregate
+
+            return this;
+        }
+    }, {
+        key: "filterUniverseBy",
+        value: function filterUniverseBy(field, values) {
+            var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
+
+            if ((typeof values === "undefined" ? "undefined" : (0, _typeof3.default)(values)) !== 'object') {
+                throw new Error("values must be type of \"array\", \"" + (typeof values === "undefined" ? "undefined" : (0, _typeof3.default)(values)) + "\" given.");
+            }
+
+            var fieldPath = _Filter2.default.getFilterPathByField(field);
+            if (values.length !== 0) {
+                this.universe_filters = (0, _extends5.default)({}, this.universe_filters, (0, _defineProperty3.default)({}, field, new _Filter2.default(fieldPath, values, applicationType, _Filter.FILTER_TYPE_FIELD)));
             } else {
                 delete this.universe_filters[field];
             }
@@ -1163,37 +1199,37 @@ var Query = function () {
             return this;
         }
     }, {
-        key: 'enableAggregations',
+        key: "enableAggregations",
         value: function enableAggregations() {
             this.aggregations_enabled = true;
             return this;
         }
     }, {
-        key: 'disableAggregations',
+        key: "disableAggregations",
         value: function disableAggregations() {
             this.aggregations_enabled = false;
             return this;
         }
     }, {
-        key: 'enableSuggestions',
+        key: "enableSuggestions",
         value: function enableSuggestions() {
             this.suggestions_enabled = true;
             return this;
         }
     }, {
-        key: 'disableSuggestions',
+        key: "disableSuggestions",
         value: function disableSuggestions() {
             this.suggestions_enabled = false;
             return this;
         }
     }, {
-        key: 'enableHighlights',
+        key: "enableHighlights",
         value: function enableHighlights() {
             this.highlight_enabled = true;
             return this;
         }
     }, {
-        key: 'disableHighlights',
+        key: "disableHighlights",
         value: function disableHighlights() {
             this.highlight_enabled = false;
             return this;
@@ -3444,6 +3480,149 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
   (result.e ? promiseCapability.reject : promiseCapability.resolve)(result.v);
   return promiseCapability.promise;
 } });
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Aggregation constants
+ */
+var AGGREGATION_SORT_BY_COUNT_ASC = exports.AGGREGATION_SORT_BY_COUNT_ASC = ['_count', 'asc'];
+var AGGREGATION_SORT_BY_COUNT_DESC = exports.AGGREGATION_SORT_BY_COUNT_DESC = ['_count', 'desc'];
+var AGGREGATION_SORT_BY_NAME_ASC = exports.AGGREGATION_SORT_BY_NAME_ASC = ['_term', 'asc'];
+var AGGREGATION_SORT_BY_NAME_DESC = exports.AGGREGATION_SORT_BY_NAME_DESC = ['_term', 'desc'];
+var AGGREGATION_NO_LIMIT = exports.AGGREGATION_NO_LIMIT = 0;
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _defineProperty = __webpack_require__(52);
+
+var _defineProperty2 = _interopRequireDefault(_defineProperty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (obj, key, value) {
+  if (key in obj) {
+    (0, _defineProperty2.default)(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
+
+/***/ }),
+/* 103 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _assign = __webpack_require__(104);
+
+var _assign2 = _interopRequireDefault(_assign);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _assign2.default || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(105), __esModule: true };
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(106);
+module.exports = __webpack_require__(2).Object.assign;
+
+
+/***/ }),
+/* 106 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.3.1 Object.assign(target, source)
+var $export = __webpack_require__(8);
+
+$export($export.S + $export.F, 'Object', { assign: __webpack_require__(107) });
+
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var getKeys = __webpack_require__(26);
+var gOPS = __webpack_require__(43);
+var pIE = __webpack_require__(32);
+var toObject = __webpack_require__(66);
+var IObject = __webpack_require__(62);
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(17)(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+  } return T;
+} : $assign;
 
 
 /***/ })

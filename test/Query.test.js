@@ -5,8 +5,8 @@ import Query, {
     QUERY_DEFAULT_SIZE
 } from '../src/Query';
 
-describe('new Query()', () => {
-    describe('creation methods', () => {
+describe('# Test: new Query()', () => {
+    describe('-> create...() methods', () => {
         let query = new Query({
             q: '',
             QUERY_DEFAULT_PAGE,
@@ -43,7 +43,28 @@ describe('new Query()', () => {
         });
     });
 
-    describe('filtered by universe methods', () => {
+    describe('-> filterBy...() methods', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should filterUniverseBy()', () => {
+            query.filterBy('source', 'source', ['source_id_123456']);
+            expect(query.filters).to.have.own.property('source');
+            expect(query.filters.source).to.include.all.keys(
+                'application_type',
+                'field',
+                'filter_terms',
+                'filter_type',
+                'values'
+            );
+            expect(query.filters.source.values).to.include('source_id_123456');
+        });
+    });
+
+    describe('-> filterUniverseBy...() methods', () => {
         let query = new Query({
             q: '',
             QUERY_DEFAULT_PAGE,
@@ -51,8 +72,16 @@ describe('new Query()', () => {
         });
 
         it('should filter universe by', () => {
-            query.filterUniverseBy(source, ['hola']);
-            expect(query.universe_filters).to.have.prop('object');
+            query.filterUniverseBy('source', ['source_id_123456']);
+            expect(query.universe_filters).to.have.own.property('source');
+            expect(query.universe_filters.source).to.include.all.keys(
+                'application_type',
+                'field',
+                'filter_terms',
+                'filter_type',
+                'values'
+            );
+            expect(query.universe_filters.source.values).to.include('source_id_123456');
         });
     });
 });
