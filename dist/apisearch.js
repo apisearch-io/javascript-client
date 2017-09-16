@@ -1175,8 +1175,9 @@ var Query = function () {
                 delete this.filters[field];
             }
 
-            //@todo: aggregation conditional
-            // aggregate
+            if (aggregate) {
+                //@todo: aggregation conditional
+            }
 
             return this;
         }
@@ -1197,6 +1198,11 @@ var Query = function () {
             }
 
             return this;
+        }
+    }, {
+        key: "aggregateBy",
+        value: function aggregateBy() {
+            //@todo: implement method
         }
     }, {
         key: "enableAggregations",

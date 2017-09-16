@@ -65,8 +65,9 @@ export default class Query {
             delete this.filters[field]
         }
 
-        //@todo: aggregation conditional
-        // aggregate
+        if (aggregate) {
+            //@todo: aggregation conditional
+        }
 
         return this;
     }
@@ -96,6 +97,10 @@ export default class Query {
         }
 
         return this;
+    }
+
+    aggregateBy() {
+        //@todo: implement method
     }
 
     enableAggregations() {

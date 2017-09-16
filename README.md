@@ -1,11 +1,11 @@
-ES6 Library skeleton
-====================
+Apisearch Javascript client
+===========================
 
 > This repository is part of the ApiSearch project. To get more information
 > about it, please visit http://apisearch.io. This a project created with love
 > by [Puntmig Development SLU](http://puntmig.com)
 
-This library aims to provide to any javascript developer nicely interfaces to 
+This library aims to provide to any Javascript developer nicely interfaces to 
 manage search-only processes related to Apisearch from the frontend side, using 
 basic ES6 modules.
 
@@ -26,9 +26,9 @@ npm install apisearch --save
 # Basic usage
 ```javascript
 apisearch.client(
-    'repository_name', 
-    'https://apisearch.io/server/endpoint/', 
-    'your_api_key'
+  'repository_name', 
+  'https://apisearch.io/server/endpoint/', 
+  'your_api_key'
 );
 let query = apisearch.query.create('Your query text');
 apisearch.search(query, function (result) {
@@ -42,11 +42,11 @@ apisearch.search(query, function (result) {
 By default aggregations are enabled, so you can disable and enable it 
 again with the following chained methods.
 ```javascript
-apisearch
-    .query
-    .createMatchAll()
-    .enableAggregations()
-    .disableAggregations()
+let query = apisearch
+  .query
+  .createMatchAll()
+  .enableAggregations()
+  .disableAggregations()
 ;
 ```
 
@@ -54,30 +54,31 @@ apisearch
 By default highlights are disabled. You can enable or disable it with 
 the following chained methods.
 ```javascript
-apisearch
-    .query
-    .create('ironman')
-    .enableHighlights()
+let query = apisearch
+  .query
+  .create('ironman')
+  .enableHighlights()
 ;
 ```
 You can then access to the highlighted text with the property `highlights`
-in the resulted object like this.
+in the resulted items like this.
 ```javascript
-apisearch.search(query, function (result) {
-   console.log(result.highlights);
+apisearch.search(query, function(result) {
+   result.forEach(item => {
+       console.log(item.highlights);
+   });
 });
-// result -> "Hey look! it's <pre>ironman</pre>!" 
+// output -> "Hey look! it's <pre>ironman</pre>!" 
 ```
 
 ## Suggestions
 Suggestions are also disabled by default. Enable or disable it using the
 following methods.
 ```javascript
-apisearch
-    .query
-    .create('spiderm')
-    .enableSuggestions()
-    .disableSuggestions()
+apisearch.query
+  .create('spiderm')
+  .enableSuggestions()
+  .disableSuggestions()
 ;
 ```
 

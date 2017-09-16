@@ -50,7 +50,7 @@ describe('# Test: new Query()', () => {
             QUERY_DEFAULT_SIZE
         });
 
-        it('should filterUniverseBy()', () => {
+        it('should filterBy()', () => {
             query.filterBy('source', 'source', ['source_id_123456']);
             expect(query.filters).to.have.own.property('source');
             expect(query.filters.source).to.include.all.keys(
@@ -71,7 +71,7 @@ describe('# Test: new Query()', () => {
             QUERY_DEFAULT_SIZE
         });
 
-        it('should filter universe by', () => {
+        it('should filterUniverseBy()', () => {
             query.filterUniverseBy('source', ['source_id_123456']);
             expect(query.universe_filters).to.have.own.property('source');
             expect(query.universe_filters.source).to.include.all.keys(
