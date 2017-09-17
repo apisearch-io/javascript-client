@@ -1,3 +1,5 @@
+import {FILTER_AT_LEAST_ONE} from "../src/Filter";
+
 const expect = require('chai').expect;
 import {defaultQuery} from './queries';
 import Query, {
@@ -82,6 +84,29 @@ describe('# Test: new Query()', () => {
                 'values'
             );
             expect(query.universe_filters.source.values).to.include('source_id_123456');
+        });
+    });
+
+    describe('-> aggregateBy...() methods', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should aggregateBy()', () => {
+            query.aggregateBy('source', 'source');
+            expect(query.aggregations).to.have.own.property('source');
+            expect(query.aggregations.source).to.include.all.keys(
+                'applicationType',
+                'field',
+                'filterType',
+                'limit',
+                'name',
+                'sort',
+                'subgroup'
+            );
+            expect(query.aggregations.source.name).to.include('source');
         });
     });
 });

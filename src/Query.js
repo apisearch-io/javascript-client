@@ -1,8 +1,6 @@
-import Filter, {
-    FILTER_AT_LEAST_ONE,
-    FILTER_TYPE_FIELD
-} from "./Filter";
-import {AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
+import Aggregation from "./Aggregation";
+import Filter, {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from "./Filter";
+import {AGGREGATION_NO_LIMIT, AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
 
 /**
  * Query constants
@@ -66,7 +64,12 @@ export default class Query {
         }
 
         if (aggregate) {
-            //@todo: aggregation conditional
+            this.aggregateBy(
+                filterName,
+                field,
+                applicationType,
+                aggregationSort
+            )
         }
 
         return this;
@@ -99,8 +102,27 @@ export default class Query {
         return this;
     }
 
-    aggregateBy() {
-        //@todo: implement method
+    aggregateBy(
+        filterName,
+        field,
+        applicationType,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC,
+        limit = AGGREGATION_NO_LIMIT
+    ) {
+        this.aggregations = {
+            ...this.aggregations,
+            [filterName]: new Aggregation(
+                filterName,
+                Filter.getFilterPathByField(field),
+                applicationType,
+                FILTER_TYPE_FIELD,
+                [],
+                aggregationSort,
+                limit
+            )
+        };
+
+        return this;
     }
 
     enableAggregations() {
