@@ -98,6 +98,45 @@ var checkCoordinateTypes = exports.checkCoordinateTypes = function checkCoordina
 
 /***/ }),
 
+/***/ 109:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * ItemUUID class
+ */
+var ItemUUID = function () {
+    function ItemUUID(id, type) {
+        _classCallCheck(this, ItemUUID);
+
+        this.id = id;
+        this.type = type;
+    }
+
+    _createClass(ItemUUID, [{
+        key: "composedUUID",
+        value: function composedUUID() {
+            return this.type + "~" + this.id;
+        }
+    }]);
+
+    return ItemUUID;
+}();
+
+exports.default = ItemUUID;
+
+/***/ }),
+
 /***/ 54:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -112,11 +151,17 @@ var _Repository = __webpack_require__(88);
 
 var _Repository2 = _interopRequireDefault(_Repository);
 
+var _ItemUUID = __webpack_require__(109);
+
+var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Apisearch entry point
- */
+var cache = {}; /**
+                 * Apisearch entry point
+                 */
+
+
 var client = function client(repository, endpoint, secret) {
     this.repository = repository;
     this.endpoint = endpoint;
@@ -164,17 +209,15 @@ var query = {
 };
 
 var createUUID = function createUUID(id, type) {
-    return {
-        id: id,
-        type: type
-    };
+    return new _ItemUUID2.default(id, type);
 };
 
 module.exports = {
     client: client,
     search: search,
     query: query,
-    createUUID: createUUID
+    createUUID: createUUID,
+    cache: cache
 };
 
 /***/ }),
@@ -205,6 +248,10 @@ var _Filter = __webpack_require__(86);
 var _Filter2 = _interopRequireDefault(_Filter);
 
 var _Coordinate = __webpack_require__(108);
+
+var _ItemUUID = __webpack_require__(109);
+
+var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -343,8 +390,8 @@ var Query = function () {
     }, {
         key: "promoteUUID",
         value: function promoteUUID(itemUUID) {
-            if ((typeof itemUUID === "undefined" ? "undefined" : _typeof(itemUUID)) !== 'object') {
-                throw new Error("values must be type of \"object\", \"" + (typeof values === "undefined" ? "undefined" : _typeof(values)) + "\" given.");
+            if (itemUUID.constructor.name !== 'ItemUUID') {
+                throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
             }
 
             this.items_promoted = [].concat(_toConsumableArray(this.items_promoted), [itemUUID]);
@@ -356,9 +403,28 @@ var Query = function () {
         value: function promoteUUIDs(uuids) {
             var _this = this;
 
-            uuids.forEach(function (uuid) {
+            [].concat(_toConsumableArray(uuids)).forEach(function (uuid) {
                 return _this.promoteUUID(uuid);
             });
+
+            return this;
+        }
+    }, {
+        key: "excludeUUID",
+        value: function excludeUUID(itemUUID) {
+            if (itemUUID.constructor.name !== 'ItemUUID') {
+                throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
+            }
+            this.excludeUUIDs([itemUUID]);
+
+            return this;
+        }
+    }, {
+        key: "excludeUUIDs",
+        value: function excludeUUIDs(uuids) {
+            this.filters = _extends({}, this.filters, _defineProperty({}, 'excluded_ids', new _Filter2.default('_id', [].concat(_toConsumableArray(uuids)).map(function (uuid) {
+                return uuid.composedUUID();
+            }), _Filter.FILTER_EXCLUDE, _Filter.FILTER_TYPE_FIELD)));
 
             return this;
         }

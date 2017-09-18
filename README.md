@@ -90,49 +90,69 @@ apisearch
 ;
 ```
 
-## Promote items by uuid
-Items can be promoted to give them more weight on the search, so they will
-appear first than the other ones.
+## Exclude items by uuid
+Items can be excluded manually for the search. For example, when printing a 
+related carousel given an item, and filtering by the type, would be useful 
+to exclude the current element from the list.
 
-There are two ways to promote items on search, let's have a look:
-* Giving an object as a parameter with the following properties: 
-**id** and **type**.  
+Using the built in apisearch method called: `createUUID(uuid)`, you will be able
+to create a secure ItemUUID object.
+
+> Remember that an item uuid is composed by the id of the item and the type.
+> In this case "spiderman" is the ID and "marvel" is the type.
+
 ```javascript
 let query = apisearch
   .query
   .createMatchAll()
-  .promoteUUID({
-    id: 'your_item_id',
-    type: 'your_item_type'
-  });
+  .excludeUUID(
+      apisearch.createUUID('spiderman', 'marvel')
+  );
 ```
-* Using the built in apisearch method called: **createUUID**. The recommended 
-way.
+
+You can also exclude several items at once:
+```javascript
+let query = apisearch
+  .query
+  .createMatchAll()
+  .excludeUUIDs([
+      apisearch.createUUID('spiderman', 'marvel'),
+      apisearch.createUUID('hulk', 'marvel'),
+      apisearch.createUUID('daredevil', 'marvel')
+  ]);
+```
+
+## Promote items by uuid
+As well as items can be exclided, they can also be promoted to give them more 
+weight on the search, so they will appear first than the other ones.
+
+Using the built in apisearch method called: `createUUID(uuid)`, you will be able
+to create a secure ItemUUID object.
 ```javascript
 let query = apisearch
   .query
   .createMatchAll()
   .promoteUUID(
-      apisearch.createUUUD('your_item_id', 'your_item_type')
+      apisearch.createUUID('spiderman', 'your_item_type')
   );
 ```
 
 If you need to promote a list of items, you don't need to chain the promoteUUID
 method every time, you can use the following method and pass the promoted items 
-as an array likt this:
+as an array like this:
 ```javascript
 let query = apisearch
   .query
   .createMatchAll()
   .promoteUUIDs([
-      apisearch.createUUUD('spiderman_id', 'marvel'),
-      apisearch.createUUUD('ironman_id', 'marvel'),
-      apisearch.createUUUD('thor_id', 'marvel')
+      apisearch.createUUID('spiderman', 'marvel'),
+      apisearch.createUUID('ironman', 'marvel'),
+      apisearch.createUUID('thor', 'marvel')
   ]);
 ```
 
 # Developer resources:
-* `npm run dev`: will start a watcher on *src/* and bundle the code 
+* `npm run dev`: will start a watcher on `./src/**/*` and bundle the code 
 in every change.
 * `npm run build`: will bundle and minify all code.
 * `npm run test` or `npm t`: will run the test suite using Mocha.

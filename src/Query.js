@@ -1,7 +1,8 @@
 import Aggregation from "./Aggregation";
-import Filter, {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from "./Filter";
+import Filter, {FILTER_AT_LEAST_ONE, FILTER_EXCLUDE, FILTER_TYPE_FIELD} from "./Filter";
 import {AGGREGATION_NO_LIMIT, AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
 import {checkCoordinateTypes} from "./Coordinate";
+import ItemUUID from "./ItemUUID";
 
 /**
  * Query constants
@@ -158,8 +159,8 @@ export default class Query {
     }
 
     promoteUUID(itemUUID) {
-        if (typeof itemUUID !== 'object') {
-            throw new Error(`values must be type of "object", "${typeof values}" given.`);
+        if (itemUUID.constructor.name !== 'ItemUUID') {
+            throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
         }
 
         this.items_promoted = [
@@ -171,7 +172,30 @@ export default class Query {
     }
 
     promoteUUIDs(uuids) {
-        uuids.forEach(uuid => this.promoteUUID(uuid));
+        [...uuids].forEach(uuid => this.promoteUUID(uuid));
+
+        return this;
+    }
+
+    excludeUUID(itemUUID) {
+        if (itemUUID.constructor.name !== 'ItemUUID') {
+            throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
+        }
+        this.excludeUUIDs([itemUUID]);
+
+        return this;
+    }
+
+    excludeUUIDs(uuids) {
+        this.filters = {
+            ...this.filters,
+            ['excluded_ids']: new Filter(
+                '_id',
+                [...uuids].map(uuid => uuid.composedUUID()),
+                FILTER_EXCLUDE,
+                FILTER_TYPE_FIELD
+            )
+        };
 
         return this;
     }

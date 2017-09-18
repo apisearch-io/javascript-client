@@ -7,7 +7,9 @@ import Query, {
     QUERY_INFINITE_SIZE
 } from "./Query";
 import HttpRepository from "./Repository";
+import ItemUUID from "./ItemUUID";
 
+const cache = {};
 
 const client = function(repository, endpoint, secret) {
     this.repository = repository;
@@ -65,15 +67,16 @@ const query =  {
 };
 
 const createUUID = function(id, type) {
-    return {
+    return new ItemUUID(
         id,
         type
-    };
+    );
 };
 
 module.exports = {
     client,
     search,
     query,
-    createUUID
+    createUUID,
+    cache
 };

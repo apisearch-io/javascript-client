@@ -1,3 +1,5 @@
+import ItemUUID from "../src/ItemUUID";
+
 const expect = require('chai').expect;
 
 import {defaultQuery} from './mocks/queries';
@@ -84,35 +86,69 @@ describe('# Test: new Query()', () => {
         });
 
         it('should promote one uuid when calling promoteUUID()', () => {
-            query.promoteUUID({
-                id: 'spiderman',
-                type: 'marvel'
-            });
-            expect(query.items_promoted).to.deep.equal([{
-                id: 'spiderman',
-                type: 'marvel'
-            }]);
+            query.promoteUUID(
+                new ItemUUID('spiderman', 'marvel')
+            );
+            expect(query.items_promoted).to.deep.equal([
+                {
+                    id: 'spiderman',
+                    type: 'marvel'
+                }
+            ]);
         });
         it('should promote many uuids when calling promoteUUIDs()', () => {
-            query.promoteUUIDs([{
-                id: 'ironman',
-                type: 'marvel'
-            }, {
-                id: 'thor',
-                type: 'marvel'
-            }]);
-            expect(query.items_promoted).to.deep.equal([{
-                id: 'spiderman',
-                type: 'marvel'
-            }, {
-                id: 'ironman',
-                type: 'marvel'
-            }, {
-                id: 'thor',
-                type: 'marvel'
-            }]);
+            // Promote thi two uuids into an existing array from the last test
+            query.promoteUUIDs([
+                new ItemUUID('ironman', 'marvel'),
+                new ItemUUID('thor', 'marvel')
+            ]);
+            expect(query.items_promoted).to.deep.equal([
+                {
+                    id: 'spiderman',
+                    type: 'marvel'
+                },
+                {
+                    id: 'ironman',
+                    type: 'marvel'
+                },
+                {
+                    id: 'thor',
+                    type: 'marvel'
+                }
+            ]);
         });
-    })
+    });
+
+    describe('-> When excluding uuids', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+        query.excludeUUID(
+            new ItemUUID('hulk', 'marvel')
+        );
+
+        it('should exist "excluded_ids" property on Query object', () => {
+            expect(query.filters).to.have.own.property('excluded_ids');
+        });
+        it('should "excluded_ids" property be an object type of Filter', () => {
+            expect(query.filters['excluded_ids'].constructor.name).to.be.equal('Filter');
+        });
+        it('should exclude one uuid when calling excludeUUID()', () => {
+            expect(query.filters['excluded_ids'].values).to.include('marvel~hulk');
+        });
+        it('should exclude many uuids when calling excludeUUIDs()', () => {
+            query.excludeUUIDs([
+                new ItemUUID('captain-america', 'marvel'),
+                new ItemUUID('daredevil', 'marvel')
+            ]);
+            expect(query.filters['excluded_ids'].values).to.deep.equal([
+                'marvel~captain-america',
+                'marvel~daredevil'
+            ]);
+        });
+    });
 
     describe('-> When switching query setters', () => {
         let query = new Query({
