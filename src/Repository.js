@@ -17,11 +17,11 @@ export default class HttpRepository {
      * @param query
      * @returns {Promise}
      */
-    async query(query) {
+    query(query) {
         query = JSON.stringify(query);
         let composedQuery = `${this.endpoint}?key=${this.secret}&query=${query}`;
 
-        return await this.fetchData(composedQuery);
+        return this.fetchData(composedQuery);
     }
 
     fetchData(composedQuery) {

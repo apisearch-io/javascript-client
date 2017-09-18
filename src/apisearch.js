@@ -1,7 +1,11 @@
 /**
  * Apisearch entry point
  */
-import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE, QUERY_INFINITE_SIZE} from "./Query";
+import Query, {
+    QUERY_DEFAULT_PAGE,
+    QUERY_DEFAULT_SIZE,
+    QUERY_INFINITE_SIZE
+} from "./Query";
 import HttpRepository from "./Repository";
 
 
@@ -26,11 +30,11 @@ const search = function(query, callback) {
 };
 
 const query =  {
-    create: (
+    create(
         q,
         page = QUERY_DEFAULT_PAGE,
         size = QUERY_DEFAULT_SIZE
-    ) => {
+    ) {
         return new Query({
             q,
             from: (page - 1) * size,
@@ -38,11 +42,24 @@ const query =  {
             size
         });
     },
-    createMatchAll: () => {
+    createMatchAll() {
         return new Query({
             q: '',
             page: QUERY_DEFAULT_PAGE,
             size: QUERY_INFINITE_SIZE
+        });
+    },
+    createLocated(
+        coordinate,
+        queryText,
+        page = QUERY_DEFAULT_PAGE,
+        size = QUERY_DEFAULT_SIZE
+    ) {
+        return new Query({
+            coordinate,
+            page,
+            size,
+            q: queryText
         });
     }
 };

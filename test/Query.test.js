@@ -1,50 +1,16 @@
-import {FILTER_AT_LEAST_ONE} from "../src/Filter";
-
 const expect = require('chai').expect;
-import {defaultQuery} from './queries';
+
+import {defaultQuery} from './mocks/queries';
+import {FILTER_AT_LEAST_ONE} from "../src/Filter";
 import Query, {
     QUERY_DEFAULT_PAGE,
     QUERY_DEFAULT_SIZE
 } from '../src/Query';
 
+/**
+ * Query object tests
+ */
 describe('# Test: new Query()', () => {
-    describe('-> create...() methods', () => {
-        let query = new Query({
-            q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
-        });
-
-        it('should be an object', () => {
-            expect(query).to.be.an('object');
-        });
-
-        it('should return a default query when creating an empty one', () => {
-            expect(query).to.deep.equal(defaultQuery);
-        });
-
-        it('should toggle aggregations properly', () => {
-            query.disableAggregations();
-            expect(query.aggregations_enabled).to.be.false;
-            query.enableAggregations();
-            expect(query.aggregations_enabled).to.be.true;
-        });
-
-        it('should toggle suggestions properly', () => {
-            query.enableSuggestions();
-            expect(query.suggestions_enabled).to.be.true;
-            query.disableSuggestions();
-            expect(query.suggestions_enabled).to.be.false;
-        });
-
-        it('should toggle highlights properly', () => {
-            query.enableHighlights();
-            expect(query.highlight_enabled).to.be.true;
-            query.disableHighlights();
-            expect(query.highlight_enabled).to.be.false;
-        });
-    });
-
     describe('-> filterBy...() methods', () => {
         let query = new Query({
             q: '',
@@ -109,5 +75,34 @@ describe('# Test: new Query()', () => {
             expect(query.aggregations.source.name).to.include('source');
         });
     });
+
+    describe('-> When switching query setters', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should set and unset aggregations properly', () => {
+            query.disableAggregations();
+            expect(query.aggregations_enabled).to.be.false;
+            query.enableAggregations();
+            expect(query.aggregations_enabled).to.be.true;
+        });
+
+        it('should set and unset suggestions properly', () => {
+            query.enableSuggestions();
+            expect(query.suggestions_enabled).to.be.true;
+            query.disableSuggestions();
+            expect(query.suggestions_enabled).to.be.false;
+        });
+
+        it('should set and unset highlights properly', () => {
+            query.enableHighlights();
+            expect(query.highlight_enabled).to.be.true;
+            query.disableHighlights();
+            expect(query.highlight_enabled).to.be.false;
+        });
+    })
 });
 

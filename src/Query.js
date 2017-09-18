@@ -1,6 +1,7 @@
 import Aggregation from "./Aggregation";
 import Filter, {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from "./Filter";
 import {AGGREGATION_NO_LIMIT, AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
+import {checkCoordinateTypes} from "./Coordinate";
 
 /**
  * Query constants
@@ -16,7 +17,6 @@ export const QUERY_INFINITE_SIZE = 1000;
 export default class Query {
     constructor(params) {
         this.q = params.q;
-        this.coordinate = params.coordinate;
         this.universe_filters = params.universe_filters || [];
         this.filters = params.filters || [];
         this.items_promoted = params.items_promoted || [];
@@ -29,6 +29,8 @@ export default class Query {
         this.highlight_enabled = params.highlight_enabled || false;
         this.filter_fields = params.filter_fields || [];
         this.user = params.user;
+        this.coordinate = checkCoordinateTypes(params.coordinate);
+        this.coordinate = params.coordinate;
 
         return this;
     }
