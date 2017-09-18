@@ -1,6 +1,7 @@
 /**
  * filter constants
  */
+export const FILTER_IT_DOESNT_MATTER = 0;
 export const FILTER_MUST_ALL = 4;
 export const FILTER_MUST_ALL_WITH_LEVELS = 5;
 export const FILTER_AT_LEAST_ONE = 8;

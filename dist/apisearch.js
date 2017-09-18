@@ -381,6 +381,26 @@ var Query = function () {
             return this;
         }
     }, {
+        key: "sortBy",
+        value: function sortBy(sort) {
+            var _this = this;
+
+            if (typeof sort['_geo_distance'] !== 'undefined') {
+                if (this.coordinate instanceof Coordinate) {
+                    throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated() \n                    instead of apisearch.query.create()\n                ");
+                }
+                this.sort = _extends({}, this.sort, _defineProperty({}, '_geo_distance', _defineProperty({}, 'coordinate', this.coordinate)));
+            }
+
+            sort.map(function (field, direction) {
+                if (direction instanceof Array) {
+                    _this.sort = _extends({}, _this.sort, _defineProperty({}, field, _defineProperty({}, 'order', direction)));
+                }
+            });
+
+            return $this;
+        }
+    }, {
         key: "enableAggregations",
         value: function enableAggregations() {
             this.aggregations_enabled = true;
@@ -419,10 +439,9 @@ var Query = function () {
     }, {
         key: "promoteUUID",
         value: function promoteUUID(itemUUID) {
-            if (itemUUID.constructor.name !== 'ItemUUID') {
+            if (!itemUUID instanceof _ItemUUID2.default) {
                 throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
             }
-
             this.items_promoted = [].concat(_toConsumableArray(this.items_promoted), [itemUUID]);
 
             return this;
@@ -430,10 +449,10 @@ var Query = function () {
     }, {
         key: "promoteUUIDs",
         value: function promoteUUIDs(uuids) {
-            var _this = this;
+            var _this2 = this;
 
             [].concat(_toConsumableArray(uuids)).forEach(function (uuid) {
-                return _this.promoteUUID(uuid);
+                return _this2.promoteUUID(uuid);
             });
 
             return this;
@@ -441,7 +460,7 @@ var Query = function () {
     }, {
         key: "excludeUUID",
         value: function excludeUUID(itemUUID) {
-            if (itemUUID.constructor.name !== 'ItemUUID') {
+            if (!itemUUID instanceof _ItemUUID2.default) {
                 throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
             }
             this.excludeUUIDs([itemUUID]);
@@ -483,6 +502,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * filter constants
  */
+var FILTER_IT_DOESNT_MATTER = exports.FILTER_IT_DOESNT_MATTER = 0;
 var FILTER_MUST_ALL = exports.FILTER_MUST_ALL = 4;
 var FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL_WITH_LEVELS = 5;
 var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;

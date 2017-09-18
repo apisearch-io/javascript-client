@@ -1,6 +1,14 @@
 import Aggregation from "./Aggregation";
-import Filter, {FILTER_AT_LEAST_ONE, FILTER_EXCLUDE, FILTER_TYPE_FIELD} from "./Filter";
-import {AGGREGATION_NO_LIMIT, AGGREGATION_SORT_BY_COUNT_DESC} from "./Aggregation";
+import Filter, {
+    FILTER_AT_LEAST_ONE,
+    FILTER_EXCLUDE,
+    FILTER_IT_DOESNT_MATTER,
+    FILTER_TYPE_FIELD
+} from "./Filter";
+import {
+    AGGREGATION_NO_LIMIT,
+    AGGREGATION_SORT_BY_COUNT_DESC
+} from "./Aggregation";
 import {checkCoordinateTypes} from "./Coordinate";
 import ItemUUID from "./ItemUUID";
 
@@ -128,6 +136,37 @@ export default class Query {
         return this;
     }
 
+    sortBy(sort) {
+        if (typeof sort['_geo_distance'] !== 'undefined') {
+            if (this.coordinate instanceof Coordinate) {
+                throw new Error(`
+                    In order to be able to sort by coordinates, you need to 
+                    create a Query by using apisearch.query.createLocated() 
+                    instead of apisearch.query.create()
+                `);
+            }
+            this.sort = {
+                ...this.sort,
+                ['_geo_distance']: {
+                    ['coordinate']: this.coordinate
+                }
+            };
+        }
+
+        sort.map((field, direction) => {
+            if (direction instanceof Array) {
+                this.sort = {
+                    ...this.sort,
+                    [field]: {
+                        ['order']: direction
+                    }
+                };
+            }
+        });
+
+        return $this;
+    }
+
     enableAggregations() {
         this.aggregations_enabled = true;
         return this;
@@ -159,10 +198,9 @@ export default class Query {
     }
 
     promoteUUID(itemUUID) {
-        if (itemUUID.constructor.name !== 'ItemUUID') {
+        if (!itemUUID instanceof ItemUUID) {
             throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
         }
-
         this.items_promoted = [
             ...this.items_promoted,
             itemUUID
@@ -178,7 +216,7 @@ export default class Query {
     }
 
     excludeUUID(itemUUID) {
-        if (itemUUID.constructor.name !== 'ItemUUID') {
+        if (!itemUUID instanceof ItemUUID) {
             throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
         }
         this.excludeUUIDs([itemUUID]);

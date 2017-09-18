@@ -24,6 +24,7 @@ npm install apisearch --save
 ```
 
 # Basic usage
+
 ```javascript
 // 1.- create the api client
 apisearch.client(
@@ -46,8 +47,10 @@ apisearch.search(query, function (result) {
 # Query
 
 ## Aggregations
+
 By default aggregations are enabled, so you can disable and enable it 
 again with the following chained methods.
+
 ```javascript
 let query = apisearch
   .query
@@ -58,8 +61,10 @@ let query = apisearch
 ```
 
 ## Highlights
+
 By default highlights are disabled. You can enable or disable it with 
 the following chained methods.
+
 ```javascript
 let query = apisearch
   .query
@@ -67,30 +72,38 @@ let query = apisearch
   .enableHighlights()
 ;
 ```
+
 You can then access to the highlighted text with the property `highlights`
 in the resulted items like this.
+
 ```javascript
 apisearch.search(query, function(result) {
    result.forEach(item => {
        console.log(item.highlights);
    });
 });
+
 // output -> "Hey look! it's <pre>ironman</pre>!" 
 ```
 
 ## Suggestions
+
 Suggestions are also disabled by default. Enable or disable it using the
 following methods.
+
 ```javascript
 apisearch
   .query
-  .create('spiderm')
-  .enableSuggestions()
+  .create('spider')
   .disableSuggestions()
+  .enableSuggestions()
 ;
+
+// output -> "Spiderman"
 ```
 
 ## Exclude items by uuid
+
 Items can be excluded manually for the search. For example, when printing a 
 related carousel given an item, and filtering by the type, would be useful 
 to exclude the current element from the list.
@@ -111,6 +124,7 @@ let query = apisearch
 ```
 
 You can also exclude several items at once:
+
 ```javascript
 let query = apisearch
   .query
@@ -123,11 +137,13 @@ let query = apisearch
 ```
 
 ## Promote items by uuid
+
 As well as items can be exclided, they can also be promoted to give them more 
 weight on the search, so they will appear first than the other ones.
 
 Using the built in apisearch method called: `apisearch.createUUID(uuid)`, 
 you will be ableto create a secure ItemUUID object.
+
 ```javascript
 let query = apisearch
   .query
@@ -140,6 +156,7 @@ let query = apisearch
 If you need to promote a list of items, you don't need to chain the promoteUUID
 method every time, you can use the following method and pass the promoted items 
 as an array like this:
+
 ```javascript
 let query = apisearch
   .query
@@ -152,6 +169,7 @@ let query = apisearch
 ```
 
 # Developer resources:
+
 * `npm run dev`: will start a watcher on `./src/**/*`, bundle at every code 
 change and export it on `./dist/apisearch.js`.
 * `npm run build`: will bundle and minify all code and export it on 
