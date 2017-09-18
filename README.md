@@ -95,11 +95,11 @@ Items can be excluded manually for the search. For example, when printing a
 related carousel given an item, and filtering by the type, would be useful 
 to exclude the current element from the list.
 
-Using the built in apisearch method called: `createUUID(uuid)`, you will be able
-to create a secure ItemUUID object.
+Using the built in apisearch method called: `apisearch.createUUID(uuid)`, 
+you will be ableto create a secure ItemUUID object.
 
 > Remember that an item uuid is composed by the id of the item and the type.
-> In this case "spiderman" is the ID and "marvel" is the type.
+> In this case "spiderman" means the ID and "marvel" means the type.
 
 ```javascript
 let query = apisearch
@@ -126,14 +126,14 @@ let query = apisearch
 As well as items can be exclided, they can also be promoted to give them more 
 weight on the search, so they will appear first than the other ones.
 
-Using the built in apisearch method called: `createUUID(uuid)`, you will be able
-to create a secure ItemUUID object.
+Using the built in apisearch method called: `apisearch.createUUID(uuid)`, 
+you will be ableto create a secure ItemUUID object.
 ```javascript
 let query = apisearch
   .query
   .createMatchAll()
   .promoteUUID(
-      apisearch.createUUID('spiderman', 'your_item_type')
+      apisearch.createUUID('spiderman', 'marvel')
   );
 ```
 
@@ -152,7 +152,8 @@ let query = apisearch
 ```
 
 # Developer resources:
-* `npm run dev`: will start a watcher on `./src/**/*` and bundle the code 
-in every change.
-* `npm run build`: will bundle and minify all code.
+* `npm run dev`: will start a watcher on `./src/**/*`, bundle at every code 
+change and export it on `./dist/apisearch.js`.
+* `npm run build`: will bundle and minify all code and export it on 
+`./dist/apisearch.min.js`.
 * `npm run test` or `npm t`: will run the test suite using Mocha.

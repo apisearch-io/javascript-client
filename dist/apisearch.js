@@ -143,6 +143,11 @@ exports.default = ItemUUID;
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Apisearch entry point
+                                                                                                                                                                                                                                                                   */
+
+
 var _Query = __webpack_require__(55);
 
 var _Query2 = _interopRequireDefault(_Query);
@@ -155,12 +160,15 @@ var _ItemUUID = __webpack_require__(109);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
+var _Filter = __webpack_require__(86);
+
+var _Filter2 = _interopRequireDefault(_Filter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cache = {}; /**
-                 * Apisearch entry point
-                 */
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var cache = {};
 
 var client = function client(repository, endpoint, secret) {
     this.repository = repository;
@@ -174,6 +182,10 @@ var search = function search(query, callback) {
     return repository.query(query).then(function (response) {
         return callback(response);
     });
+};
+
+var createUUID = function createUUID(id, type) {
+    return new _ItemUUID2.default(id, type);
 };
 
 var query = {
@@ -205,19 +217,36 @@ var query = {
             size: size,
             q: queryText
         });
+    },
+    createByUUID: function createByUUID(uuid) {
+        return this.createByUUIDs([uuid]);
+    },
+    createByUUIDs: function createByUUIDs(uuids) {
+        var ids = uuids.map(function (uuid) {
+            return uuid.composedUUID();
+        });
+        var query = new _Query2.default({
+            q: '',
+            page: _Query.QUERY_DEFAULT_PAGE,
+            size: _Query.QUERY_INFINITE_SIZE
+        });
+
+        query.disableAggregations().disableSuggestions();
+
+        query.filters = _extends({}, query.filters, _defineProperty({}, '_id', new _Filter2.default('_id', ids.filter(function (item, pos) {
+            return ids.indexOf(item) === pos;
+        }), _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+
+        return query;
     }
 };
 
-var createUUID = function createUUID(id, type) {
-    return new _ItemUUID2.default(id, type);
-};
-
 module.exports = {
+    cache: cache,
     client: client,
     search: search,
-    query: query,
     createUUID: createUUID,
-    cache: cache
+    query: query
 };
 
 /***/ }),

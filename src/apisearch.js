@@ -8,6 +8,7 @@ import Query, {
 } from "./Query";
 import HttpRepository from "./Repository";
 import ItemUUID from "./ItemUUID";
+import Filter, {FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD} from "./Filter";
 
 const cache = {};
 
@@ -29,6 +30,13 @@ const search = function(query, callback) {
             response => callback(response)
         )
     ;
+};
+
+const createUUID = function(id, type) {
+    return new ItemUUID(
+        id,
+        type
+    );
 };
 
 const query =  {
@@ -63,20 +71,42 @@ const query =  {
             size,
             q: queryText
         });
+    },
+    createByUUID(uuid) {
+        return this.createByUUIDs([uuid]);
+    },
+    createByUUIDs(uuids) {
+        let ids = uuids.map(uuid => uuid.composedUUID());
+        let query = new Query({
+            q: '',
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_INFINITE_SIZE
+        });
+
+        query
+            .disableAggregations()
+            .disableSuggestions();
+
+        query.filters = {
+            ...query.filters,
+            ['_id']: new Filter(
+                '_id',
+                ids.filter(
+                    (item, pos) => ids.indexOf(item) === pos
+                ),
+                FILTER_AT_LEAST_ONE,
+                FILTER_TYPE_FIELD
+            )
+        };
+
+        return query;
     }
 };
 
-const createUUID = function(id, type) {
-    return new ItemUUID(
-        id,
-        type
-    );
-};
-
 module.exports = {
+    cache,
     client,
     search,
-    query,
     createUUID,
-    cache
+    query
 };
