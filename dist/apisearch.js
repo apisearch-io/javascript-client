@@ -163,10 +163,18 @@ var query = {
     }
 };
 
+var createUUID = function createUUID(id, type) {
+    return {
+        id: id,
+        type: type
+    };
+};
+
 module.exports = {
     client: client,
     search: search,
-    query: query
+    query: query,
+    createUUID: createUUID
 };
 
 /***/ }),
@@ -199,6 +207,8 @@ var _Filter2 = _interopRequireDefault(_Filter);
 var _Coordinate = __webpack_require__(108);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -328,6 +338,28 @@ var Query = function () {
         key: "disableHighlights",
         value: function disableHighlights() {
             this.highlight_enabled = false;
+            return this;
+        }
+    }, {
+        key: "promoteUUID",
+        value: function promoteUUID(itemUUID) {
+            if ((typeof itemUUID === "undefined" ? "undefined" : _typeof(itemUUID)) !== 'object') {
+                throw new Error("values must be type of \"object\", \"" + (typeof values === "undefined" ? "undefined" : _typeof(values)) + "\" given.");
+            }
+
+            this.items_promoted = [].concat(_toConsumableArray(this.items_promoted), [itemUUID]);
+
+            return this;
+        }
+    }, {
+        key: "promoteUUIDs",
+        value: function promoteUUIDs(uuids) {
+            var _this = this;
+
+            uuids.forEach(function (uuid) {
+                return _this.promoteUUID(uuid);
+            });
+
             return this;
         }
     }]);

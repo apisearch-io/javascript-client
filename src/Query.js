@@ -156,4 +156,23 @@ export default class Query {
         this.highlight_enabled = false;
         return this;
     }
+
+    promoteUUID(itemUUID) {
+        if (typeof itemUUID !== 'object') {
+            throw new Error(`values must be type of "object", "${typeof values}" given.`);
+        }
+
+        this.items_promoted = [
+            ...this.items_promoted,
+            itemUUID
+        ];
+
+        return this;
+    }
+
+    promoteUUIDs(uuids) {
+        uuids.forEach(uuid => this.promoteUUID(uuid));
+
+        return this;
+    }
 }

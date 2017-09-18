@@ -76,6 +76,44 @@ describe('# Test: new Query()', () => {
         });
     });
 
+    describe('-> When promoting uuids', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should promote one uuid when calling promoteUUID()', () => {
+            query.promoteUUID({
+                id: 'spiderman',
+                type: 'marvel'
+            });
+            expect(query.items_promoted).to.deep.equal([{
+                id: 'spiderman',
+                type: 'marvel'
+            }]);
+        });
+        it('should promote many uuids when calling promoteUUIDs()', () => {
+            query.promoteUUIDs([{
+                id: 'ironman',
+                type: 'marvel'
+            }, {
+                id: 'thor',
+                type: 'marvel'
+            }]);
+            expect(query.items_promoted).to.deep.equal([{
+                id: 'spiderman',
+                type: 'marvel'
+            }, {
+                id: 'ironman',
+                type: 'marvel'
+            }, {
+                id: 'thor',
+                type: 'marvel'
+            }]);
+        });
+    })
+
     describe('-> When switching query setters', () => {
         let query = new Query({
             q: '',

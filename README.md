@@ -82,11 +82,53 @@ apisearch.search(query, function(result) {
 Suggestions are also disabled by default. Enable or disable it using the
 following methods.
 ```javascript
-apisearch.query
+apisearch
+  .query
   .create('spiderm')
   .enableSuggestions()
   .disableSuggestions()
 ;
+```
+
+## Promote items by uuid
+Items can be promoted to give them more weight on the search, so they will
+appear first than the other ones.
+
+There are two ways to promote items on search, let's have a look:
+* Giving an object as a parameter with the following properties: 
+**id** and **type**.  
+```javascript
+let query = apisearch
+  .query
+  .createMatchAll()
+  .promoteUUID({
+    id: 'your_item_id',
+    type: 'your_item_type'
+  });
+```
+* Using the built in apisearch method called: **createUUID**. The recommended 
+way.
+```javascript
+let query = apisearch
+  .query
+  .createMatchAll()
+  .promoteUUID(
+      apisearch.createUUUD('your_item_id', 'your_item_type')
+  );
+```
+
+If you need to promote a list of items, you don't need to chain the promoteUUID
+method every time, you can use the following method and pass the promoted items 
+as an array likt this:
+```javascript
+let query = apisearch
+  .query
+  .createMatchAll()
+  .promoteUUIDs([
+      apisearch.createUUUD('spiderman_id', 'marvel'),
+      apisearch.createUUUD('ironman_id', 'marvel'),
+      apisearch.createUUUD('thor_id', 'marvel')
+  ]);
 ```
 
 # Developer resources:

@@ -64,8 +64,16 @@ const query =  {
     }
 };
 
+const createUUID = function(id, type) {
+    return {
+        id,
+        type
+    };
+};
+
 module.exports = {
     client,
     search,
-    query
+    query,
+    createUUID
 };
