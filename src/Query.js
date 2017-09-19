@@ -9,8 +9,9 @@ import {
     AGGREGATION_NO_LIMIT,
     AGGREGATION_SORT_BY_COUNT_DESC
 } from "./Aggregation";
-import {checkCoordinateTypes} from "./Coordinate";
 import ItemUUID from "./ItemUUID";
+import Coordinate from "./Coordinate";
+import {SORT_BY_SCORE} from "./SortBy";
 
 /**
  * Query constants
@@ -37,9 +38,14 @@ export default class Query {
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
         this.filter_fields = params.filter_fields || [];
-        this.user = params.user;
-        this.coordinate = checkCoordinateTypes(params.coordinate);
-        this.coordinate = params.coordinate;
+        this.user = params.user || null;
+        this.coordinate = (typeof params.coordinate !== 'undefined')
+            ? new Coordinate(
+                params.coordinate.lat,
+                params.coordinate.lon
+            ) : null
+        ;
+        this.sortBy(SORT_BY_SCORE);
 
         return this;
     }
@@ -137,34 +143,34 @@ export default class Query {
     }
 
     sortBy(sort) {
+        if (typeof sort === 'undefined') {
+            throw new Error(`sortBy() parameter cannot be undefined.`);
+        }
         if (typeof sort['_geo_distance'] !== 'undefined') {
-            if (this.coordinate instanceof Coordinate) {
+            if (this.coordinate instanceof Coordinate === false) {
                 throw new Error(`
                     In order to be able to sort by coordinates, you need to 
-                    create a Query by using apisearch.query.createLocated() 
-                    instead of apisearch.query.create()
+                    create a Query by using apisearch.query.createLocated(...) 
+                    instead of apisearch.query.create(...)
                 `);
             }
             this.sort = {
-                ...this.sort,
                 ['_geo_distance']: {
                     ['coordinate']: this.coordinate
                 }
             };
         }
 
-        sort.map((field, direction) => {
-            if (direction instanceof Array) {
-                this.sort = {
-                    ...this.sort,
-                    [field]: {
-                        ['order']: direction
-                    }
-                };
-            }
+        Object.keys(sort).map(field => {
+            let direction = sort[field].order;
+            this.sort = {
+                [field]: {
+                    ['order']: direction
+                }
+            };
         });
 
-        return $this;
+        return this;
     }
 
     enableAggregations() {
@@ -198,7 +204,7 @@ export default class Query {
     }
 
     promoteUUID(itemUUID) {
-        if (!itemUUID instanceof ItemUUID) {
+        if (itemUUID instanceof ItemUUID === false) {
             throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
         }
         this.items_promoted = [
@@ -216,7 +222,7 @@ export default class Query {
     }
 
     excludeUUID(itemUUID) {
-        if (!itemUUID instanceof ItemUUID) {
+        if (itemUUID instanceof ItemUUID === false) {
             throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
         }
         this.excludeUUIDs([itemUUID]);

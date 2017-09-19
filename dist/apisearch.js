@@ -76,25 +76,25 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Coordinate Type cast
  * @param coordinate
  */
-var checkCoordinateTypes = exports.checkCoordinateTypes = function checkCoordinateTypes(coordinate) {
-    if (typeof coordinate === 'undefined') {
-        return coordinate;
-    }
-    if ((typeof coordinate === 'undefined' ? 'undefined' : _typeof(coordinate)) !== 'object') {
-        throw new Error('Coordinates must be typo of object, "' + (typeof coordinate === 'undefined' ? 'undefined' : _typeof(coordinate)) + '" given.');
-    }
-    if (typeof coordinate.lat !== 'undefined' && typeof coordinate.lon !== 'undefined') {
-        return coordinate;
+
+var Coordinate = function Coordinate(latitude, longitude) {
+    _classCallCheck(this, Coordinate);
+
+    if (typeof latitude === 'undefined' || typeof latitude === 'undefined') {
+        throw new Error('Not valid coordinates object type given.');
     }
 
-    throw new Error('Not valid coordinates object type given.');
+    this.lat = latitude;
+    this.lon = longitude;
 };
+
+exports.default = Coordinate;
 
 /***/ }),
 
@@ -137,6 +137,64 @@ exports.default = ItemUUID;
 
 /***/ }),
 
+/***/ 110:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ export * Sort by constants
+ */
+
+var SORT_BY_SCORE = exports.SORT_BY_SCORE = {
+    '_score': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_RANDOM = exports.SORT_BY_RANDOM = {
+    'random': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_ID_ASC = exports.SORT_BY_ID_ASC = {
+    'uuid.id': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_ID_DESC = exports.SORT_BY_ID_DESC = {
+    'uuid.id': {
+        'order': 'desc'
+    }
+};
+var SORT_BY_TYPE_ASC = exports.SORT_BY_TYPE_ASC = {
+    'uuid.type': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_TYPE_DESC = exports.SORT_BY_TYPE_DESC = {
+    'uuid.type': {
+        'order': 'desc'
+    }
+};
+var SORT_BY_LOCATION_KM_ASC = exports.SORT_BY_LOCATION_KM_ASC = {
+    '_geo_distance': {
+        'order': 'asc',
+        'unit': 'km'
+    }
+};
+var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
+    '_geo_distance': {
+        'order': 'asc',
+        'unit': 'mi'
+    }
+};
+
+/***/ }),
+
 /***/ 54:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -148,10 +206,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _Query = __webpack_require__(55);
-
-var _Query2 = _interopRequireDefault(_Query);
-
 var _Repository = __webpack_require__(88);
 
 var _Repository2 = _interopRequireDefault(_Repository);
@@ -159,6 +213,10 @@ var _Repository2 = _interopRequireDefault(_Repository);
 var _ItemUUID = __webpack_require__(109);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
+
+var _Query = __webpack_require__(55);
+
+var _Query2 = _interopRequireDefault(_Query);
 
 var _Filter = __webpack_require__(86);
 
@@ -276,11 +334,15 @@ var _Filter = __webpack_require__(86);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
-var _Coordinate = __webpack_require__(108);
-
 var _ItemUUID = __webpack_require__(109);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
+
+var _Coordinate = __webpack_require__(108);
+
+var _Coordinate2 = _interopRequireDefault(_Coordinate);
+
+var _SortBy = __webpack_require__(110);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -318,9 +380,9 @@ var Query = function () {
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
         this.filter_fields = params.filter_fields || [];
-        this.user = params.user;
-        this.coordinate = (0, _Coordinate.checkCoordinateTypes)(params.coordinate);
-        this.coordinate = params.coordinate;
+        this.user = params.user || null;
+        this.coordinate = typeof params.coordinate !== 'undefined' ? new _Coordinate2.default(params.coordinate.lat, params.coordinate.lon) : null;
+        this.sortBy(_SortBy.SORT_BY_SCORE);
 
         return this;
     }
@@ -385,20 +447,22 @@ var Query = function () {
         value: function sortBy(sort) {
             var _this = this;
 
+            if (typeof sort === 'undefined') {
+                throw new Error("sortBy() parameter cannot be undefined.");
+            }
             if (typeof sort['_geo_distance'] !== 'undefined') {
-                if (this.coordinate instanceof Coordinate) {
-                    throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated() \n                    instead of apisearch.query.create()\n                ");
+                if (this.coordinate instanceof _Coordinate2.default === false) {
+                    throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated(...) \n                    instead of apisearch.query.create(...)\n                ");
                 }
-                this.sort = _extends({}, this.sort, _defineProperty({}, '_geo_distance', _defineProperty({}, 'coordinate', this.coordinate)));
+                this.sort = _defineProperty({}, '_geo_distance', _defineProperty({}, 'coordinate', this.coordinate));
             }
 
-            sort.map(function (field, direction) {
-                if (direction instanceof Array) {
-                    _this.sort = _extends({}, _this.sort, _defineProperty({}, field, _defineProperty({}, 'order', direction)));
-                }
+            Object.keys(sort).map(function (field) {
+                var direction = sort[field].order;
+                _this.sort = _defineProperty({}, field, _defineProperty({}, 'order', direction));
             });
 
-            return $this;
+            return this;
         }
     }, {
         key: "enableAggregations",
@@ -439,7 +503,7 @@ var Query = function () {
     }, {
         key: "promoteUUID",
         value: function promoteUUID(itemUUID) {
-            if (!itemUUID instanceof _ItemUUID2.default) {
+            if (itemUUID instanceof _ItemUUID2.default === false) {
                 throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
             }
             this.items_promoted = [].concat(_toConsumableArray(this.items_promoted), [itemUUID]);
@@ -460,7 +524,7 @@ var Query = function () {
     }, {
         key: "excludeUUID",
         value: function excludeUUID(itemUUID) {
-            if (!itemUUID instanceof _ItemUUID2.default) {
+            if (itemUUID instanceof _ItemUUID2.default === false) {
                 throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
             }
             this.excludeUUIDs([itemUUID]);

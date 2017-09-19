@@ -1,6 +1,7 @@
 import ItemUUID from "../src/ItemUUID";
 
 const expect = require('chai').expect;
+const assert = require('chai').assert;
 
 import {defaultQuery} from './mocks/queries';
 import {FILTER_AT_LEAST_ONE} from "../src/Filter";
@@ -75,6 +76,82 @@ describe('# Test: new Query()', () => {
                 'subgroup'
             );
             expect(query.aggregations.source.name).to.include('source');
+        });
+    });
+
+    describe('-> sortBy...() method', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+        it('should throw an error when sortBy() without parameters', () => {
+            assert.throws(
+                query.sortBy,
+                Error
+            );
+        });
+        it('should sortBy()', () => {
+            query.sortBy({
+                'random': {
+                    'order': 'asc'
+                }
+            })
+            expect(query.sort).to.deep.equal(
+                {
+                    'random': {
+                        'order': 'asc'
+                    }
+                }
+            );
+        });
+        it('should overwrite the last sort object setting again sortBy()', () => {
+            query.sortBy({
+                'uuid.type': {
+                    'order': 'asc'
+                }
+            })
+            expect(query.sort).to.deep.equal(
+                {
+                    'uuid.type': {
+                        'order': 'asc'
+                    }
+                }
+            );
+        });
+        it('should throw an error when sortBy() "_geo_distance" without a location object', () => {
+            const querySortedBy = query.sortBy({
+                '_geo_distance': {
+                    'order': 'asc',
+                    'unit': 'km'
+                }
+            })
+            assert.throws(querySortedBy, Error);
+        });
+        it('should sortBy() "_geo_distance" when Query has been created with createLocated() method', () => {
+            let query = new Query({
+                q: '',
+                QUERY_DEFAULT_PAGE,
+                QUERY_DEFAULT_SIZE,
+                coordinate:  {
+                    lat: 1234,
+                    lon: 1234
+                }
+            });
+            query.sortBy({
+                '_geo_distance': {
+                    'order': 'asc',
+                    'unit': 'km'
+                }
+            });
+            expect(query.sort).to.deep.equal(
+                {
+                    '_geo_distance': {
+                        'order': 'asc',
+                        'unit': 'km'
+                    }
+                }
+            );
         });
     });
 
