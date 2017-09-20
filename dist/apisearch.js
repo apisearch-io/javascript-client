@@ -544,6 +544,23 @@ var Query = function () {
 
             return this;
         }
+    }, {
+        key: "byUser",
+        value: function byUser(user) {
+            if (user instanceof User === false) {
+                throw new Error("byUser parameter must be type User, \"" + user.constructor.name + "\" given");
+            }
+            this.user = user;
+
+            return this;
+        }
+    }, {
+        key: "anonymously",
+        value: function anonymously() {
+            this.user = null;
+
+            return null;
+        }
     }]);
 
     return Query;

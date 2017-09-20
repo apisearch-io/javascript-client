@@ -245,4 +245,19 @@ export default class Query {
 
         return this;
     }
+
+    byUser(user) {
+        if (user instanceof User === false) {
+            throw new Error(`byUser parameter must be type User, "${user.constructor.name}" given`);
+        }
+        this.user = user;
+
+        return this;
+    }
+
+    anonymously() {
+        this.user = null;
+
+        return null;
+    }
 }
