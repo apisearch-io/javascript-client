@@ -195,6 +195,97 @@ var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
 
 /***/ }),
 
+/***/ 111:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Typechecking
+ */
+var TypeChecker = function () {
+    function TypeChecker() {
+        _classCallCheck(this, TypeChecker);
+    }
+
+    _createClass(TypeChecker, null, [{
+        key: 'isDefined',
+        value: function isDefined(value) {
+            if (typeof value === 'undefined') {
+                throw new TypeError('Method parameter must be defined.');
+            }
+        }
+    }, {
+        key: 'isArray',
+        value: function isArray(array) {
+            if (array instanceof Array === false) {
+                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + values.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isBool',
+        value: function isBool(bool) {
+            if (typeof bool !== 'boolean') {
+                throw new TypeError('\n                "' + bool + '" must be type of Boolean, \n                "' + bool.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isString',
+        value: function isString(string) {
+            if (typeof string !== 'string') {
+                throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isObjectTypeOf',
+        value: function isObjectTypeOf(givenObject, mustBe) {
+            if (givenObject instanceof mustBe !== true) {
+                throw new TypeError('\n                "' + givenObject.constructor.name + '" must be type ' + mustBe.name + ', \n                "' + givenObject.constructor.name + '" given.\n            ');
+            }
+        }
+    }]);
+
+    return TypeChecker;
+}();
+
+exports.default = TypeChecker;
+
+/***/ }),
+
+/***/ 112:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * User class
+ */
+var User = function User(id) {
+    _classCallCheck(this, User);
+
+    this.id = id;
+};
+
+exports.default = User;
+
+/***/ }),
+
 /***/ 54:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -324,17 +415,11 @@ exports.QUERY_INFINITE_SIZE = exports.QUERY_DEFAULT_SIZE = exports.QUERY_DEFAULT
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Aggregation = __webpack_require__(87);
 
 var _Aggregation2 = _interopRequireDefault(_Aggregation);
-
-var _Filter = __webpack_require__(86);
-
-var _Filter2 = _interopRequireDefault(_Filter);
 
 var _ItemUUID = __webpack_require__(109);
 
@@ -344,7 +429,19 @@ var _Coordinate = __webpack_require__(108);
 
 var _Coordinate2 = _interopRequireDefault(_Coordinate);
 
+var _TypeChecker = __webpack_require__(111);
+
+var _TypeChecker2 = _interopRequireDefault(_TypeChecker);
+
+var _Filter = __webpack_require__(86);
+
+var _Filter2 = _interopRequireDefault(_Filter);
+
 var _SortBy = __webpack_require__(110);
+
+var _User = __webpack_require__(112);
+
+var _User2 = _interopRequireDefault(_User);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -396,12 +493,8 @@ var Query = function () {
             var aggregate = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
             var aggregationSort = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
 
-            if ((typeof values === "undefined" ? "undefined" : _typeof(values)) !== 'object') {
-                throw new Error("values must be type of \"array\", \"" + (typeof values === "undefined" ? "undefined" : _typeof(values)) + "\" given.");
-            }
-            if ((typeof aggregationSort === "undefined" ? "undefined" : _typeof(aggregationSort)) !== 'object') {
-                throw new Error("values must be type of \"array\", \"" + (typeof aggregationSort === "undefined" ? "undefined" : _typeof(aggregationSort)) + "\" given.");
-            }
+            _TypeChecker2.default.isArray(values);
+            _TypeChecker2.default.isArray(aggregationSort);
 
             var fieldPath = _Filter2.default.getFilterPathByField(field);
             if (values.length !== 0) {
@@ -417,13 +510,46 @@ var Query = function () {
             return this;
         }
     }, {
+        key: "filterByTypes",
+        value: function filterByTypes(values) {
+            var aggregate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+            var aggregationSort = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
+
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField('type');
+            if (values.length !== 0) {
+                this.filters = _extends({}, this.filters, _defineProperty({}, 'type', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+            } else {
+                delete this.filters['type'];
+            }
+
+            if (aggregate) {
+                this.aggregations = _extends({}, this.aggregations, _defineProperty({}, 'type', new _Aggregation2.default('type', fieldPath, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD, [], aggregationSort)));
+            }
+
+            return this;
+        }
+    }, {
+        key: "filterByIds",
+        value: function filterByIds(values) {
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField('id');
+            if (values.length !== 0) {
+                this.filters = _extends({}, this.filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+            } else {
+                delete this.filters['id'];
+            }
+
+            return this;
+        }
+    }, {
         key: "filterUniverseBy",
         value: function filterUniverseBy(field, values) {
             var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
 
-            if ((typeof values === "undefined" ? "undefined" : _typeof(values)) !== 'object') {
-                throw new Error("values must be type of \"array\", \"" + (typeof values === "undefined" ? "undefined" : _typeof(values)) + "\" given.");
-            }
+            _TypeChecker2.default.isArray(values);
 
             var fieldPath = _Filter2.default.getFilterPathByField(field);
             if (values.length !== 0) {
@@ -449,9 +575,8 @@ var Query = function () {
         value: function sortBy(sort) {
             var _this = this;
 
-            if (typeof sort === 'undefined') {
-                throw new Error("sortBy() parameter cannot be undefined.");
-            }
+            _TypeChecker2.default.isDefined(sort);
+
             if (typeof sort['_geo_distance'] !== 'undefined') {
                 var _geo_distance;
 
@@ -528,9 +653,7 @@ var Query = function () {
     }, {
         key: "excludeUUID",
         value: function excludeUUID(itemUUID) {
-            if (itemUUID instanceof _ItemUUID2.default === false) {
-                throw new Error("Excluded item must be type \"ItemUUID\", \"" + itemUUID.constructor.name + "\" given.");
-            }
+            _TypeChecker2.default.isObjectTypeOf(itemUUID, _ItemUUID2.default);
             this.excludeUUIDs([itemUUID]);
 
             return this;
@@ -547,9 +670,7 @@ var Query = function () {
     }, {
         key: "byUser",
         value: function byUser(user) {
-            if (user instanceof User === false) {
-                throw new Error("byUser parameter must be type User, \"" + user.constructor.name + "\" given");
-            }
+            _TypeChecker2.default.isObjectTypeOf(user, _User2.default);
             this.user = user;
 
             return this;

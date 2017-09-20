@@ -1,4 +1,7 @@
 import Aggregation from "./Aggregation";
+import ItemUUID from "./ItemUUID";
+import Coordinate from "./Coordinate";
+import TypeChecker from "./TypeChecker";
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
@@ -9,9 +12,8 @@ import {
     AGGREGATION_NO_LIMIT,
     AGGREGATION_SORT_BY_COUNT_DESC
 } from "./Aggregation";
-import ItemUUID from "./ItemUUID";
-import Coordinate from "./Coordinate";
 import {SORT_BY_SCORE} from "./SortBy";
+import User from "./User";
 
 /**
  * Query constants
@@ -58,12 +60,8 @@ export default class Query {
         aggregate = true,
         aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC
     ) {
-        if (typeof values !== 'object') {
-            throw new Error(`values must be type of "array", "${typeof values}" given.`);
-        }
-        if (typeof aggregationSort !== 'object') {
-            throw new Error(`values must be type of "array", "${typeof aggregationSort}" given.`);
-        }
+        TypeChecker.isArray(values);
+        TypeChecker.isArray(aggregationSort);
 
         let fieldPath = Filter.getFilterPathByField(field);
         if (values.length !== 0) {
@@ -92,14 +90,72 @@ export default class Query {
         return this;
     }
 
+    filterByTypes(
+        values,
+        aggregate = true,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC
+    ) {
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField('type');
+        if (values.length !== 0) {
+            this.filters = {
+                ...this.filters,
+                ['type']: new Filter(
+                    fieldPath,
+                    values,
+                    FILTER_AT_LEAST_ONE,
+                    FILTER_TYPE_FIELD
+                )
+            }
+        } else {
+            delete this.filters['type']
+        }
+
+        if (aggregate) {
+            this.aggregations = {
+                ...this.aggregations,
+                ['type']: new Aggregation(
+                    'type',
+                    fieldPath,
+                    FILTER_AT_LEAST_ONE,
+                    FILTER_TYPE_FIELD,
+                    [],
+                    aggregationSort
+                )
+            }
+        }
+
+        return this;
+    }
+
+    filterByIds(values) {
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField('id');
+        if (values.length !== 0) {
+            this.filters = {
+                ...this.filters,
+                ['id']: new Filter(
+                    fieldPath,
+                    values,
+                    FILTER_AT_LEAST_ONE,
+                    FILTER_TYPE_FIELD
+                )
+            }
+        } else {
+            delete this.filters['id']
+        }
+
+        return this;
+    }
+
     filterUniverseBy(
         field,
         values,
         applicationType = FILTER_AT_LEAST_ONE
     ) {
-        if (typeof values !== 'object') {
-            throw new Error(`values must be type of "array", "${typeof values}" given.`);
-        }
+        TypeChecker.isArray(values);
 
         let fieldPath = Filter.getFilterPathByField(field);
         if (values.length !== 0) {
@@ -143,9 +199,8 @@ export default class Query {
     }
 
     sortBy(sort) {
-        if (typeof sort === 'undefined') {
-            throw new Error(`sortBy() parameter cannot be undefined.`);
-        }
+        TypeChecker.isDefined(sort);
+
         if (typeof sort['_geo_distance'] !== 'undefined') {
             if (this.coordinate instanceof Coordinate === false) {
                 throw new Error(`
@@ -224,9 +279,7 @@ export default class Query {
     }
 
     excludeUUID(itemUUID) {
-        if (itemUUID instanceof ItemUUID === false) {
-            throw new Error(`Excluded item must be type "ItemUUID", "${itemUUID.constructor.name}" given.`);
-        }
+        TypeChecker.isObjectTypeOf(itemUUID, ItemUUID);
         this.excludeUUIDs([itemUUID]);
 
         return this;
@@ -247,9 +300,7 @@ export default class Query {
     }
 
     byUser(user) {
-        if (user instanceof User === false) {
-            throw new Error(`byUser parameter must be type User, "${user.constructor.name}" given`);
-        }
+        TypeChecker.isObjectTypeOf(user, User);
         this.user = user;
 
         return this;
