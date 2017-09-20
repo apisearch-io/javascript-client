@@ -228,10 +228,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var cache = {};
 
-var client = function client(repository, endpoint, secret) {
+var client = function client(repository, secret, endpoint) {
     this.repository = repository;
-    this.endpoint = endpoint;
     this.secret = secret;
+    this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
 };
 
 var search = function search(query, callback) {

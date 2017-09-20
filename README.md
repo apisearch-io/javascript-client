@@ -29,8 +29,7 @@ npm install apisearch --save
 // 1.- create the api client
 apisearch.client(
   'repository_name', 
-  'https://apisearch.io/server/endpoint/', 
-  'your_api_key'
+  'your_api_key',
 );
 
 // 2.- build a query

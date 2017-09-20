@@ -15,10 +15,10 @@ import Filter, {
 
 const cache = {};
 
-const client = function(repository, endpoint, secret) {
+const client = function(repository, secret, endpoint) {
     this.repository = repository;
-    this.endpoint = endpoint;
     this.secret = secret;
+    this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
 };
 
 const search = function(query, callback) {
