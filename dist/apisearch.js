@@ -451,16 +451,18 @@ var Query = function () {
                 throw new Error("sortBy() parameter cannot be undefined.");
             }
             if (typeof sort['_geo_distance'] !== 'undefined') {
+                var _geo_distance;
+
                 if (this.coordinate instanceof _Coordinate2.default === false) {
                     throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated(...) \n                    instead of apisearch.query.create(...)\n                ");
                 }
-                this.sort = _defineProperty({}, '_geo_distance', _defineProperty({}, 'coordinate', this.coordinate));
+                this.sort = _defineProperty({}, '_geo_distance', (_geo_distance = {}, _defineProperty(_geo_distance, 'coordinate', this.coordinate), _defineProperty(_geo_distance, 'order', sort._geo_distance.order), _defineProperty(_geo_distance, 'unit', sort._geo_distance.unit), _geo_distance));
+            } else {
+                Object.keys(sort).map(function (field) {
+                    var direction = sort[field].order;
+                    _this.sort = _defineProperty({}, field, _defineProperty({}, 'order', direction));
+                });
             }
-
-            Object.keys(sort).map(function (field) {
-                var direction = sort[field].order;
-                _this.sort = _defineProperty({}, field, _defineProperty({}, 'order', direction));
-            });
 
             return this;
         }

@@ -1,7 +1,6 @@
 import ItemUUID from "../src/ItemUUID";
 
 const expect = require('chai').expect;
-const assert = require('chai').assert;
 
 import {defaultQuery} from './mocks/queries';
 import {FILTER_AT_LEAST_ONE} from "../src/Filter";
@@ -86,10 +85,7 @@ describe('# Test: new Query()', () => {
             QUERY_DEFAULT_SIZE
         });
         it('should throw an error when sortBy() without parameters', () => {
-            assert.throws(
-                query.sortBy,
-                Error
-            );
+            expect(() => query.sortBy()).to.throw(Error);
         });
         it('should sortBy()', () => {
             query.sortBy({
@@ -120,13 +116,12 @@ describe('# Test: new Query()', () => {
             );
         });
         it('should throw an error when sortBy() "_geo_distance" without a location object', () => {
-            const querySortedBy = query.sortBy({
+            expect(() => query.sortBy({
                 '_geo_distance': {
                     'order': 'asc',
                     'unit': 'km'
                 }
-            })
-            assert.throws(querySortedBy, Error);
+            })).to.throw(Error);
         });
         it('should sortBy() "_geo_distance" when Query has been created with createLocated() method', () => {
             let query = new Query({
@@ -134,8 +129,8 @@ describe('# Test: new Query()', () => {
                 QUERY_DEFAULT_PAGE,
                 QUERY_DEFAULT_SIZE,
                 coordinate:  {
-                    lat: 1234,
-                    lon: 1234
+                    lat: 1.234,
+                    lon: 1.234
                 }
             });
             query.sortBy({
@@ -147,6 +142,10 @@ describe('# Test: new Query()', () => {
             expect(query.sort).to.deep.equal(
                 {
                     '_geo_distance': {
+                        'coordinate': {
+                            'lat': 1.234,
+                            'lon': 1.234
+                        },
                         'order': 'asc',
                         'unit': 'km'
                     }

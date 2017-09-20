@@ -156,19 +156,21 @@ export default class Query {
             }
             this.sort = {
                 ['_geo_distance']: {
-                    ['coordinate']: this.coordinate
+                    ['coordinate']: this.coordinate,
+                    ['order']: sort._geo_distance.order,
+                    ['unit']: sort._geo_distance.unit
                 }
             };
+        } else {
+            Object.keys(sort).map(field => {
+                let direction = sort[field].order;
+                this.sort = {
+                    [field]: {
+                        ['order']: direction
+                    }
+                };
+            });
         }
-
-        Object.keys(sort).map(field => {
-            let direction = sort[field].order;
-            this.sort = {
-                [field]: {
-                    ['order']: direction
-                }
-            };
-        });
 
         return this;
     }
