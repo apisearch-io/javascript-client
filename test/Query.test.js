@@ -115,13 +115,11 @@ describe('# Test: new Query()', () => {
                     'order': 'asc'
                 }
             })
-            expect(query.sort).to.deep.equal(
-                {
-                    'random': {
-                        'order': 'asc'
-                    }
+            expect(query.sort).to.deep.equal({
+                'random': {
+                    'order': 'asc'
                 }
-            );
+            });
         });
         it('should overwrite the last sort object setting again sortBy()', () => {
             query.sortBy({
@@ -129,13 +127,11 @@ describe('# Test: new Query()', () => {
                     'order': 'asc'
                 }
             })
-            expect(query.sort).to.deep.equal(
-                {
-                    'uuid.type': {
-                        'order': 'asc'
-                    }
+            expect(query.sort).to.deep.equal({
+                'uuid.type': {
+                   'order': 'asc'
                 }
-            );
+            });
         });
         it('should throw an error when sortBy() "_geo_distance" without a location object', () => {
             expect(() => query.sortBy({
@@ -161,18 +157,16 @@ describe('# Test: new Query()', () => {
                     'unit': 'km'
                 }
             });
-            expect(query.sort).to.deep.equal(
-                {
-                    '_geo_distance': {
-                        'coordinate': {
-                            'lat': 1.234,
-                            'lon': 1.234
-                        },
-                        'order': 'asc',
-                        'unit': 'km'
-                    }
+            expect(query.sort).to.deep.equal({
+                '_geo_distance': {
+                    'coordinate': {
+                        'lat': 1.234,
+                        'lon': 1.234
+                    },
+                    'order': 'asc',
+                    'unit': 'km'
                 }
-            );
+            });
         });
     });
 
