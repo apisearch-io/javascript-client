@@ -6,7 +6,7 @@ import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
     FILTER_IT_DOESNT_MATTER,
-    FILTER_TYPE_FIELD
+    FILTER_TYPE_FIELD, FILTER_TYPE_ID
 } from "./Filter";
 import {
     AGGREGATION_NO_LIMIT,
@@ -140,7 +140,7 @@ export default class Query {
                     fieldPath,
                     values,
                     FILTER_AT_LEAST_ONE,
-                    FILTER_TYPE_FIELD
+                    FILTER_TYPE_ID
                 )
             }
         } else {

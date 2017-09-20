@@ -8,6 +8,7 @@ export const FILTER_AT_LEAST_ONE = 8;
 export const FILTER_EXCLUDE = 16;
 export const FILTER_PROMOTE = 32;
 export const FILTER_TYPE_FIELD = 'field';
+export const FILTER_TYPE_ID = 'id';
 export const FILTER_TYPE_RANGE = 'range';
 export const FILTER_TYPE_DATE_RANGE = 'date_range';
 export const FILTER_TYPE_GEO = 'geo';

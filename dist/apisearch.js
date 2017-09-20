@@ -537,7 +537,7 @@ var Query = function () {
 
             var fieldPath = _Filter2.default.getFilterPathByField('id');
             if (values.length !== 0) {
-                this.filters = _extends({}, this.filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+                this.filters = _extends({}, this.filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_ID)));
             } else {
                 delete this.filters['id'];
             }
@@ -715,6 +715,7 @@ var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
 var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
 var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
 var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
+var FILTER_TYPE_ID = exports.FILTER_TYPE_ID = 'id';
 var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
 var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
 var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';

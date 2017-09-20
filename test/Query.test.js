@@ -32,6 +32,28 @@ describe('# Test: new Query()', () => {
             );
             expect(query.filters.source.values).to.include('source_id_123456');
         });
+        it('should filterByTypes()', () => {
+            query.filterByTypes(['item_uuid_type']);
+            expect(query.filters).to.have.own.property('type');
+            expect(query.filters.type).to.deep.equal({
+                application_type: 8,
+                field: 'uuid.type',
+                filter_terms: [],
+                filter_type: 'field',
+                values: ['item_uuid_type']
+            });
+        });
+        it('should filterByIds()', () => {
+            query.filterByIds(['item_uuid_id']);
+            expect(query.filters).to.have.own.property('id');
+            expect(query.filters.id).to.deep.equal({
+                application_type: 8,
+                field: 'uuid.id',
+                filter_terms: [],
+                filter_type: 'id',
+                values: ['item_uuid_id']
+            });
+        });
     });
 
     describe('-> filterUniverseBy...() methods', () => {

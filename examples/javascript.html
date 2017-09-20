@@ -40,7 +40,10 @@
 
             searchInput.addEventListener('keyup', function (e) {
                 // 2.- compose query
-                query = apisearch.query.create(e.target.value);
+                query = apisearch
+                    .query
+                    .create(e.target.value)
+                ;
 
                 // 3.- Execute search
                 apisearch.search(query, function (result, error) {
