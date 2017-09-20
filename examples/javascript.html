@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <title>Apisearch Javascript example</title>
+        <script src="../dist/apisearch.js"></script>
+    </head>
+    <body>
+        <!-- Content -->
+        <label for="search">Search something:</label>
+        <input type="text" value="" id="search"/>
+        <div id="result"></div>
+        <!-- /Content -->
+
+        <!-- Underscore templating -->
+        <script type="text/template" id="template">
+            <b><%= total_hits %></b><br>
+            <% if (items.length !== 0) { %>
+                <% items.forEach(function(item) { %>
+                    <div>
+                        <b><%= item.metadata.author_name %></b>
+                        <div><%= item.metadata.content %></div><br>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div>No results found.</div>
+            <% } %>
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <!-- /Underscore templating -->
+
+        <!-- Apisearch -->
+        <script>
+            var query,
+                searchInput = document.getElementById('search'),
+                resultBlock = document.getElementById('result'),
+                compiled = _.template(document.getElementById('template').innerHTML)
+            ;
+
+            // 1. Create the client
+            apisearch.client('repository_name', 'http://api.apisearch.io/v1/', 'api_key');
+
+            searchInput.addEventListener('keyup', function (e) {
+                // 2.- compose query
+                query = apisearch.query.create(e.target.value);
+
+                // 3.- Execute search
+                apisearch.search(query, function (result, error) {
+                    // Handle error
+                    if (error) {
+                        console.log(error)
+                        return;
+                    }
+
+                    // Render result
+                    resultBlock.innerHTML = compiled({
+                        total_hits: result.total_hits,
+                        items: result.items || []
+                    });
+                });
+            });
+        </script>
+        <!-- /Apisearch -->
+    </body>
+</html>

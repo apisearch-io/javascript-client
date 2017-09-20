@@ -30,7 +30,9 @@ const search = function(query, callback) {
     return repository
         .query(query)
         .then(
-            response => callback(response)
+            response => callback(response, null)
+        ).catch(
+            error => callback(null, error)
         )
     ;
 };

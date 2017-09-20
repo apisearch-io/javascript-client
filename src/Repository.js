@@ -25,17 +25,23 @@ export default class HttpRepository {
     }
 
     fetchData(composedQuery) {
-        return new Promise(resolve => {
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    return resolve(
-                        JSON.parse(this.responseText)
-                    );
-                }
-            };
-            xhr.open("GET", composedQuery, true);
-            xhr.send();
-        })
+        return new Promise((resolve, reject) => {
+                let xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            return resolve(
+                                JSON.parse(this.responseText)
+                            )
+                        } else {
+                            return reject(`Request error, make sure your query url is properly formed.`)
+                        }
+                    }
+                };
+
+                xhr.open("GET", composedQuery, true);
+                xhr.send();
+            }
+        );
     }
 }

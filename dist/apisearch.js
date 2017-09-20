@@ -238,7 +238,9 @@ var search = function search(query, callback) {
     var repository = new _Repository2.default(this.endpoint, this.secret);
 
     return repository.query(query).then(function (response) {
-        return callback(response);
+        return callback(response, null);
+    }).catch(function (error) {
+        return callback(null, error);
     });
 };
 
@@ -705,13 +707,18 @@ var HttpRepository = function () {
     }, {
         key: "fetchData",
         value: function fetchData(composedQuery) {
-            return new Promise(function (resolve) {
+            return new Promise(function (resolve, reject) {
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) {
-                        return resolve(JSON.parse(this.responseText));
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            return resolve(JSON.parse(this.responseText));
+                        } else {
+                            return reject("Request error, make sure your query url is properly formed.");
+                        }
                     }
                 };
+
                 xhr.open("GET", composedQuery, true);
                 xhr.send();
             });
