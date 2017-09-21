@@ -1,17 +1,17 @@
 /**
  * Apisearch entry point
  */
-import HttpRepository from "./Repository";
-import ItemUUID from "./ItemUUID";
+import HttpRepository from "./Repository/HttpRepository";
+import ItemUUID from "./Query/ItemUUID";
 import Query, {
     QUERY_DEFAULT_PAGE,
     QUERY_DEFAULT_SIZE,
     QUERY_INFINITE_SIZE
-} from "./Query";
+} from "./Query/Query";
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_TYPE_FIELD
-} from "./Filter";
+} from "./Query/Filter";
 
 const cache = {};
 

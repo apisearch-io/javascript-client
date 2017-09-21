@@ -65,105 +65,8 @@ var apisearch =
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * ItemUUID class
- */
-var ItemUUID = function () {
-    function ItemUUID(id, type) {
-        _classCallCheck(this, ItemUUID);
-
-        this.id = id;
-        this.type = type;
-    }
-
-    _createClass(ItemUUID, [{
-        key: "composedUUID",
-        value: function composedUUID() {
-            return this.type + "~" + this.id;
-        }
-    }]);
-
-    return ItemUUID;
-}();
-
-exports.default = ItemUUID;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * filter constants
- */
-var FILTER_IT_DOESNT_MATTER = exports.FILTER_IT_DOESNT_MATTER = 0;
-var FILTER_MUST_ALL = exports.FILTER_MUST_ALL = 4;
-var FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL_WITH_LEVELS = 5;
-var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
-var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
-var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
-var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
-var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
-var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
-var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';
-var FILTER_TYPE_QUERY = exports.FILTER_TYPE_QUERY = 'query';
-
-/**
- * Filter class
- */
-
-var Filter = function () {
-    function Filter(field, values, applicationType, filterType) {
-        var filterTerms = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-
-        _classCallCheck(this, Filter);
-
-        this.field = field;
-        this.values = values;
-        this.application_type = applicationType;
-        this.filter_type = filterType;
-        this.filter_terms = filterTerms;
-
-        return this;
-    }
-
-    _createClass(Filter, null, [{
-        key: 'getFilterPathByField',
-        value: function getFilterPathByField(field) {
-            return ['id', 'type'].indexOf(field) > -1 ? 'uuid.' + field : 'indexed_metadata.' + field;
-        }
-    }]);
-
-    return Filter;
-}();
-
-exports.default = Filter;
-
-/***/ }),
+/* 0 */,
+/* 1 */,
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -175,19 +78,19 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _Repository = __webpack_require__(3);
+var _HttpRepository = __webpack_require__(17);
 
-var _Repository2 = _interopRequireDefault(_Repository);
+var _HttpRepository2 = _interopRequireDefault(_HttpRepository);
 
-var _ItemUUID = __webpack_require__(0);
+var _ItemUUID = __webpack_require__(10);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
-var _Query = __webpack_require__(4);
+var _Query = __webpack_require__(12);
 
 var _Query2 = _interopRequireDefault(_Query);
 
-var _Filter = __webpack_require__(1);
+var _Filter = __webpack_require__(11);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
@@ -204,7 +107,7 @@ var client = function client(repository, secret, endpoint) {
 };
 
 var search = function search(query, callback) {
-    var repository = new _Repository2.default(this.endpoint, this.secret);
+    var repository = new _HttpRepository2.default(this.endpoint, this.secret);
 
     return repository.query(query).then(function (response) {
         return callback(response, null);
@@ -279,7 +182,11 @@ module.exports = {
 };
 
 /***/ }),
-/* 3 */
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -294,64 +201,165 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Repository class
+ * Typechecking
  */
-var HttpRepository = function () {
-    /**
-     * Constructor
-     * @param endpoint
-     * @param secret
-     */
-    function HttpRepository(endpoint, secret) {
-        _classCallCheck(this, HttpRepository);
-
-        this.endpoint = endpoint;
-        this.secret = secret;
+var TypeChecker = function () {
+    function TypeChecker() {
+        _classCallCheck(this, TypeChecker);
     }
 
-    /**
-     * Make query against the server
-     * @param query
-     * @returns {Promise}
-     */
-
-
-    _createClass(HttpRepository, [{
-        key: "query",
-        value: function query(_query) {
-            _query = JSON.stringify(_query);
-            var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
-
-            return this.fetchData(composedQuery);
+    _createClass(TypeChecker, null, [{
+        key: 'isDefined',
+        value: function isDefined(value) {
+            if (typeof value === 'undefined') {
+                throw new TypeError('Method parameter must be defined.');
+            }
         }
     }, {
-        key: "fetchData",
-        value: function fetchData(composedQuery) {
-            return new Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4) {
-                        if (this.status === 200) {
-                            return resolve(JSON.parse(this.responseText));
-                        } else {
-                            return reject("Request error.");
-                        }
-                    }
-                };
-
-                xhr.open("GET", composedQuery, true);
-                xhr.send();
-            });
+        key: 'isInteger',
+        value: function isInteger(integer) {
+            if (typeof integer !== 'number') {
+                throw new TypeError('\n                "' + integer + '" must be type of Integer, \n                "' + integer.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isBool',
+        value: function isBool(bool) {
+            if (typeof bool !== 'boolean') {
+                throw new TypeError('\n                "' + bool + '" must be type of Boolean, \n                "' + bool.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isString',
+        value: function isString(string) {
+            if (typeof string !== 'string') {
+                throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isArray',
+        value: function isArray(array) {
+            if (array instanceof Array === false) {
+                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + array.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isObjectTypeOf',
+        value: function isObjectTypeOf(givenObject, mustBe) {
+            if (givenObject instanceof mustBe !== true) {
+                throw new TypeError('\n                "' + givenObject.constructor.name + '" must be type ' + mustBe.name + ', \n                "' + givenObject.constructor.name + '" given.\n            ');
+            }
         }
     }]);
 
-    return HttpRepository;
+    return TypeChecker;
 }();
 
-exports.default = HttpRepository;
+exports.default = TypeChecker;
 
 /***/ }),
-/* 4 */
+/* 8 */,
+/* 9 */,
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * ItemUUID class
+ */
+var ItemUUID = function () {
+    function ItemUUID(id, type) {
+        _classCallCheck(this, ItemUUID);
+
+        this.id = id;
+        this.type = type;
+    }
+
+    _createClass(ItemUUID, [{
+        key: "composedUUID",
+        value: function composedUUID() {
+            return this.type + "~" + this.id;
+        }
+    }]);
+
+    return ItemUUID;
+}();
+
+exports.default = ItemUUID;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * filter constants
+ */
+var FILTER_IT_DOESNT_MATTER = exports.FILTER_IT_DOESNT_MATTER = 0;
+var FILTER_MUST_ALL = exports.FILTER_MUST_ALL = 4;
+var FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL_WITH_LEVELS = 5;
+var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
+var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
+var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
+var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
+var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
+var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
+var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';
+var FILTER_TYPE_QUERY = exports.FILTER_TYPE_QUERY = 'query';
+
+/**
+ * Filter class
+ */
+
+var Filter = function () {
+    function Filter(field, values, applicationType, filterType) {
+        var filterTerms = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
+        _classCallCheck(this, Filter);
+
+        this.field = field;
+        this.values = values;
+        this.application_type = applicationType;
+        this.filter_type = filterType;
+        this.filter_terms = filterTerms;
+
+        return this;
+    }
+
+    _createClass(Filter, null, [{
+        key: 'getFilterPathByField',
+        value: function getFilterPathByField(field) {
+            return ['id', 'type'].indexOf(field) > -1 ? 'uuid.' + field : 'indexed_metadata.' + field;
+        }
+    }]);
+
+    return Filter;
+}();
+
+exports.default = Filter;
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -366,15 +374,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Aggregation = __webpack_require__(5);
+var _Aggregation = __webpack_require__(13);
 
 var _Aggregation2 = _interopRequireDefault(_Aggregation);
 
-var _ItemUUID = __webpack_require__(0);
+var _ItemUUID = __webpack_require__(10);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
-var _Coordinate = __webpack_require__(6);
+var _Coordinate = __webpack_require__(14);
 
 var _Coordinate2 = _interopRequireDefault(_Coordinate);
 
@@ -382,13 +390,13 @@ var _TypeChecker = __webpack_require__(7);
 
 var _TypeChecker2 = _interopRequireDefault(_TypeChecker);
 
-var _Filter = __webpack_require__(1);
+var _Filter = __webpack_require__(11);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
-var _SortBy = __webpack_require__(8);
+var _SortBy = __webpack_require__(15);
 
-var _User = __webpack_require__(9);
+var _User = __webpack_require__(16);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -595,6 +603,57 @@ var Query = function () {
             return this.filterUniverseByRange(field, values, applicationType, _Filter.FILTER_TYPE_DATE_RANGE);
         }
     }, {
+        key: "filterUniverseByLocation",
+        value: function filterUniverseByLocation(locationRange) {
+            _TypeChecker2.default.isObjectTypeOf(locationRange, LocationRange);
+
+            this.universe_filters = _extends({}, this.universe_filters, _defineProperty({}, 'coordinate', new _Filter2.default('coordinate', locationRange, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_GEO)));
+
+            return this;
+        }
+    }, {
+        key: "setFilterFields",
+        value: function setFilterFields(fields) {
+            var _this = this;
+
+            _TypeChecker2.default.isArray(fields);
+
+            if (fields.length === 0) {
+                this.filter_fields = [].concat(_toConsumableArray(fields));
+
+                return this;
+            }
+
+            fields.map(function (field) {
+                _this.filter_fields = [].concat(_toConsumableArray(_this.filter_fields), [field]);
+            });
+
+            return this;
+        }
+    }, {
+        key: "sortBy",
+        value: function sortBy(sort) {
+            var _this2 = this;
+
+            _TypeChecker2.default.isDefined(sort);
+
+            if (typeof sort['_geo_distance'] !== 'undefined') {
+                var _geo_distance;
+
+                if (this.coordinate instanceof _Coordinate2.default === false) {
+                    throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated(...) \n                    instead of apisearch.query.create(...)\n                ");
+                }
+                this.sort = _defineProperty({}, '_geo_distance', (_geo_distance = {}, _defineProperty(_geo_distance, 'coordinate', this.coordinate), _defineProperty(_geo_distance, 'order', sort._geo_distance.order), _defineProperty(_geo_distance, 'unit', sort._geo_distance.unit), _geo_distance));
+            } else {
+                Object.keys(sort).map(function (field) {
+                    var direction = sort[field].order;
+                    _this2.sort = _defineProperty({}, field, _defineProperty({}, 'order', direction));
+                });
+            }
+
+            return this;
+        }
+    }, {
         key: "aggregateBy",
         value: function aggregateBy(filterName, field, applicationType) {
             var aggregationSort = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
@@ -637,29 +696,6 @@ var Query = function () {
             }
 
             this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, _Filter.FILTER_TYPE_DATE_RANGE, aggregationSort, limit)));
-
-            return this;
-        }
-    }, {
-        key: "sortBy",
-        value: function sortBy(sort) {
-            var _this = this;
-
-            _TypeChecker2.default.isDefined(sort);
-
-            if (typeof sort['_geo_distance'] !== 'undefined') {
-                var _geo_distance;
-
-                if (this.coordinate instanceof _Coordinate2.default === false) {
-                    throw new Error("\n                    In order to be able to sort by coordinates, you need to \n                    create a Query by using apisearch.query.createLocated(...) \n                    instead of apisearch.query.create(...)\n                ");
-                }
-                this.sort = _defineProperty({}, '_geo_distance', (_geo_distance = {}, _defineProperty(_geo_distance, 'coordinate', this.coordinate), _defineProperty(_geo_distance, 'order', sort._geo_distance.order), _defineProperty(_geo_distance, 'unit', sort._geo_distance.unit), _geo_distance));
-            } else {
-                Object.keys(sort).map(function (field) {
-                    var direction = sort[field].order;
-                    _this.sort = _defineProperty({}, field, _defineProperty({}, 'order', direction));
-                });
-            }
 
             return this;
         }
@@ -712,10 +748,10 @@ var Query = function () {
     }, {
         key: "promoteUUIDs",
         value: function promoteUUIDs(uuids) {
-            var _this2 = this;
+            var _this3 = this;
 
             [].concat(_toConsumableArray(uuids)).forEach(function (uuid) {
-                return _this2.promoteUUID(uuid);
+                return _this3.promoteUUID(uuid);
             });
 
             return this;
@@ -760,7 +796,7 @@ var Query = function () {
 exports.default = Query;
 
 /***/ }),
-/* 5 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -800,7 +836,7 @@ var Aggregation = function Aggregation(name, field, applicationType, filterType,
 exports.default = Aggregation;
 
 /***/ }),
-/* 6 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -831,79 +867,7 @@ var Coordinate = function Coordinate(latitude, longitude) {
 exports.default = Coordinate;
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Typechecking
- */
-var TypeChecker = function () {
-    function TypeChecker() {
-        _classCallCheck(this, TypeChecker);
-    }
-
-    _createClass(TypeChecker, null, [{
-        key: 'isDefined',
-        value: function isDefined(value) {
-            if (typeof value === 'undefined') {
-                throw new TypeError('Method parameter must be defined.');
-            }
-        }
-    }, {
-        key: 'isInteger',
-        value: function isInteger(integer) {
-            if (typeof integer !== 'number') {
-                throw new TypeError('\n                "' + integer + '" must be type of Integer, \n                "' + integer.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isBool',
-        value: function isBool(bool) {
-            if (typeof bool !== 'boolean') {
-                throw new TypeError('\n                "' + bool + '" must be type of Boolean, \n                "' + bool.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isString',
-        value: function isString(string) {
-            if (typeof string !== 'string') {
-                throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isArray',
-        value: function isArray(array) {
-            if (array instanceof Array === false) {
-                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + array.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isObjectTypeOf',
-        value: function isObjectTypeOf(givenObject, mustBe) {
-            if (givenObject instanceof mustBe !== true) {
-                throw new TypeError('\n                "' + givenObject.constructor.name + '" must be type ' + mustBe.name + ', \n                "' + givenObject.constructor.name + '" given.\n            ');
-            }
-        }
-    }]);
-
-    return TypeChecker;
-}();
-
-exports.default = TypeChecker;
-
-/***/ }),
-/* 8 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -960,7 +924,7 @@ var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
 };
 
 /***/ }),
-/* 9 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -982,6 +946,78 @@ var User = function User(id) {
 };
 
 exports.default = User;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Repository class
+ */
+var HttpRepository = function () {
+    /**
+     * Constructor
+     * @param endpoint
+     * @param secret
+     */
+    function HttpRepository(endpoint, secret) {
+        _classCallCheck(this, HttpRepository);
+
+        this.endpoint = endpoint;
+        this.secret = secret;
+    }
+
+    /**
+     * Make query against the server
+     * @param query
+     * @returns {Promise}
+     */
+
+
+    _createClass(HttpRepository, [{
+        key: "query",
+        value: function query(_query) {
+            _query = JSON.stringify(_query);
+            var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
+
+            return this.fetchData(composedQuery);
+        }
+    }, {
+        key: "fetchData",
+        value: function fetchData(composedQuery) {
+            return new Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            return resolve(JSON.parse(this.responseText));
+                        } else {
+                            return reject("Request error.");
+                        }
+                    }
+                };
+
+                xhr.open("GET", composedQuery, true);
+                xhr.send();
+            });
+        }
+    }]);
+
+    return HttpRepository;
+}();
+
+exports.default = HttpRepository;
 
 /***/ })
 /******/ ]);

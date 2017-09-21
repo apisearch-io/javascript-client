@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
 import {defaultQuery} from './mocks/queries';
 
-import ItemUUID from "../src/ItemUUID";
-import User from "../src/User";
-import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query';
-import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Filter";
+import ItemUUID from "../src/Query/ItemUUID";
+import User from "../src/Query/User";
+import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query/Query';
+import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Query/Filter";
 
 /**
  * Query object tests
@@ -133,7 +133,7 @@ describe('# Test: Query()', () => {
             });
         });
 
-        it('should filterUniverseByRange()', function () {
+        it('should filterUniverseByRange()', () => {
             query.filterUniverseByRange(
                 'price',
                 ['0..20'],
@@ -149,7 +149,7 @@ describe('# Test: Query()', () => {
             });
         });
 
-        it('should filterUniverseByDateRange()', function () {
+        it('should filterUniverseByDateRange()', () => {
             query.filterUniverseByDateRange(
                 'created_at',
                 ['2009-11-04T19:55:41Z..2017-11-04T19:55:41Z'],
@@ -163,6 +163,10 @@ describe('# Test: Query()', () => {
                 filter_type: 'date_range',
                 values: ['2009-11-04T19:55:41Z..2017-11-04T19:55:41Z']
             });
+        });
+
+        it('should filterUniverseByLocation()', () => {
+
         });
     });
 

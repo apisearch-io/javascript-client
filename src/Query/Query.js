@@ -1,12 +1,12 @@
 import Aggregation from "./Aggregation";
 import ItemUUID from "./ItemUUID";
 import Coordinate from "./Coordinate";
-import TypeChecker from "./TypeChecker";
+import TypeChecker from "../TypeChecker";
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
     FILTER_IT_DOESNT_MATTER, FILTER_TYPE_DATE_RANGE,
-    FILTER_TYPE_FIELD, FILTER_TYPE_RANGE
+    FILTER_TYPE_FIELD, FILTER_TYPE_GEO, FILTER_TYPE_RANGE
 } from "./Filter";
 import {
     AGGREGATION_NO_LIMIT,
@@ -319,6 +319,73 @@ export default class Query {
         );
     }
 
+    filterUniverseByLocation(locationRange) {
+        TypeChecker.isObjectTypeOf(locationRange, LocationRange);
+
+        this.universe_filters = {
+            ...this.universe_filters,
+            ['coordinate']: new Filter(
+                'coordinate',
+                locationRange,
+                FILTER_AT_LEAST_ONE,
+                FILTER_TYPE_GEO
+            )
+        };
+
+        return this;
+    }
+
+    setFilterFields(fields) {
+        TypeChecker.isArray(fields);
+
+        if(fields.length === 0) {
+            this.filter_fields = [...fields];
+
+            return this;
+        }
+
+        fields.map(field => {
+            this.filter_fields = [
+                ...this.filter_fields,
+                field
+            ]
+        });
+
+        return this;
+    }
+
+    sortBy(sort) {
+        TypeChecker.isDefined(sort);
+
+        if (typeof sort['_geo_distance'] !== 'undefined') {
+            if (this.coordinate instanceof Coordinate === false) {
+                throw new Error(`
+                    In order to be able to sort by coordinates, you need to 
+                    create a Query by using apisearch.query.createLocated(...) 
+                    instead of apisearch.query.create(...)
+                `);
+            }
+            this.sort = {
+                ['_geo_distance']: {
+                    ['coordinate']: this.coordinate,
+                    ['order']: sort._geo_distance.order,
+                    ['unit']: sort._geo_distance.unit
+                }
+            };
+        } else {
+            Object.keys(sort).map(field => {
+                let direction = sort[field].order;
+                this.sort = {
+                    [field]: {
+                        ['order']: direction
+                    }
+                };
+            });
+        }
+
+        return this;
+    }
+
     aggregateBy(
         filterName,
         field,
@@ -400,38 +467,6 @@ export default class Query {
                 limit
             )
         };
-
-        return this;
-    }
-
-    sortBy(sort) {
-        TypeChecker.isDefined(sort);
-
-        if (typeof sort['_geo_distance'] !== 'undefined') {
-            if (this.coordinate instanceof Coordinate === false) {
-                throw new Error(`
-                    In order to be able to sort by coordinates, you need to 
-                    create a Query by using apisearch.query.createLocated(...) 
-                    instead of apisearch.query.create(...)
-                `);
-            }
-            this.sort = {
-                ['_geo_distance']: {
-                    ['coordinate']: this.coordinate,
-                    ['order']: sort._geo_distance.order,
-                    ['unit']: sort._geo_distance.unit
-                }
-            };
-        } else {
-            Object.keys(sort).map(field => {
-                let direction = sort[field].order;
-                this.sort = {
-                    [field]: {
-                        ['order']: direction
-                    }
-                };
-            });
-        }
 
         return this;
     }
