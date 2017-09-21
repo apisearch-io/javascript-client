@@ -34,7 +34,7 @@ export default class HttpRepository {
                                 JSON.parse(this.responseText)
                             )
                         } else {
-                            return reject(`Request error, make sure your query url is properly formed.`)
+                            return reject(`Request error.`)
                         }
                     }
                 };

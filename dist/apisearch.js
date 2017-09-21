@@ -61,44 +61,11 @@ var apisearch =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 54);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 108:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Coordinate Type cast
- * @param coordinate
- */
-
-var Coordinate = function Coordinate(latitude, longitude) {
-    _classCallCheck(this, Coordinate);
-
-    if (typeof latitude === 'undefined' || typeof latitude === 'undefined') {
-        throw new Error('Not valid coordinates object type given.');
-    }
-
-    this.lat = latitude;
-    this.lon = longitude;
-};
-
-exports.default = Coordinate;
-
-/***/ }),
-
-/***/ 109:
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -136,66 +103,7 @@ var ItemUUID = function () {
 exports.default = ItemUUID;
 
 /***/ }),
-
-/***/ 110:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- export * Sort by constants
- */
-
-var SORT_BY_SCORE = exports.SORT_BY_SCORE = {
-    '_score': {
-        'order': 'asc'
-    }
-};
-var SORT_BY_RANDOM = exports.SORT_BY_RANDOM = {
-    'random': {
-        'order': 'asc'
-    }
-};
-var SORT_BY_ID_ASC = exports.SORT_BY_ID_ASC = {
-    'uuid.id': {
-        'order': 'asc'
-    }
-};
-var SORT_BY_ID_DESC = exports.SORT_BY_ID_DESC = {
-    'uuid.id': {
-        'order': 'desc'
-    }
-};
-var SORT_BY_TYPE_ASC = exports.SORT_BY_TYPE_ASC = {
-    'uuid.type': {
-        'order': 'asc'
-    }
-};
-var SORT_BY_TYPE_DESC = exports.SORT_BY_TYPE_DESC = {
-    'uuid.type': {
-        'order': 'desc'
-    }
-};
-var SORT_BY_LOCATION_KM_ASC = exports.SORT_BY_LOCATION_KM_ASC = {
-    '_geo_distance': {
-        'order': 'asc',
-        'unit': 'km'
-    }
-};
-var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
-    '_geo_distance': {
-        'order': 'asc',
-        'unit': 'mi'
-    }
-};
-
-/***/ }),
-
-/***/ 111:
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -210,83 +118,54 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Typechecking
+ * filter constants
  */
-var TypeChecker = function () {
-    function TypeChecker() {
-        _classCallCheck(this, TypeChecker);
+var FILTER_IT_DOESNT_MATTER = exports.FILTER_IT_DOESNT_MATTER = 0;
+var FILTER_MUST_ALL = exports.FILTER_MUST_ALL = 4;
+var FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL_WITH_LEVELS = 5;
+var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
+var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
+var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
+var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
+var FILTER_TYPE_ID = exports.FILTER_TYPE_ID = 'id';
+var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
+var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
+var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';
+var FILTER_TYPE_QUERY = exports.FILTER_TYPE_QUERY = 'query';
+
+/**
+ * Filter class
+ */
+
+var Filter = function () {
+    function Filter(field, values, applicationType, filterType) {
+        var filterTerms = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
+        _classCallCheck(this, Filter);
+
+        this.field = field;
+        this.values = values;
+        this.application_type = applicationType;
+        this.filter_type = filterType;
+        this.filter_terms = filterTerms;
+
+        return this;
     }
 
-    _createClass(TypeChecker, null, [{
-        key: 'isDefined',
-        value: function isDefined(value) {
-            if (typeof value === 'undefined') {
-                throw new TypeError('Method parameter must be defined.');
-            }
-        }
-    }, {
-        key: 'isArray',
-        value: function isArray(array) {
-            if (array instanceof Array === false) {
-                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + values.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isBool',
-        value: function isBool(bool) {
-            if (typeof bool !== 'boolean') {
-                throw new TypeError('\n                "' + bool + '" must be type of Boolean, \n                "' + bool.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isString',
-        value: function isString(string) {
-            if (typeof string !== 'string') {
-                throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
-        key: 'isObjectTypeOf',
-        value: function isObjectTypeOf(givenObject, mustBe) {
-            if (givenObject instanceof mustBe !== true) {
-                throw new TypeError('\n                "' + givenObject.constructor.name + '" must be type ' + mustBe.name + ', \n                "' + givenObject.constructor.name + '" given.\n            ');
-            }
+    _createClass(Filter, null, [{
+        key: 'getFilterPathByField',
+        value: function getFilterPathByField(field) {
+            return ['id', 'type'].indexOf(field) > -1 ? 'uuid.' + field : 'indexed_metadata.' + field;
         }
     }]);
 
-    return TypeChecker;
+    return Filter;
 }();
 
-exports.default = TypeChecker;
+exports.default = Filter;
 
 /***/ }),
-
-/***/ 112:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * User class
- */
-var User = function User(id) {
-    _classCallCheck(this, User);
-
-    this.id = id;
-};
-
-exports.default = User;
-
-/***/ }),
-
-/***/ 54:
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -297,19 +176,19 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _Repository = __webpack_require__(88);
+var _Repository = __webpack_require__(3);
 
 var _Repository2 = _interopRequireDefault(_Repository);
 
-var _ItemUUID = __webpack_require__(109);
+var _ItemUUID = __webpack_require__(0);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
-var _Query = __webpack_require__(55);
+var _Query = __webpack_require__(4);
 
 var _Query2 = _interopRequireDefault(_Query);
 
-var _Filter = __webpack_require__(86);
+var _Filter = __webpack_require__(1);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
@@ -401,8 +280,79 @@ module.exports = {
 };
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 55:
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Repository class
+ */
+var HttpRepository = function () {
+    /**
+     * Constructor
+     * @param endpoint
+     * @param secret
+     */
+    function HttpRepository(endpoint, secret) {
+        _classCallCheck(this, HttpRepository);
+
+        this.endpoint = endpoint;
+        this.secret = secret;
+    }
+
+    /**
+     * Make query against the server
+     * @param query
+     * @returns {Promise}
+     */
+
+
+    _createClass(HttpRepository, [{
+        key: "query",
+        value: function query(_query) {
+            _query = JSON.stringify(_query);
+            var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
+
+            return this.fetchData(composedQuery);
+        }
+    }, {
+        key: "fetchData",
+        value: function fetchData(composedQuery) {
+            return new Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            return resolve(JSON.parse(this.responseText));
+                        } else {
+                            return reject("Request error.");
+                        }
+                    }
+                };
+
+                xhr.open("GET", composedQuery, true);
+                xhr.send();
+            });
+        }
+    }]);
+
+    return HttpRepository;
+}();
+
+exports.default = HttpRepository;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -417,29 +367,29 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Aggregation = __webpack_require__(87);
+var _Aggregation = __webpack_require__(5);
 
 var _Aggregation2 = _interopRequireDefault(_Aggregation);
 
-var _ItemUUID = __webpack_require__(109);
+var _ItemUUID = __webpack_require__(0);
 
 var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
 
-var _Coordinate = __webpack_require__(108);
+var _Coordinate = __webpack_require__(6);
 
 var _Coordinate2 = _interopRequireDefault(_Coordinate);
 
-var _TypeChecker = __webpack_require__(111);
+var _TypeChecker = __webpack_require__(7);
 
 var _TypeChecker2 = _interopRequireDefault(_TypeChecker);
 
-var _Filter = __webpack_require__(86);
+var _Filter = __webpack_require__(1);
 
 var _Filter2 = _interopRequireDefault(_Filter);
 
-var _SortBy = __webpack_require__(110);
+var _SortBy = __webpack_require__(8);
 
-var _User = __webpack_require__(112);
+var _User = __webpack_require__(9);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -690,71 +640,7 @@ var Query = function () {
 exports.default = Query;
 
 /***/ }),
-
-/***/ 86:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * filter constants
- */
-var FILTER_IT_DOESNT_MATTER = exports.FILTER_IT_DOESNT_MATTER = 0;
-var FILTER_MUST_ALL = exports.FILTER_MUST_ALL = 4;
-var FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL_WITH_LEVELS = 5;
-var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
-var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
-var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
-var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
-var FILTER_TYPE_ID = exports.FILTER_TYPE_ID = 'id';
-var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
-var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
-var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';
-var FILTER_TYPE_QUERY = exports.FILTER_TYPE_QUERY = 'query';
-
-/**
- * Filter class
- */
-
-var Filter = function () {
-    function Filter(field, values, applicationType, filterType) {
-        var filterTerms = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-
-        _classCallCheck(this, Filter);
-
-        this.field = field;
-        this.values = values;
-        this.application_type = applicationType;
-        this.filter_type = filterType;
-        this.filter_terms = filterTerms;
-
-        return this;
-    }
-
-    _createClass(Filter, null, [{
-        key: 'getFilterPathByField',
-        value: function getFilterPathByField(field) {
-            return ['id', 'type'].indexOf(field) > -1 ? 'uuid.' + field : 'indexed_metadata.' + field;
-        }
-    }]);
-
-    return Filter;
-}();
-
-exports.default = Filter;
-
-/***/ }),
-
-/***/ 87:
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -797,8 +683,38 @@ var Aggregation = function Aggregation(name, field, applicationType, filterType,
 exports.default = Aggregation;
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 88:
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Coordinate Type cast
+ * @param coordinate
+ */
+
+var Coordinate = function Coordinate(latitude, longitude) {
+    _classCallCheck(this, Coordinate);
+
+    if (typeof latitude === 'undefined' || typeof latitude === 'undefined') {
+        throw new Error('Not valid coordinates object type given.');
+    }
+
+    this.lat = latitude;
+    this.lon = longitude;
+};
+
+exports.default = Coordinate;
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -813,63 +729,136 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Repository class
+ * Typechecking
  */
-var HttpRepository = function () {
-    /**
-     * Constructor
-     * @param endpoint
-     * @param secret
-     */
-    function HttpRepository(endpoint, secret) {
-        _classCallCheck(this, HttpRepository);
-
-        this.endpoint = endpoint;
-        this.secret = secret;
+var TypeChecker = function () {
+    function TypeChecker() {
+        _classCallCheck(this, TypeChecker);
     }
 
-    /**
-     * Make query against the server
-     * @param query
-     * @returns {Promise}
-     */
-
-
-    _createClass(HttpRepository, [{
-        key: "query",
-        value: function query(_query) {
-            _query = JSON.stringify(_query);
-            var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
-
-            return this.fetchData(composedQuery);
+    _createClass(TypeChecker, null, [{
+        key: 'isDefined',
+        value: function isDefined(value) {
+            if (typeof value === 'undefined') {
+                throw new TypeError('Method parameter must be defined.');
+            }
         }
     }, {
-        key: "fetchData",
-        value: function fetchData(composedQuery) {
-            return new Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4) {
-                        if (this.status === 200) {
-                            return resolve(JSON.parse(this.responseText));
-                        } else {
-                            return reject("Request error, make sure your query url is properly formed.");
-                        }
-                    }
-                };
-
-                xhr.open("GET", composedQuery, true);
-                xhr.send();
-            });
+        key: 'isArray',
+        value: function isArray(array) {
+            if (array instanceof Array === false) {
+                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + values.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isBool',
+        value: function isBool(bool) {
+            if (typeof bool !== 'boolean') {
+                throw new TypeError('\n                "' + bool + '" must be type of Boolean, \n                "' + bool.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isString',
+        value: function isString(string) {
+            if (typeof string !== 'string') {
+                throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isObjectTypeOf',
+        value: function isObjectTypeOf(givenObject, mustBe) {
+            if (givenObject instanceof mustBe !== true) {
+                throw new TypeError('\n                "' + givenObject.constructor.name + '" must be type ' + mustBe.name + ', \n                "' + givenObject.constructor.name + '" given.\n            ');
+            }
         }
     }]);
 
-    return HttpRepository;
+    return TypeChecker;
 }();
 
-exports.default = HttpRepository;
+exports.default = TypeChecker;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ export * Sort by constants
+ */
+
+var SORT_BY_SCORE = exports.SORT_BY_SCORE = {
+    '_score': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_RANDOM = exports.SORT_BY_RANDOM = {
+    'random': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_ID_ASC = exports.SORT_BY_ID_ASC = {
+    'uuid.id': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_ID_DESC = exports.SORT_BY_ID_DESC = {
+    'uuid.id': {
+        'order': 'desc'
+    }
+};
+var SORT_BY_TYPE_ASC = exports.SORT_BY_TYPE_ASC = {
+    'uuid.type': {
+        'order': 'asc'
+    }
+};
+var SORT_BY_TYPE_DESC = exports.SORT_BY_TYPE_DESC = {
+    'uuid.type': {
+        'order': 'desc'
+    }
+};
+var SORT_BY_LOCATION_KM_ASC = exports.SORT_BY_LOCATION_KM_ASC = {
+    '_geo_distance': {
+        'order': 'asc',
+        'unit': 'km'
+    }
+};
+var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
+    '_geo_distance': {
+        'order': 'asc',
+        'unit': 'mi'
+    }
+};
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * User class
+ */
+var User = function User(id) {
+    _classCallCheck(this, User);
+
+    this.id = id;
+};
+
+exports.default = User;
 
 /***/ })
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=apisearch.js.map

@@ -1,4 +1,5 @@
 import ItemUUID from "../src/ItemUUID";
+import User from "../src/User";
 
 const expect = require('chai').expect;
 
@@ -268,6 +269,27 @@ describe('# Test: new Query()', () => {
             expect(query.highlight_enabled).to.be.true;
             query.disableHighlights();
             expect(query.highlight_enabled).to.be.false;
+        });
+    })
+
+    describe('-> When setting/unsetting a User on query', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should set a user when calling byUser() method', () => {
+            query.byUser(
+                new User('some_user_uuid')
+            );
+            expect(query.user).to.deep.equal({
+                id:'some_user_uuid'
+            });
+        });
+        it('should unset the user when calling anonymously() on a user query', () => {
+            query.anonymously();
+            expect(query.user).to.be.equal(null);
         });
     })
 });
