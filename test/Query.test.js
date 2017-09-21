@@ -1,19 +1,15 @@
+const expect = require('chai').expect;
+import {defaultQuery} from './mocks/queries';
+
 import ItemUUID from "../src/ItemUUID";
 import User from "../src/User";
-
-const expect = require('chai').expect;
-
-import {defaultQuery} from './mocks/queries';
+import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query';
 import {FILTER_AT_LEAST_ONE} from "../src/Filter";
-import Query, {
-    QUERY_DEFAULT_PAGE,
-    QUERY_DEFAULT_SIZE
-} from '../src/Query';
 
 /**
  * Query object tests
  */
-describe('# Test: new Query()', () => {
+describe('# Test: Query()', () => {
     describe('-> filterBy...() methods', () => {
         let query = new Query({
             q: '',
@@ -33,6 +29,7 @@ describe('# Test: new Query()', () => {
             );
             expect(query.filters.source.values).to.include('source_id_123456');
         });
+
         it('should filterByTypes()', () => {
             query.filterByTypes(['item_uuid_type']);
             expect(query.filters).to.have.own.property('type');
@@ -44,7 +41,20 @@ describe('# Test: new Query()', () => {
                 values: ['item_uuid_type']
             });
         });
+
         it('should filterByIds()', () => {
+            query.filterByIds(['item_uuid_id']);
+            expect(query.filters).to.have.own.property('id');
+            expect(query.filters.id).to.deep.equal({
+                application_type: 8,
+                field: 'uuid.id',
+                filter_terms: [],
+                filter_type: 'field',
+                values: ['item_uuid_id']
+            });
+        });
+
+        it('should filterBy()', () => {
             query.filterByIds(['item_uuid_id']);
             expect(query.filters).to.have.own.property('id');
             expect(query.filters.id).to.deep.equal({
@@ -76,6 +86,7 @@ describe('# Test: new Query()', () => {
             );
             expect(query.universe_filters.source.values).to.include('source_id_123456');
         });
+
         it('should filterUniverseByTypes()', () => {
             query.filterUniverseByTypes(['item_uuid_type']);
             expect(query.universe_filters).to.have.own.property('type');
@@ -87,6 +98,7 @@ describe('# Test: new Query()', () => {
                 values: ['item_uuid_type']
             });
         });
+
         it('should filterUniverseByIds()', () => {
             query.filterUniverseByIds(['item_uuid_id']);
             expect(query.universe_filters).to.have.own.property('id');
@@ -129,9 +141,11 @@ describe('# Test: new Query()', () => {
             QUERY_DEFAULT_PAGE,
             QUERY_DEFAULT_SIZE
         });
+
         it('should throw an error when sortBy() without parameters', () => {
             expect(() => query.sortBy()).to.throw(Error);
         });
+
         it('should sortBy()', () => {
             query.sortBy({
                 'random': {
@@ -144,6 +158,7 @@ describe('# Test: new Query()', () => {
                 }
             });
         });
+
         it('should overwrite the last sort object setting again sortBy()', () => {
             query.sortBy({
                 'uuid.type': {
@@ -156,6 +171,7 @@ describe('# Test: new Query()', () => {
                 }
             });
         });
+
         it('should throw an error when sortBy() "_geo_distance" without a location object', () => {
             expect(() => query.sortBy({
                 '_geo_distance': {
@@ -164,6 +180,7 @@ describe('# Test: new Query()', () => {
                 }
             })).to.throw(Error);
         });
+
         it('should sortBy() "_geo_distance" when Query has been created with createLocated() method', () => {
             let query = new Query({
                 q: '',
@@ -211,6 +228,7 @@ describe('# Test: new Query()', () => {
                 }
             ]);
         });
+
         it('should promote many uuids when calling promoteUUIDs()', () => {
             // Promote thi two uuids into an existing array from the last test
             query.promoteUUIDs([
@@ -247,12 +265,15 @@ describe('# Test: new Query()', () => {
         it('should exist "excluded_ids" property on Query object', () => {
             expect(query.filters).to.have.own.property('excluded_ids');
         });
+
         it('should "excluded_ids" property be an object type of Filter', () => {
             expect(query.filters['excluded_ids'].constructor.name).to.be.equal('Filter');
         });
+
         it('should exclude one uuid when calling excludeUUID()', () => {
             expect(query.filters['excluded_ids'].values).to.include('marvel~hulk');
         });
+
         it('should exclude many uuids when calling excludeUUIDs()', () => {
             query.excludeUUIDs([
                 new ItemUUID('captain-america', 'marvel'),
@@ -292,7 +313,7 @@ describe('# Test: new Query()', () => {
             query.disableHighlights();
             expect(query.highlight_enabled).to.be.false;
         });
-    })
+    });
 
     describe('-> When setting/unsetting a User on query', () => {
         let query = new Query({
@@ -313,6 +334,6 @@ describe('# Test: new Query()', () => {
             query.anonymously();
             expect(query.user).to.be.equal(null);
         });
-    })
+    });
 });
 

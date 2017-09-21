@@ -5,8 +5,8 @@ import TypeChecker from "./TypeChecker";
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
-    FILTER_IT_DOESNT_MATTER,
-    FILTER_TYPE_FIELD
+    FILTER_IT_DOESNT_MATTER, FILTER_TYPE_DATE_RANGE,
+    FILTER_TYPE_FIELD, FILTER_TYPE_RANGE
 } from "./Filter";
 import {
     AGGREGATION_NO_LIMIT,
@@ -150,6 +150,69 @@ export default class Query {
         return this;
     }
 
+    filterByRange(
+        filterName,
+        field,
+        options,
+        values,
+        applicationType = FILTER_AT_LEAST_ONE,
+        rangeType = FILTER_TYPE_RANGE,
+        aggregate = true,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC
+    ) {
+        TypeChecker.isArray(options);
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField(field);
+        if (values.length !== 0) {
+            this.filters = {
+                ...this.filters,
+                [filterName]: new Filter(
+                    fieldPath,
+                    values,
+                    applicationType,
+                    rangeType
+                )
+            }
+        } else {
+            delete this.filters[filterName]
+        }
+
+        if (aggregate) {
+            this.aggregateByRage(
+                filterName,
+                fieldPath,
+                options,
+                applicationType,
+                rangeType,
+                aggregationSort
+            )
+        }
+
+        return this;
+    }
+
+    filterByDateRange(
+        filterName,
+        field,
+        options,
+        values,
+        applicationType = FILTER_AT_LEAST_ONE,
+        aggregate = true,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC
+    ) {
+        return this.filterByRange(
+            filterName,
+            field,
+            options,
+            values,
+            applicationType,
+            FILTER_TYPE_DATE_RANGE,
+            aggregate,
+            aggregationSort
+        );
+    }
+
     filterUniverseBy(
         field,
         values,
@@ -232,6 +295,36 @@ export default class Query {
                 applicationType,
                 FILTER_TYPE_FIELD,
                 [],
+                aggregationSort,
+                limit
+            )
+        };
+
+        return this;
+    }
+
+    aggregateByRage(
+        filterName,
+        field,
+        options,
+        applicationType,
+        rangeType = FILTER_TYPE_RANGE,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC,
+        limit = AGGREGATION_NO_LIMIT
+    ) {
+        TypeChecker.isArray(options);
+
+        if (options.length === 0) {
+            return this;
+        }
+
+        this.aggregations = {
+            ...this.aggregations,
+            [filterName]: new Aggregation(
+                filterName,
+                Filter.getFilterPathByField(field),
+                applicationType,
+                rangeType,
                 aggregationSort,
                 limit
             )

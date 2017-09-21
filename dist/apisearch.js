@@ -494,6 +494,39 @@ var Query = function () {
             return this;
         }
     }, {
+        key: "filterByRange",
+        value: function filterByRange(filterName, field, options, values) {
+            var applicationType = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Filter.FILTER_AT_LEAST_ONE;
+            var rangeType = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Filter.FILTER_TYPE_RANGE;
+            var aggregate = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : true;
+            var aggregationSort = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
+
+            _TypeChecker2.default.isArray(options);
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField(field);
+            if (values.length !== 0) {
+                this.filters = _extends({}, this.filters, _defineProperty({}, filterName, new _Filter2.default(fieldPath, values, applicationType, rangeType)));
+            } else {
+                delete this.filters[filterName];
+            }
+
+            if (aggregate) {
+                this.aggregateByRage(filterName, fieldPath, options, applicationType, rangeType, aggregationSort);
+            }
+
+            return this;
+        }
+    }, {
+        key: "filterByDateRange",
+        value: function filterByDateRange(filterName, field, options, values) {
+            var applicationType = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Filter.FILTER_AT_LEAST_ONE;
+            var aggregate = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : true;
+            var aggregationSort = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
+
+            return this.filterByRange(filterName, field, options, values, applicationType, _Filter.FILTER_TYPE_DATE_RANGE, aggregate, aggregationSort);
+        }
+    }, {
         key: "filterUniverseBy",
         value: function filterUniverseBy(field, values) {
             var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
@@ -544,6 +577,23 @@ var Query = function () {
             var limit = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Aggregation.AGGREGATION_NO_LIMIT;
 
             this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, _Filter.FILTER_TYPE_FIELD, [], aggregationSort, limit)));
+
+            return this;
+        }
+    }, {
+        key: "aggregateByRage",
+        value: function aggregateByRage(filterName, field, options, applicationType) {
+            var rangeType = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Filter.FILTER_TYPE_RANGE;
+            var aggregationSort = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
+            var limit = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : _Aggregation.AGGREGATION_NO_LIMIT;
+
+            _TypeChecker2.default.isArray(options);
+
+            if (options.length === 0) {
+                return this;
+            }
+
+            this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, rangeType, aggregationSort, limit)));
 
             return this;
         }
@@ -771,13 +821,6 @@ var TypeChecker = function () {
             }
         }
     }, {
-        key: 'isArray',
-        value: function isArray(array) {
-            if (array instanceof Array === false) {
-                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + values.constructor.name + '" given.\n            ');
-            }
-        }
-    }, {
         key: 'isBool',
         value: function isBool(bool) {
             if (typeof bool !== 'boolean') {
@@ -789,6 +832,13 @@ var TypeChecker = function () {
         value: function isString(string) {
             if (typeof string !== 'string') {
                 throw new TypeError('\n                "' + string + '" must be type of String, \n                "' + string.constructor.name + '" given.\n            ');
+            }
+        }
+    }, {
+        key: 'isArray',
+        value: function isArray(array) {
+            if (array instanceof Array === false) {
+                throw new TypeError('\n                "' + array + '" must be type of Array, \n                "' + array.constructor.name + '" given.\n            ');
             }
         }
     }, {

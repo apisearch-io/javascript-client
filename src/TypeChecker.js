@@ -8,15 +8,6 @@ export default class TypeChecker {
         }
     }
 
-    static isArray(array) {
-        if (array instanceof Array === false) {
-            throw new TypeError(`
-                "${array}" must be type of Array, 
-                "${values.constructor.name}" given.
-            `);
-        }
-    }
-
     static isBool(bool) {
         if (typeof bool !== 'boolean') {
             throw new TypeError(`
@@ -31,6 +22,15 @@ export default class TypeChecker {
             throw new TypeError(`
                 "${string}" must be type of String, 
                 "${string.constructor.name}" given.
+            `);
+        }
+    }
+
+    static isArray(array) {
+        if (array instanceof Array === false) {
+            throw new TypeError(`
+                "${array}" must be type of Array, 
+                "${array.constructor.name}" given.
             `);
         }
     }
