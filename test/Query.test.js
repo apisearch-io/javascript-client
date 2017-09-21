@@ -51,7 +51,7 @@ describe('# Test: new Query()', () => {
                 application_type: 8,
                 field: 'uuid.id',
                 filter_terms: [],
-                filter_type: 'id',
+                filter_type: 'field',
                 values: ['item_uuid_id']
             });
         });
@@ -75,6 +75,28 @@ describe('# Test: new Query()', () => {
                 'values'
             );
             expect(query.universe_filters.source.values).to.include('source_id_123456');
+        });
+        it('should filterUniverseByTypes()', () => {
+            query.filterUniverseByTypes(['item_uuid_type']);
+            expect(query.universe_filters).to.have.own.property('type');
+            expect(query.universe_filters.type).to.deep.equal({
+                application_type: 8,
+                field: 'uuid.type',
+                filter_terms: [],
+                filter_type: 'field',
+                values: ['item_uuid_type']
+            });
+        });
+        it('should filterUniverseByIds()', () => {
+            query.filterUniverseByIds(['item_uuid_id']);
+            expect(query.universe_filters).to.have.own.property('id');
+            expect(query.universe_filters.id).to.deep.equal({
+                application_type: 8,
+                field: 'uuid.id',
+                filter_terms: [],
+                filter_type: 'field',
+                values: ['item_uuid_id']
+            });
         });
     });
 

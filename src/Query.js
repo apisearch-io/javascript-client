@@ -6,7 +6,7 @@ import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
     FILTER_IT_DOESNT_MATTER,
-    FILTER_TYPE_FIELD, FILTER_TYPE_ID
+    FILTER_TYPE_FIELD
 } from "./Filter";
 import {
     AGGREGATION_NO_LIMIT,
@@ -140,7 +140,7 @@ export default class Query {
                     fieldPath,
                     values,
                     FILTER_AT_LEAST_ONE,
-                    FILTER_TYPE_ID
+                    FILTER_TYPE_FIELD
                 )
             }
         } else {
@@ -170,6 +170,48 @@ export default class Query {
             }
         } else {
             delete this.universe_filters[field]
+        }
+
+        return this;
+    }
+
+    filterUniverseByTypes(values) {
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField('type');
+        if (values.length !== 0) {
+            this.universe_filters = {
+                ...this.universe_filters,
+                ['type']: new Filter(
+                    fieldPath,
+                    values,
+                    FILTER_AT_LEAST_ONE,
+                    FILTER_TYPE_FIELD
+                )
+            }
+        } else {
+            delete this.universe_filters['type']
+        }
+
+        return this;
+    }
+
+    filterUniverseByIds(values) {
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField('id');
+        if (values.length !== 0) {
+            this.universe_filters = {
+                ...this.universe_filters,
+                ['id']: new Filter(
+                    fieldPath,
+                    values,
+                    FILTER_AT_LEAST_ONE,
+                    FILTER_TYPE_FIELD
+                )
+            }
+        } else {
+            delete this.universe_filters['id']
         }
 
         return this;

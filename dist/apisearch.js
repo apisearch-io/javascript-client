@@ -127,7 +127,6 @@ var FILTER_AT_LEAST_ONE = exports.FILTER_AT_LEAST_ONE = 8;
 var FILTER_EXCLUDE = exports.FILTER_EXCLUDE = 16;
 var FILTER_PROMOTE = exports.FILTER_PROMOTE = 32;
 var FILTER_TYPE_FIELD = exports.FILTER_TYPE_FIELD = 'field';
-var FILTER_TYPE_ID = exports.FILTER_TYPE_ID = 'id';
 var FILTER_TYPE_RANGE = exports.FILTER_TYPE_RANGE = 'range';
 var FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_DATE_RANGE = 'date_range';
 var FILTER_TYPE_GEO = exports.FILTER_TYPE_GEO = 'geo';
@@ -487,7 +486,7 @@ var Query = function () {
 
             var fieldPath = _Filter2.default.getFilterPathByField('id');
             if (values.length !== 0) {
-                this.filters = _extends({}, this.filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_ID)));
+                this.filters = _extends({}, this.filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
             } else {
                 delete this.filters['id'];
             }
@@ -506,6 +505,34 @@ var Query = function () {
                 this.universe_filters = _extends({}, this.universe_filters, _defineProperty({}, field, new _Filter2.default(fieldPath, values, applicationType, _Filter.FILTER_TYPE_FIELD)));
             } else {
                 delete this.universe_filters[field];
+            }
+
+            return this;
+        }
+    }, {
+        key: "filterUniverseByTypes",
+        value: function filterUniverseByTypes(values) {
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField('type');
+            if (values.length !== 0) {
+                this.universe_filters = _extends({}, this.universe_filters, _defineProperty({}, 'type', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+            } else {
+                delete this.universe_filters['type'];
+            }
+
+            return this;
+        }
+    }, {
+        key: "filterUniverseByIds",
+        value: function filterUniverseByIds(values) {
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField('id');
+            if (values.length !== 0) {
+                this.universe_filters = _extends({}, this.universe_filters, _defineProperty({}, 'id', new _Filter2.default(fieldPath, values, _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+            } else {
+                delete this.universe_filters['id'];
             }
 
             return this;
