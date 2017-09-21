@@ -17,6 +17,18 @@ describe('# Test: TypeChecker()', () => {
         });
     });
 
+    describe('-> isInteger()', () => {
+        it('should throw exception when value is not type Integer', () => {
+            let notAnIntegerValue = 'I am a string';
+            expect(() => TypeChecker.isInteger(notAnIntegerValue)).to.throw(TypeError);
+        });
+
+        it('should silent pass if value is type of Boolean', () => {
+            let integerValue = 123;
+            expect(() => TypeChecker.isInteger(integerValue)).to.not.throw(TypeError);
+        });
+    });
+
     describe('-> isBool()', () => {
         it('should throw exception when value is not type Boolean', () => {
             let notABooleanValue = 'I am a string';

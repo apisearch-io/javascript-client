@@ -4,7 +4,7 @@ import {defaultQuery} from './mocks/queries';
 import ItemUUID from "../src/ItemUUID";
 import User from "../src/User";
 import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query';
-import {FILTER_AT_LEAST_ONE} from "../src/Filter";
+import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Filter";
 
 /**
  * Query object tests
@@ -72,18 +72,16 @@ describe('# Test: Query()', () => {
         });
 
         it('should filterByDateRange()', function () {
-            this.skip('Waiting for method documentation on the main api.');
-
             query.filterByDateRange(
-                'date_range_filter_name',
-                'date_range_filter',
+                'created_at',
+                'created_at',
                 [],
                 ['today..tomorrow']
             );
-            expect(query.filters).to.have.own.property('date_range_filter_name');
-            expect(query.filters.date_range_filter_name).to.deep.equal({
+            expect(query.filters).to.have.own.property('created_at');
+            expect(query.filters.created_at).to.deep.equal({
                 application_type: 8,
-                field: 'indexed_metadata.date_range_filter',
+                field: 'indexed_metadata.created_at',
                 filter_terms: [],
                 filter_type: 'date_range',
                 values: ['today..tomorrow']
@@ -134,6 +132,38 @@ describe('# Test: Query()', () => {
                 values: ['item_uuid_id']
             });
         });
+
+        it('should filterUniverseByRange()', function () {
+            query.filterUniverseByRange(
+                'price',
+                ['0..20'],
+                FILTER_MUST_ALL
+            );
+            expect(query.universe_filters).to.have.own.property('price');
+            expect(query.universe_filters.price).to.deep.equal({
+                application_type: 4,
+                field: 'indexed_metadata.price',
+                filter_terms: [],
+                filter_type: 'range',
+                values: ['0..20']
+            });
+        });
+
+        it('should filterUniverseByDateRange()', function () {
+            query.filterUniverseByDateRange(
+                'created_at',
+                ['2009-11-04T19:55:41Z..2017-11-04T19:55:41Z'],
+                FILTER_MUST_ALL
+            );
+            expect(query.universe_filters).to.have.own.property('created_at');
+            expect(query.universe_filters.created_at).to.deep.equal({
+                application_type: 4,
+                field: 'indexed_metadata.created_at',
+                filter_terms: [],
+                filter_type: 'date_range',
+                values: ['2009-11-04T19:55:41Z..2017-11-04T19:55:41Z']
+            });
+        });
     });
 
     describe('-> aggregateBy...() methods', () => {
@@ -144,26 +174,60 @@ describe('# Test: Query()', () => {
         });
 
         it('should aggregateBy()', () => {
-            query.aggregateBy('source', 'source');
-            expect(query.aggregations).to.have.own.property('source');
-            expect(query.aggregations.source).to.include.all.keys(
-                'applicationType',
-                'field',
-                'filterType',
-                'limit',
-                'name',
-                'sort',
-                'subgroup'
+            query.aggregateBy(
+                'source',
+                'source',
+                FILTER_IT_DOESNT_MATTER
             );
-            expect(query.aggregations.source.name).to.include('source');
+
+            expect(query.aggregations).to.have.own.property('source');
+            expect(query.aggregations.source).to.deep.equal({
+                applicationType: 0,
+                field: 'indexed_metadata.source',
+                filterType: 'field',
+                limit: 0,
+                name: 'source',
+                sort: ['_count', 'desc'],
+                subgroup: []
+            });
         });
 
-        it('should aggregateByRange()', function () {
-            this.skip('Waiting for method documentation on the main api.')
+        it('should aggregateByRange()', () => {
+            query.aggregateByRange(
+                'price',
+                'price',
+                ['some_option'],
+                FILTER_MUST_ALL
+            );
+            expect(query.aggregations).to.have.own.property('price');
+            expect(query.aggregations.price).to.deep.equal({
+                applicationType: 4,
+                field: 'indexed_metadata.price',
+                filterType: 'range',
+                limit: 0,
+                name: 'price',
+                sort: ['_count', 'desc'],
+                subgroup: ['_count', 'desc']
+            });
         });
 
-        it('should aggregateByDateRange()', function () {
-            this.skip('Waiting for method documentation on the main api.')
+        it('should aggregateByDateRange()', () => {
+            query.aggregateByDateRange(
+                'created_at',
+                'created_at',
+                ['some_option'],
+                FILTER_MUST_ALL
+            );
+            expect(query.aggregations).to.have.own.property('created_at');
+            expect(query.aggregations.created_at).to.deep.equal({
+                applicationType: 4,
+                field: 'indexed_metadata.created_at',
+                filterType: 'date_range',
+                limit: 0,
+                name: 'created_at',
+                sort: ['_count', 'desc'],
+                subgroup: ['_count', 'desc']
+            });
         });
     });
 

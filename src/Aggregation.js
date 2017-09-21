@@ -17,15 +17,15 @@ export default class Aggregation {
         applicationType,
         filterType,
         subgroup,
-        sort = AGGREGATION_SORT_BY_COUNT_DESC,
-        limit = AGGREGATION_NO_LIMIT
+        sort,
+        limit
     ) {
         this.name = name;
         this.field = field;
         this.applicationType = applicationType;
         this.filterType = filterType;
         this.subgroup = subgroup;
-        this.sort = sort;
-        this.limit = limit;
+        this.sort = sort || AGGREGATION_SORT_BY_COUNT_DESC;
+        this.limit = limit || AGGREGATION_NO_LIMIT;
     }
 }

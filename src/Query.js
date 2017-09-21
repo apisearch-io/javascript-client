@@ -179,7 +179,7 @@ export default class Query {
         }
 
         if (aggregate) {
-            this.aggregateByRage(
+            this.aggregateByRange(
                 filterName,
                 fieldPath,
                 options,
@@ -280,6 +280,45 @@ export default class Query {
         return this;
     }
 
+    filterUniverseByRange(
+        field,
+        values,
+        applicationType = FILTER_AT_LEAST_ONE,
+        rangeType = FILTER_TYPE_RANGE
+    ) {
+        TypeChecker.isArray(values);
+
+        let fieldPath = Filter.getFilterPathByField(field);
+        if (values.length !== 0) {
+            this.universe_filters = {
+                ...this.universe_filters,
+                [field]: new Filter(
+                    fieldPath,
+                    values,
+                    applicationType,
+                    rangeType
+                )
+            }
+        } else {
+            delete this.universe_filters[field]
+        }
+
+        return this;
+    }
+
+    filterUniverseByDateRange(
+        field,
+        values,
+        applicationType = FILTER_AT_LEAST_ONE
+    ) {
+        return this.filterUniverseByRange(
+            field,
+            values,
+            applicationType,
+            FILTER_TYPE_DATE_RANGE
+        );
+    }
+
     aggregateBy(
         filterName,
         field,
@@ -287,6 +326,9 @@ export default class Query {
         aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC,
         limit = AGGREGATION_NO_LIMIT
     ) {
+        TypeChecker.isDefined(applicationType);
+        TypeChecker.isInteger(applicationType);
+
         this.aggregations = {
             ...this.aggregations,
             [filterName]: new Aggregation(
@@ -303,7 +345,7 @@ export default class Query {
         return this;
     }
 
-    aggregateByRage(
+    aggregateByRange(
         filterName,
         field,
         options,
@@ -325,6 +367,35 @@ export default class Query {
                 Filter.getFilterPathByField(field),
                 applicationType,
                 rangeType,
+                aggregationSort,
+                limit
+            )
+        };
+
+        return this;
+    }
+
+    aggregateByDateRange(
+        filterName,
+        field,
+        options,
+        applicationType,
+        aggregationSort = AGGREGATION_SORT_BY_COUNT_DESC,
+        limit = AGGREGATION_NO_LIMIT
+    ) {
+        TypeChecker.isArray(options);
+
+        if (options.length === 0) {
+            return this;
+        }
+
+        this.aggregations = {
+            ...this.aggregations,
+            [filterName]: new Aggregation(
+                filterName,
+                Filter.getFilterPathByField(field),
+                applicationType,
+                FILTER_TYPE_DATE_RANGE,
                 aggregationSort,
                 limit
             )

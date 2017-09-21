@@ -42,7 +42,8 @@
                 // 2.- compose query
                 query = apisearch
                     .query
-                    .create(e.target.value)
+                    .createMatchAll()
+                    query.aggregateBy('comment', 'comment')
                 ;
                 console.log(query)
 

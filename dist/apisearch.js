@@ -512,7 +512,7 @@ var Query = function () {
             }
 
             if (aggregate) {
-                this.aggregateByRage(filterName, fieldPath, options, applicationType, rangeType, aggregationSort);
+                this.aggregateByRange(filterName, fieldPath, options, applicationType, rangeType, aggregationSort);
             }
 
             return this;
@@ -571,18 +571,45 @@ var Query = function () {
             return this;
         }
     }, {
+        key: "filterUniverseByRange",
+        value: function filterUniverseByRange(field, values) {
+            var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
+            var rangeType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Filter.FILTER_TYPE_RANGE;
+
+            _TypeChecker2.default.isArray(values);
+
+            var fieldPath = _Filter2.default.getFilterPathByField(field);
+            if (values.length !== 0) {
+                this.universe_filters = _extends({}, this.universe_filters, _defineProperty({}, field, new _Filter2.default(fieldPath, values, applicationType, rangeType)));
+            } else {
+                delete this.universe_filters[field];
+            }
+
+            return this;
+        }
+    }, {
+        key: "filterUniverseByDateRange",
+        value: function filterUniverseByDateRange(field, values) {
+            var applicationType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Filter.FILTER_AT_LEAST_ONE;
+
+            return this.filterUniverseByRange(field, values, applicationType, _Filter.FILTER_TYPE_DATE_RANGE);
+        }
+    }, {
         key: "aggregateBy",
         value: function aggregateBy(filterName, field, applicationType) {
             var aggregationSort = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
             var limit = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Aggregation.AGGREGATION_NO_LIMIT;
+
+            _TypeChecker2.default.isDefined(applicationType);
+            _TypeChecker2.default.isInteger(applicationType);
 
             this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, _Filter.FILTER_TYPE_FIELD, [], aggregationSort, limit)));
 
             return this;
         }
     }, {
-        key: "aggregateByRage",
-        value: function aggregateByRage(filterName, field, options, applicationType) {
+        key: "aggregateByRange",
+        value: function aggregateByRange(filterName, field, options, applicationType) {
             var rangeType = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Filter.FILTER_TYPE_RANGE;
             var aggregationSort = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
             var limit = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : _Aggregation.AGGREGATION_NO_LIMIT;
@@ -594,6 +621,22 @@ var Query = function () {
             }
 
             this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, rangeType, aggregationSort, limit)));
+
+            return this;
+        }
+    }, {
+        key: "aggregateByDateRange",
+        value: function aggregateByDateRange(filterName, field, options, applicationType) {
+            var aggregationSort = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : _Aggregation.AGGREGATION_SORT_BY_COUNT_DESC;
+            var limit = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : _Aggregation.AGGREGATION_NO_LIMIT;
+
+            _TypeChecker2.default.isArray(options);
+
+            if (options.length === 0) {
+                return this;
+            }
+
+            this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, _Filter.FILTER_TYPE_DATE_RANGE, aggregationSort, limit)));
 
             return this;
         }
@@ -742,10 +785,7 @@ var AGGREGATION_NO_LIMIT = exports.AGGREGATION_NO_LIMIT = 0;
  * Aggregation class
  */
 
-var Aggregation = function Aggregation(name, field, applicationType, filterType, subgroup) {
-    var sort = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : AGGREGATION_SORT_BY_COUNT_DESC;
-    var limit = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : AGGREGATION_NO_LIMIT;
-
+var Aggregation = function Aggregation(name, field, applicationType, filterType, subgroup, sort, limit) {
     _classCallCheck(this, Aggregation);
 
     this.name = name;
@@ -753,8 +793,8 @@ var Aggregation = function Aggregation(name, field, applicationType, filterType,
     this.applicationType = applicationType;
     this.filterType = filterType;
     this.subgroup = subgroup;
-    this.sort = sort;
-    this.limit = limit;
+    this.sort = sort || AGGREGATION_SORT_BY_COUNT_DESC;
+    this.limit = limit || AGGREGATION_NO_LIMIT;
 };
 
 exports.default = Aggregation;
@@ -818,6 +858,13 @@ var TypeChecker = function () {
         value: function isDefined(value) {
             if (typeof value === 'undefined') {
                 throw new TypeError('Method parameter must be defined.');
+            }
+        }
+    }, {
+        key: 'isInteger',
+        value: function isInteger(integer) {
+            if (typeof integer !== 'number') {
+                throw new TypeError('\n                "' + integer + '" must be type of Integer, \n                "' + integer.constructor.name + '" given.\n            ');
             }
         }
     }, {

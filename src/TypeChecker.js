@@ -8,6 +8,15 @@ export default class TypeChecker {
         }
     }
 
+    static isInteger(integer) {
+        if (typeof integer !== 'number') {
+            throw new TypeError(`
+                "${integer}" must be type of Integer, 
+                "${integer.constructor.name}" given.
+            `);
+        }
+    }
+
     static isBool(bool) {
         if (typeof bool !== 'boolean') {
             throw new TypeError(`
