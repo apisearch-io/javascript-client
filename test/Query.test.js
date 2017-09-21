@@ -54,15 +54,39 @@ describe('# Test: Query()', () => {
             });
         });
 
-        it('should filterBy()', () => {
-            query.filterByIds(['item_uuid_id']);
-            expect(query.filters).to.have.own.property('id');
-            expect(query.filters.id).to.deep.equal({
+        it('should filterByRange()', () => {
+            query.filterByRange(
+                'price',
+                'price',
+                [],
+                ['50..60', '90..100']
+            );
+            expect(query.filters).to.have.own.property('price');
+            expect(query.filters.price).to.deep.equal({
                 application_type: 8,
-                field: 'uuid.id',
+                field: 'indexed_metadata.price',
                 filter_terms: [],
-                filter_type: 'field',
-                values: ['item_uuid_id']
+                filter_type: 'range',
+                values: ['50..60', '90..100']
+            });
+        });
+
+        it('should filterByDateRange()', function () {
+            this.skip('Waiting for method documentation on the main api.');
+
+            query.filterByDateRange(
+                'date_range_filter_name',
+                'date_range_filter',
+                [],
+                ['today..tomorrow']
+            );
+            expect(query.filters).to.have.own.property('date_range_filter_name');
+            expect(query.filters.date_range_filter_name).to.deep.equal({
+                application_type: 8,
+                field: 'indexed_metadata.date_range_filter',
+                filter_terms: [],
+                filter_type: 'date_range',
+                values: ['today..tomorrow']
             });
         });
     });
@@ -132,6 +156,14 @@ describe('# Test: Query()', () => {
                 'subgroup'
             );
             expect(query.aggregations.source.name).to.include('source');
+        });
+
+        it('should aggregateByRange()', function () {
+            this.skip('Waiting for method documentation on the main api.')
+        });
+
+        it('should aggregateByDateRange()', function () {
+            this.skip('Waiting for method documentation on the main api.')
         });
     });
 
