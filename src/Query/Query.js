@@ -14,6 +14,7 @@ import {
 } from "./Aggregation";
 import {SORT_BY_SCORE} from "./SortBy";
 import User from "./User";
+import AbstractLocationRange from "../Geo/AbstractLocationRange";
 
 /**
  * Query constants
@@ -320,7 +321,7 @@ export default class Query {
     }
 
     filterUniverseByLocation(locationRange) {
-        TypeChecker.isObjectTypeOf(locationRange, LocationRange);
+        TypeChecker.isObjectTypeOf(locationRange, AbstractLocationRange);
 
         this.universe_filters = {
             ...this.universe_filters,
@@ -338,7 +339,7 @@ export default class Query {
     setFilterFields(fields) {
         TypeChecker.isArray(fields);
 
-        if(fields.length === 0) {
+        if (fields.length === 0) {
             this.filter_fields = [...fields];
 
             return this;

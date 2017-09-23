@@ -1,6 +1,3 @@
-/**
- * Apisearch entry point
- */
 import HttpRepository from "./Repository/HttpRepository";
 import ItemUUID from "./Query/ItemUUID";
 import Query, {
@@ -13,39 +10,68 @@ import Filter, {
     FILTER_TYPE_FIELD
 } from "./Query/Filter";
 
-const cache = {};
+/**
+ * Entry point for the Apisearch client
+ *
+ * @param repository
+ * @param apiKey
+ * @param endpoint
+ * @returns {Apisearch}
+ */
+module.exports = function(apiKey, endpoint) {
+    if (typeof apiKey === 'undefined') {
+       throw new TypeError(`ApiKey parameter must be defined.`)
+    }
 
-const client = function(repository, secret, endpoint) {
-    this.repository = repository;
-    this.secret = secret;
-    this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
-};
-
-const search = function(query, callback) {
-    let repository = new HttpRepository(
-        this.endpoint,
-        this.secret
-    );
-
-    return repository
-        .query(query)
-        .then(
-            response => callback(response, null)
-        ).catch(
-            error => callback(null, error)
-        )
-    ;
-};
-
-const createUUID = function(id, type) {
-    return new ItemUUID(
-        id,
-        type
+    return new Apisearch(
+        'apisearch-app-id',
+        apiKey,
+        endpoint
     );
 };
 
-const query =  {
-    create(
+/**
+ * Apisearch class
+ */
+class Apisearch {
+    constructor(appId, apiKey, endpoint) {
+        this.appId = appId;
+        this.apiKey = apiKey;
+        this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
+        this.query = QueryFactory;
+        this.cache = {};
+    }
+
+    search(query, callback) {
+        let repository = new HttpRepository(
+            this.endpoint,
+            this.apiKey
+        );
+
+        return repository
+            .query(query)
+            .then(
+                response => callback(response, null)
+            )
+            .catch(
+                error => callback(null, error)
+            )
+        ;
+    }
+
+    createUUID(id, type) {
+        return new ItemUUID(
+            id,
+            type
+        );
+    };
+}
+
+/**
+ * QueryFactory class
+ */
+class QueryFactory {
+    static create(
         q,
         page = QUERY_DEFAULT_PAGE,
         size = QUERY_DEFAULT_SIZE
@@ -56,15 +82,17 @@ const query =  {
             page,
             size
         });
-    },
-    createMatchAll() {
+    }
+
+    static createMatchAll() {
         return new Query({
             q: '',
             page: QUERY_DEFAULT_PAGE,
             size: QUERY_INFINITE_SIZE
         });
-    },
-    createLocated(
+    }
+
+    static createLocated(
         coordinate,
         queryText,
         page = QUERY_DEFAULT_PAGE,
@@ -76,11 +104,13 @@ const query =  {
             size,
             q: queryText
         });
-    },
-    createByUUID(uuid) {
+    }
+
+    static createByUUID(uuid) {
         return this.createByUUIDs([uuid]);
-    },
-    createByUUIDs(uuids) {
+    }
+
+    static createByUUIDs(uuids) {
         let ids = uuids.map(uuid => uuid.composedUUID());
         let query = new Query({
             q: '',
@@ -106,12 +136,4 @@ const query =  {
 
         return query;
     }
-};
-
-module.exports = {
-    cache,
-    client,
-    search,
-    createUUID,
-    query
-};
+}

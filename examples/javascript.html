@@ -36,18 +36,18 @@
             ;
 
             // 1. Create the client
-            apisearch.client('comment_repository', 'sandbox_comments_secret');
+            let client = apisearch('sandbox_comments_secret');
 
             searchInput.addEventListener('keyup', function (e) {
                 // 2.- compose query
-                query = apisearch
+                query = client
                     .query
                     .create(e.target.value)
                 ;
                 console.log(query)
 
                 // 3.- Execute search
-                apisearch.search(query, function (result, error) {
+                client.search(query, function (result, error) {
                     // Handle error
                     if (error) {
                         console.log(error)

@@ -1,3 +1,5 @@
+import Coordinate from "../src/Query/Coordinate";
+
 const expect = require('chai').expect;
 import {defaultQuery} from './mocks/queries';
 
@@ -165,8 +167,16 @@ describe('# Test: Query()', () => {
             });
         });
 
-        it('should filterUniverseByLocation()', () => {
-
+        describe('--> When filterUniverseByLocation()', () => {
+            it('should filter by Coordinate and Distance points', function() {
+                this.skip();
+            });
+            it('should filter by square area location', function() {
+                this.skip();
+            });
+            it('should filter by polygon area location', function() {
+                this.skip();
+            });
         });
     });
 
