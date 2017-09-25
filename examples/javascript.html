@@ -42,17 +42,17 @@
                 // 2.- compose query
                 query = api.query
                     .createLocated(
-                        api.createCoordinate(1.2324, 1.1232),
+                        api.createObject.coordinate(1.2324, 1.1232),
                         e.target.value
                     )
                     .promoteUUID(
-                        api.createUUID('some_type', 'some_uuid')
+                        api.createObject.uuid('some_type', 'some_uuid')
                     )
                     .filterUniverseByLocation(
-                        api.createPolygon(
-                            api.createCoordinate(1.32, 1.32),
-                            api.createCoordinate(1.35, 1.36),
-                            api.createCoordinate(1.40, 1.38)
+                        api.createObject.polygon(
+                            api.createObject.coordinate(1.32, 1.32),
+                            api.createObject.coordinate(1.35, 1.36),
+                            api.createObject.coordinate(1.40, 1.38)
                         )
                     )
                     .enableHighlights()

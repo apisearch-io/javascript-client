@@ -36,7 +36,7 @@ describe('# Test: Apisearch entry point', () => {
         });
         it('should create a "uuid query" given createByUUID method', () => {
             let query = client.query.createByUUID(
-                    client.createUUID('captain-america', 'marvel')
+                    client.createObject.uuid('captain-america', 'marvel')
                 )
             ;
             expect(query.filters).to.deep.equal({
@@ -54,8 +54,8 @@ describe('# Test: Apisearch entry point', () => {
         it('should create a "uuids query" given createByUUIDs method', () => {
             let query = client.query
                 .createByUUIDs(
-                    client.createUUID('black-widow', 'marvel'),
-                    client.createUUID('ant-man', 'marvel')
+                    client.createObject.uuid('black-widow', 'marvel'),
+                    client.createObject.uuid('ant-man', 'marvel')
                 )
             ;
             expect(query.filters).to.deep.equal({

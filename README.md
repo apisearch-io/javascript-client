@@ -14,13 +14,13 @@ basic ES6 modules.
 ## npm
 
 ```shell
-npm install apisearch --save 
+npm install apisearch --save
 ```
 
 ## html tag \<script\>
 
 ```html
-<script src="/your/assets/apisearch.min.js"></script>
+<script src="/apisearch.min.js"></script>
 ```
 
 # Basic usage

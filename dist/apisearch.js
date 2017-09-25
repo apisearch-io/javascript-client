@@ -303,49 +303,21 @@ exports.default = Filter;
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _ItemUUID = __webpack_require__(3);
-
-var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
-
-var _Coordinate = __webpack_require__(0);
-
-var _Coordinate2 = _interopRequireDefault(_Coordinate);
 
 var _HttpRepository = __webpack_require__(6);
 
 var _HttpRepository2 = _interopRequireDefault(_HttpRepository);
 
-var _CoordinateAndDistance = __webpack_require__(7);
+var _SecureObjectFactory = __webpack_require__(14);
 
-var _CoordinateAndDistance2 = _interopRequireDefault(_CoordinateAndDistance);
+var _SecureObjectFactory2 = _interopRequireDefault(_SecureObjectFactory);
 
-var _Square = __webpack_require__(8);
+var _QueryFactory = __webpack_require__(15);
 
-var _Square2 = _interopRequireDefault(_Square);
-
-var _Polygon = __webpack_require__(9);
-
-var _Polygon2 = _interopRequireDefault(_Polygon);
-
-var _Query = __webpack_require__(10);
-
-var _Query2 = _interopRequireDefault(_Query);
-
-var _Filter = __webpack_require__(4);
-
-var _Filter2 = _interopRequireDefault(_Filter);
-
-var _AbstractLocationRange = __webpack_require__(1);
-
-var _AbstractLocationRange2 = _interopRequireDefault(_AbstractLocationRange);
+var _QueryFactory2 = _interopRequireDefault(_QueryFactory);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -378,7 +350,8 @@ var Apisearch = function () {
         this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
 
         this.cache = {};
-        this.query = QueryFactory;
+        this.query = _QueryFactory2.default;
+        this.createObject = _SecureObjectFactory2.default;
     }
 
     _createClass(Apisearch, [{
@@ -392,117 +365,9 @@ var Apisearch = function () {
                 return callback(null, error);
             });
         }
-    }, {
-        key: "createUUID",
-        value: function createUUID(id, type) {
-            return new _ItemUUID2.default(id, type);
-        }
-    }, {
-        key: "createCoordinate",
-        value: function createCoordinate(lat, lon) {
-            return new _Coordinate2.default(lat, lon);
-        }
-    }, {
-        key: "createCoordinateAndDistance",
-        value: function createCoordinateAndDistance(coordinate, distance) {
-            return new _CoordinateAndDistance2.default(coordinate, distance);
-        }
-    }, {
-        key: "createSquare",
-        value: function createSquare(topLeftCoordinate, bottomRightCoordinate) {
-            return new _Square2.default(topLeftCoordinate, bottomRightCoordinate);
-        }
-    }, {
-        key: "createPolygon",
-        value: function createPolygon() {
-            for (var _len = arguments.length, coordinates = Array(_len), _key = 0; _key < _len; _key++) {
-                coordinates[_key] = arguments[_key];
-            }
-
-            return new (Function.prototype.bind.apply(_Polygon2.default, [null].concat(coordinates)))();
-        }
     }]);
 
     return Apisearch;
-}();
-
-/**
- * QueryFactory class
- */
-
-
-var QueryFactory = function () {
-    function QueryFactory() {
-        _classCallCheck(this, QueryFactory);
-    }
-
-    _createClass(QueryFactory, null, [{
-        key: "create",
-        value: function create(q) {
-            var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _Query.QUERY_DEFAULT_PAGE;
-            var size = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Query.QUERY_DEFAULT_SIZE;
-
-            return new _Query2.default({
-                q: q,
-                from: (page - 1) * size,
-                page: page,
-                size: size
-            });
-        }
-    }, {
-        key: "createMatchAll",
-        value: function createMatchAll() {
-            return new _Query2.default({
-                q: '',
-                page: _Query.QUERY_DEFAULT_PAGE,
-                size: _Query.QUERY_INFINITE_SIZE
-            });
-        }
-    }, {
-        key: "createLocated",
-        value: function createLocated(coordinate, queryText) {
-            var page = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Query.QUERY_DEFAULT_PAGE;
-            var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Query.QUERY_DEFAULT_SIZE;
-
-            return new _Query2.default({
-                coordinate: coordinate,
-                page: page,
-                size: size,
-                q: queryText
-            });
-        }
-    }, {
-        key: "createByUUID",
-        value: function createByUUID(uuid) {
-            return this.createByUUIDs(uuid);
-        }
-    }, {
-        key: "createByUUIDs",
-        value: function createByUUIDs() {
-            for (var _len2 = arguments.length, uuids = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                uuids[_key2] = arguments[_key2];
-            }
-
-            var ids = uuids.map(function (uuid) {
-                return uuid.composedUUID();
-            });
-            var query = new _Query2.default({
-                q: '',
-                page: _Query.QUERY_DEFAULT_PAGE,
-                size: _Query.QUERY_INFINITE_SIZE
-            });
-
-            query.disableAggregations().disableSuggestions();
-
-            query.filters = _extends({}, query.filters, _defineProperty({}, '_id', new _Filter2.default('_id', ids.filter(function (item, pos) {
-                return ids.indexOf(item) === pos;
-            }), _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
-
-            return query;
-        }
-    }]);
-
-    return QueryFactory;
 }();
 
 /***/ }),
@@ -1361,6 +1226,195 @@ var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
         'unit': 'mi'
     }
 };
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ItemUUID = __webpack_require__(3);
+
+var _ItemUUID2 = _interopRequireDefault(_ItemUUID);
+
+var _Coordinate = __webpack_require__(0);
+
+var _Coordinate2 = _interopRequireDefault(_Coordinate);
+
+var _CoordinateAndDistance = __webpack_require__(7);
+
+var _CoordinateAndDistance2 = _interopRequireDefault(_CoordinateAndDistance);
+
+var _Square = __webpack_require__(8);
+
+var _Square2 = _interopRequireDefault(_Square);
+
+var _Polygon = __webpack_require__(9);
+
+var _Polygon2 = _interopRequireDefault(_Polygon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * SecureObjectFactory class.
+ */
+var SecureApiObjectFactory = function () {
+    function SecureApiObjectFactory() {
+        _classCallCheck(this, SecureApiObjectFactory);
+    }
+
+    _createClass(SecureApiObjectFactory, null, [{
+        key: "uuid",
+        value: function uuid(id, type) {
+            return new _ItemUUID2.default(id, type);
+        }
+    }, {
+        key: "coordinate",
+        value: function coordinate(lat, lon) {
+            return new _Coordinate2.default(lat, lon);
+        }
+    }, {
+        key: "coordinateAndDistance",
+        value: function coordinateAndDistance(coordinate, distance) {
+            return new _CoordinateAndDistance2.default(coordinate, distance);
+        }
+    }, {
+        key: "square",
+        value: function square(topLeftCoordinate, bottomRightCoordinate) {
+            return new _Square2.default(topLeftCoordinate, bottomRightCoordinate);
+        }
+    }, {
+        key: "polygon",
+        value: function polygon() {
+            for (var _len = arguments.length, coordinates = Array(_len), _key = 0; _key < _len; _key++) {
+                coordinates[_key] = arguments[_key];
+            }
+
+            return new (Function.prototype.bind.apply(_Polygon2.default, [null].concat(coordinates)))();
+        }
+    }]);
+
+    return SecureApiObjectFactory;
+}();
+
+exports.default = SecureApiObjectFactory;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Query = __webpack_require__(10);
+
+var _Query2 = _interopRequireDefault(_Query);
+
+var _Filter = __webpack_require__(4);
+
+var _Filter2 = _interopRequireDefault(_Filter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * QueryFactory class
+ */
+var QueryFactory = function () {
+    function QueryFactory() {
+        _classCallCheck(this, QueryFactory);
+    }
+
+    _createClass(QueryFactory, null, [{
+        key: "create",
+        value: function create(q) {
+            var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _Query.QUERY_DEFAULT_PAGE;
+            var size = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Query.QUERY_DEFAULT_SIZE;
+
+            return new _Query2.default({
+                q: q,
+                from: (page - 1) * size,
+                page: page,
+                size: size
+            });
+        }
+    }, {
+        key: "createMatchAll",
+        value: function createMatchAll() {
+            return new _Query2.default({
+                q: '',
+                page: _Query.QUERY_DEFAULT_PAGE,
+                size: _Query.QUERY_INFINITE_SIZE
+            });
+        }
+    }, {
+        key: "createLocated",
+        value: function createLocated(coordinate, queryText) {
+            var page = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _Query.QUERY_DEFAULT_PAGE;
+            var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Query.QUERY_DEFAULT_SIZE;
+
+            return new _Query2.default({
+                coordinate: coordinate,
+                page: page,
+                size: size,
+                q: queryText
+            });
+        }
+    }, {
+        key: "createByUUID",
+        value: function createByUUID(uuid) {
+            return this.createByUUIDs(uuid);
+        }
+    }, {
+        key: "createByUUIDs",
+        value: function createByUUIDs() {
+            for (var _len = arguments.length, uuids = Array(_len), _key = 0; _key < _len; _key++) {
+                uuids[_key] = arguments[_key];
+            }
+
+            var ids = uuids.map(function (uuid) {
+                return uuid.composedUUID();
+            });
+            var query = new _Query2.default({
+                q: '',
+                page: _Query.QUERY_DEFAULT_PAGE,
+                size: _Query.QUERY_INFINITE_SIZE
+            });
+
+            query.disableAggregations().disableSuggestions();
+
+            query.filters = _extends({}, query.filters, _defineProperty({}, '_id', new _Filter2.default('_id', ids.filter(function (item, pos) {
+                return ids.indexOf(item) === pos;
+            }), _Filter.FILTER_AT_LEAST_ONE, _Filter.FILTER_TYPE_FIELD)));
+
+            return query;
+        }
+    }]);
+
+    return QueryFactory;
+}();
+
+exports.default = QueryFactory;
 
 /***/ })
 /******/ ]);
