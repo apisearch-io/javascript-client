@@ -341,10 +341,10 @@ describe('# Test: Query()', () => {
 
         it('should promote many uuids when calling promoteUUIDs()', () => {
             // Promote thi two uuids into an existing array from the last test
-            query.promoteUUIDs([
+            query.promoteUUIDs(
                 new ItemUUID('ironman', 'marvel'),
                 new ItemUUID('thor', 'marvel')
-            ]);
+            );
             expect(query.items_promoted).to.deep.equal([
                 {
                     id: 'spiderman',
@@ -385,10 +385,10 @@ describe('# Test: Query()', () => {
         });
 
         it('should exclude many uuids when calling excludeUUIDs()', () => {
-            query.excludeUUIDs([
+            query.excludeUUIDs(
                 new ItemUUID('captain-america', 'marvel'),
                 new ItemUUID('daredevil', 'marvel')
-            ]);
+            );
             expect(query.filters['excluded_ids'].values).to.deep.equal([
                 'marvel~captain-america',
                 'marvel~daredevil'

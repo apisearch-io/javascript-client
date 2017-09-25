@@ -27,21 +27,20 @@ npm install apisearch --save
 
 ```javascript
 // 1.- create the api client
-apisearch.client(
-  'repository_name', 
-  'your_api_key',
-);
+let api = apisearch('your_api_key');
 
 // 2.- build a query
-let query = apisearch
-  .query
+let query = api.query
   .create('Your query text');
 
 // 3.- go search!
-apisearch.search(query, function (result) {
+api.search(query, function(result) {
    console.log(result) 
 });
 ```
+
+You can checkout more examples running these files on your browser:
+[example files](https://github.com/alexhoma/apisearch-js-client/tree/master/examples) 
 
 # Query
 
@@ -51,8 +50,7 @@ By default aggregations are enabled, so you can disable and enable it
 again with the following chained methods.
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .createMatchAll()
   .enableAggregations()
   .disableAggregations()
@@ -65,8 +63,7 @@ By default highlights are disabled. You can enable or disable it with
 the following chained methods.
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .create('ironman')
   .enableHighlights()
 ;
@@ -76,8 +73,8 @@ You can then access to the highlighted text with the property `highlights`
 in the resulted items like this.
 
 ```javascript
-apisearch.search(query, function(result) {
-   result.forEach(item => {
+api.search(query, function(result) {
+   result.forEach(function(item) {
        console.log(item.highlights);
    });
 });
@@ -91,8 +88,7 @@ Suggestions are also disabled by default. Enable or disable it using the
 following methods.
 
 ```javascript
-apisearch
-  .query
+let query = api.query
   .create('spider')
   .disableSuggestions()
   .enableSuggestions()
@@ -114,8 +110,7 @@ you will be ableto create a secure ItemUUID object.
 > In this case "spiderman" means the ID and "marvel" means the type.
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .createMatchAll()
   .excludeUUID(
       apisearch.createUUID('spiderman', 'marvel')
@@ -125,14 +120,13 @@ let query = apisearch
 You can also exclude several items at once:
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .createMatchAll()
-  .excludeUUIDs([
+  .excludeUUIDs(
       apisearch.createUUID('spiderman', 'marvel'),
       apisearch.createUUID('hulk', 'marvel'),
       apisearch.createUUID('daredevil', 'marvel')
-  ]);
+  );
 ```
 
 ## Promote items by uuid
@@ -144,8 +138,7 @@ Using the built in apisearch method called: `apisearch.createUUID(uuid)`,
 you will be ableto create a secure ItemUUID object.
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .createMatchAll()
   .promoteUUID(
       apisearch.createUUID('spiderman', 'marvel')
@@ -157,15 +150,19 @@ method every time, you can use the following method and pass the promoted items
 as an array like this:
 
 ```javascript
-let query = apisearch
-  .query
+let query = api.query
   .createMatchAll()
-  .promoteUUIDs([
+  .promoteUUIDs(
       apisearch.createUUID('spiderman', 'marvel'),
       apisearch.createUUID('ironman', 'marvel'),
       apisearch.createUUID('thor', 'marvel')
-  ]);
+  );
 ```
+
+# Demos
+Just open the 
+[example files](https://github.com/alexhoma/apisearch-js-client/tree/master/examples) 
+on your browser:
 
 # Developer resources:
 

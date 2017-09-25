@@ -53,10 +53,10 @@ describe('# Test: Apisearch entry point', () => {
         });
         it('should create a "uuids query" given createByUUIDs method', () => {
             let query = client.query
-                .createByUUIDs([
+                .createByUUIDs(
                     client.createUUID('black-widow', 'marvel'),
                     client.createUUID('ant-man', 'marvel')
-                ])
+                )
             ;
             expect(query.filters).to.deep.equal({
                 _id: {

@@ -145,10 +145,10 @@ class QueryFactory {
     }
 
     static createByUUID(uuid) {
-        return this.createByUUIDs([uuid]);
+        return this.createByUUIDs(uuid);
     }
 
-    static createByUUIDs(uuids) {
+    static createByUUIDs(...uuids) {
         let ids = uuids.map(uuid => uuid.composedUUID());
         let query = new Query({
             q: '',

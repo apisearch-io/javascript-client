@@ -470,11 +470,15 @@ var QueryFactory = function () {
     }, {
         key: "createByUUID",
         value: function createByUUID(uuid) {
-            return this.createByUUIDs([uuid]);
+            return this.createByUUIDs(uuid);
         }
     }, {
         key: "createByUUIDs",
-        value: function createByUUIDs(uuids) {
+        value: function createByUUIDs() {
+            for (var _len2 = arguments.length, uuids = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                uuids[_key2] = arguments[_key2];
+            }
+
             var ids = uuids.map(function (uuid) {
                 return uuid.composedUUID();
             });
@@ -1177,10 +1181,14 @@ var Query = function () {
         }
     }, {
         key: "promoteUUIDs",
-        value: function promoteUUIDs(uuids) {
+        value: function promoteUUIDs() {
             var _this3 = this;
 
-            [].concat(_toConsumableArray(uuids)).forEach(function (uuid) {
+            for (var _len = arguments.length, uuids = Array(_len), _key = 0; _key < _len; _key++) {
+                uuids[_key] = arguments[_key];
+            }
+
+            uuids.forEach(function (uuid) {
                 return _this3.promoteUUID(uuid);
             });
 
@@ -1190,14 +1198,18 @@ var Query = function () {
         key: "excludeUUID",
         value: function excludeUUID(itemUUID) {
             _TypeChecker2.default.isObjectTypeOf(itemUUID, _ItemUUID2.default);
-            this.excludeUUIDs([itemUUID]);
+            this.excludeUUIDs(itemUUID);
 
             return this;
         }
     }, {
         key: "excludeUUIDs",
-        value: function excludeUUIDs(uuids) {
-            this.filters = _extends({}, this.filters, _defineProperty({}, 'excluded_ids', new _Filter2.default('_id', [].concat(_toConsumableArray(uuids)).map(function (uuid) {
+        value: function excludeUUIDs() {
+            for (var _len2 = arguments.length, uuids = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                uuids[_key2] = arguments[_key2];
+            }
+
+            this.filters = _extends({}, this.filters, _defineProperty({}, 'excluded_ids', new _Filter2.default('_id', uuids.map(function (uuid) {
                 return uuid.composedUUID();
             }), _Filter.FILTER_EXCLUDE, _Filter.FILTER_TYPE_FIELD)));
 

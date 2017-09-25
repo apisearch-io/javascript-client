@@ -518,25 +518,25 @@ export default class Query {
         return this;
     }
 
-    promoteUUIDs(uuids) {
-        [...uuids].forEach(uuid => this.promoteUUID(uuid));
+    promoteUUIDs(...uuids) {
+        uuids.forEach(uuid => this.promoteUUID(uuid));
 
         return this;
     }
 
     excludeUUID(itemUUID) {
         TypeChecker.isObjectTypeOf(itemUUID, ItemUUID);
-        this.excludeUUIDs([itemUUID]);
+        this.excludeUUIDs(itemUUID);
 
         return this;
     }
 
-    excludeUUIDs(uuids) {
+    excludeUUIDs(...uuids) {
         this.filters = {
             ...this.filters,
             ['excluded_ids']: new Filter(
                 '_id',
-                [...uuids].map(uuid => uuid.composedUUID()),
+                uuids.map(uuid => uuid.composedUUID()),
                 FILTER_EXCLUDE,
                 FILTER_TYPE_FIELD
             )
