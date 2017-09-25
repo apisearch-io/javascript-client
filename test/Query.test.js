@@ -8,6 +8,8 @@ import User from "../src/Query/User";
 import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query/Query';
 import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Query/Filter";
 import CoordinateAndDistance from "../src/Geo/CoordinateAndDistance";
+import Square from "../src/Geo/Square";
+import Polygon from "../src/Geo/Polygon";
 
 /**
  * Query object tests
@@ -182,16 +184,88 @@ describe('# Test: Query()', () => {
             it('should filter by Coordinate and Distance points', () => {
                 query.filterUniverseByLocation(
                     new CoordinateAndDistance(
-                        new Coordinate(1.234, -1.123),
+                        new Coordinate(1.234, -1.234),
                         '20km'
                     )
-                )
+                );
+                expect(query.universe_filters).to.have.own.property('coordinate');
+                expect(query.universe_filters.coordinate).to.deep.equal({
+                    application_type: 8,
+                    field: 'coordinate',
+                    filter_terms: [],
+                    filter_type: 'geo',
+                    values: {
+                        type: 'CoordinateAndDistance',
+                        data: {
+                            coordinate: {
+                                lat: 1.234,
+                                lon: -1.234
+                            },
+                            distance: '20km'
+                        }
+                    }
+                });
             });
-            it('should filter by square area location', function() {
-                this.skip();
+            it('should filter by square area location', () => {
+                query.filterUniverseByLocation(
+                    new Square(
+                        new Coordinate(1.234, 1.234),
+                        new Coordinate(-1.234, -1.234)
+                    )
+                );
+                expect(query.universe_filters).to.have.own.property('coordinate');
+                expect(query.universe_filters.coordinate).to.deep.equal({
+                    application_type: 8,
+                    field: 'coordinate',
+                    filter_terms: [],
+                    filter_type: 'geo',
+                    values: {
+                        type: 'Square',
+                        data: {
+                            0: {
+                                lat: 1.234,
+                                lon: 1.234
+                            },
+                            1: {
+                                lat: -1.234,
+                                lon: -1.234
+                            },
+                        }
+                    }
+                });
             });
-            it('should filter by polygon area location', function() {
-                this.skip();
+            it('should filter by polygon area location', () => {
+                query.filterUniverseByLocation(
+                    new Polygon(
+                        new Coordinate(1.234, 1.234),
+                        new Coordinate(-1.234, -1.234),
+                        new Coordinate(2.234, 2.234)
+                    )
+                );
+                expect(query.universe_filters).to.have.own.property('coordinate');
+                expect(query.universe_filters.coordinate).to.deep.equal({
+                    application_type: 8,
+                    field: 'coordinate',
+                    filter_terms: [],
+                    filter_type: 'geo',
+                    values: {
+                        type: 'Polygon',
+                        data: [
+                            {
+                                lat: 1.234,
+                                lon: 1.234
+                            },
+                            {
+                                lat: -1.234,
+                                lon: -1.234
+                            },
+                            {
+                                lat: 2.234,
+                                lon: 2.234
+                            }
+                        ]
+                    }
+                });
             });
         });
     });
