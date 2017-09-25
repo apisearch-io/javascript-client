@@ -7,6 +7,7 @@ import ItemUUID from "../src/Query/ItemUUID";
 import User from "../src/Query/User";
 import Query, {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query/Query';
 import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Query/Filter";
+import CoordinateAndDistance from "../src/Geo/CoordinateAndDistance";
 
 /**
  * Query object tests
@@ -168,8 +169,23 @@ describe('# Test: Query()', () => {
         });
 
         describe('--> When filterUniverseByLocation()', () => {
-            it('should filter by Coordinate and Distance points', function() {
-                this.skip();
+            let query = new Query({
+                q: '',
+                QUERY_DEFAULT_PAGE,
+                QUERY_DEFAULT_SIZE,
+                coordinate:  {
+                    lat: 1.234,
+                    lon: -1.234
+                }
+            });
+
+            it('should filter by Coordinate and Distance points', () => {
+                query.filterUniverseByLocation(
+                    new CoordinateAndDistance(
+                        new Coordinate(1.234, -1.123),
+                        '20km'
+                    )
+                )
             });
             it('should filter by square area location', function() {
                 this.skip();

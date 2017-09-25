@@ -15,6 +15,7 @@ import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_TYPE_FIELD
 } from "./Query/Filter";
+import AbstractLocationRange from "./Geo/AbstractLocationRange";
 
 /**
  * Entry point for the Apisearch client

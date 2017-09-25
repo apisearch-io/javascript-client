@@ -3,7 +3,7 @@
  */
 export default class AbstractLocationRange {
     constructor() {
-        if (this instanceof AbstractLocationRange) {
+        if (this.constructor.name === AbstractLocationRange) {
             throw TypeError(`You can't instantiate an Abstract class`);
         }
 

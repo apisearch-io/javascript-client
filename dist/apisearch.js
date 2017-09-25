@@ -114,7 +114,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var AbstractLocationRange = function AbstractLocationRange() {
     _classCallCheck(this, AbstractLocationRange);
 
-    if (this instanceof AbstractLocationRange) {
+    if (this.constructor.name === AbstractLocationRange) {
         throw TypeError('You can\'t instantiate an Abstract class');
     }
 
@@ -338,6 +338,10 @@ var _Query2 = _interopRequireDefault(_Query);
 var _Filter = __webpack_require__(4);
 
 var _Filter2 = _interopRequireDefault(_Filter);
+
+var _AbstractLocationRange = __webpack_require__(1);
+
+var _AbstractLocationRange2 = _interopRequireDefault(_AbstractLocationRange);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
