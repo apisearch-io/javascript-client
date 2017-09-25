@@ -2,19 +2,23 @@ import Aggregation from "./Aggregation";
 import ItemUUID from "./ItemUUID";
 import Coordinate from "./Coordinate";
 import TypeChecker from "../TypeChecker";
+import User from "./User";
+import AbstractLocationRange from "../Geo/AbstractLocationRange";
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
-    FILTER_IT_DOESNT_MATTER, FILTER_TYPE_DATE_RANGE,
-    FILTER_TYPE_FIELD, FILTER_TYPE_GEO, FILTER_TYPE_RANGE
+    FILTER_TYPE_DATE_RANGE,
+    FILTER_TYPE_FIELD,
+    FILTER_TYPE_GEO,
+    FILTER_TYPE_RANGE
 } from "./Filter";
 import {
     AGGREGATION_NO_LIMIT,
     AGGREGATION_SORT_BY_COUNT_DESC
 } from "./Aggregation";
-import {SORT_BY_SCORE} from "./SortBy";
-import User from "./User";
-import AbstractLocationRange from "../Geo/AbstractLocationRange";
+import {
+    SORT_BY_SCORE
+} from "./SortBy";
 
 /**
  * Query constants
@@ -327,7 +331,7 @@ export default class Query {
             ...this.universe_filters,
             ['coordinate']: new Filter(
                 'coordinate',
-                locationRange,
+                locationRange.toFilterObject(),
                 FILTER_AT_LEAST_ONE,
                 FILTER_TYPE_GEO
             )

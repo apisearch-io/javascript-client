@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Apisearch Javascript example</title>
-        <script src="../dist/apisearch.js"></script>
+        <script src="../dist/apisearch.min.js"></script>
     </head>
     <body>
         <!-- Content -->
@@ -29,20 +29,33 @@
 
         <!-- Apisearch -->
         <script>
-            var query,
-                searchInput = document.getElementById('search'),
+            var searchInput = document.getElementById('search'),
                 resultBlock = document.getElementById('result'),
                 compiled = _.template(document.getElementById('template').innerHTML)
             ;
 
             // 1. Create the client
             let client = apisearch('sandbox_comments_secret');
+            let query;
 
             searchInput.addEventListener('keyup', function (e) {
                 // 2.- compose query
-                query = client
-                    .query
-                    .create(e.target.value)
+                query = client.query
+                    .createLocated(
+                        client.createCoordinate(1.2324, 1.1232),
+                        e.target.value
+                    )
+                    .promoteUUID(
+                        client.createUUID('some_type', 'some_uuid')
+                    )
+                    .filterUniverseByLocation(
+                        client.createPolygon(
+                            client.createCoordinate(1.32, 1.32),
+                            client.createCoordinate(1.35, 1.36),
+                            client.createCoordinate(1.40, 1.38)
+                        )
+                    )
+                    .enableHighlights()
                 ;
                 console.log(query)
 

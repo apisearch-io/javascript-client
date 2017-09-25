@@ -2,7 +2,7 @@ import AbstractLocationRange from "./AbstractLocationRange";
 import Coordinate from "../Query/Coordinate";
 import TypeChecker from "../TypeChecker";
 
-class CoordinateAndDistance extends AbstractLocationRange {
+export default class CoordinateAndDistance extends AbstractLocationRange {
     constructor(
         coordinate,
         distance
@@ -16,5 +16,15 @@ class CoordinateAndDistance extends AbstractLocationRange {
         this.distance = distance;
 
         return this;
+    }
+
+    toFilterObject() {
+        return {
+            type: this.constructor.name,
+            data: {
+                coordinate: this.coordinate,
+                distance: this.distance
+            }
+        }
     }
 }

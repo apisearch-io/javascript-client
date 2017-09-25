@@ -1,10 +1,16 @@
-import HttpRepository from "./Repository/HttpRepository";
 import ItemUUID from "./Query/ItemUUID";
+import Coordinate from "./Query/Coordinate";
+import HttpRepository from "./Repository/HttpRepository";
+import CoordinateAndDistance from "./Geo/CoordinateAndDistance";
+import Square from "./Geo/Square";
+import Polygon from "./Geo/Polygon";
+
 import Query, {
     QUERY_DEFAULT_PAGE,
     QUERY_DEFAULT_SIZE,
     QUERY_INFINITE_SIZE
 } from "./Query/Query";
+
 import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_TYPE_FIELD
@@ -13,9 +19,9 @@ import Filter, {
 /**
  * Entry point for the Apisearch client
  *
- * @param repository
  * @param apiKey
  * @param endpoint
+ *
  * @returns {Apisearch}
  */
 module.exports = function(apiKey, endpoint) {
@@ -38,8 +44,9 @@ class Apisearch {
         this.appId = appId;
         this.apiKey = apiKey;
         this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
-        this.query = QueryFactory;
+
         this.cache = {};
+        this.query = QueryFactory;
     }
 
     search(query, callback) {
@@ -65,6 +72,37 @@ class Apisearch {
             type
         );
     };
+
+    createCoordinate(lat, lon) {
+        return new Coordinate(
+            lat,
+            lon
+        )
+    }
+
+    createCoordinateAndDistance(
+        coordinate,
+        distance
+    ) {
+        return new CoordinateAndDistance(
+            coordinate,
+            distance
+        )
+    }
+
+    createSquare(
+        topLeftCoordinate,
+        bottomRightCoordinate
+    ) {
+        return new Square(
+            topLeftCoordinate,
+            bottomRightCoordinate
+        )
+    }
+
+    createPolygon(...coordinates) {
+        return new Polygon(...coordinates);
+    }
 }
 
 /**
