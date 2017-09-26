@@ -42,7 +42,6 @@ class Apisearch {
     }
 
     search(query, callback) {
-
         return this.repository
             .query(query)
             .then(
