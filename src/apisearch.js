@@ -26,23 +26,24 @@ module.exports = function(apiKey, endpoint) {
  * Apisearch class
  */
 class Apisearch {
-    constructor(appId, apiKey, endpoint) {
+    constructor(appId, apiKey, options = {}) {
         this.appId = appId;
         this.apiKey = apiKey;
-        this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
+        this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
-        this.cache = {};
         this.query = QueryFactory;
         this.createObject = SecureObjectFactory;
+
+        this.repository = new HttpRepository(
+            this.endpoint,
+            this.apiKey,
+            options.cache || true
+        );
     }
 
     search(query, callback) {
-        let repository = new HttpRepository(
-            this.endpoint,
-            this.apiKey
-        );
 
-        return repository
+        return this.repository
             .query(query)
             .then(
                 response => callback(response, null)

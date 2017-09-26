@@ -1,7 +1,7 @@
 {
   "name": "apisearch",
   "version": "0.1.0",
-  "description": "Javascript client for the Apisearch sagregator and search engine.",
+  "description": "Javascript client for Apisearch.",
   "main": "./src/apisearch.js",
   "license": "MIT",
   "author": "alexhoma <alexcm.14@gmail.com>",

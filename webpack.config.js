@@ -17,6 +17,7 @@ let plugins = [], filename;
 if (ENV === 'build') {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
         minimize: true,
+        sourceMap: true,
         compress: {warnings: false},
         output: {comments: false}
     }));

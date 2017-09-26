@@ -7,7 +7,7 @@ import Polygon from "../Geo/Polygon";
 /**
  * SecureObjectFactory class.
  */
-export default class SecureApiObjectFactory {
+export default class SecureObjectFactory {
     static uuid(id, type) {
         return new ItemUUID(
             id,

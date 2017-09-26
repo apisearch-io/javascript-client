@@ -35,29 +35,17 @@
             ;
 
             // 1. Create the client
-            let api = apisearch('sandbox_comments_secret');
+            let api = apisearch('sandbox_comments_secret', {
+                cache: true
+            });
             let query;
 
             searchInput.addEventListener('keyup', function (e) {
                 // 2.- compose query
                 query = api.query
-                    .createLocated(
-                        api.createObject.coordinate(1.2324, 1.1232),
-                        e.target.value
-                    )
-                    .promoteUUID(
-                        api.createObject.uuid('some_type', 'some_uuid')
-                    )
-                    .filterUniverseByLocation(
-                        api.createObject.polygon(
-                            api.createObject.coordinate(1.32, 1.32),
-                            api.createObject.coordinate(1.35, 1.36),
-                            api.createObject.coordinate(1.40, 1.38)
-                        )
-                    )
+                    .create(e.target.value)
                     .enableHighlights()
                 ;
-                console.log(query, api)
 
                 // 3.- Execute search
                 api.search(query, function (result, error) {
@@ -74,7 +62,8 @@
                     });
 
                     // Log
-                    console.log(result);
+//                    console.log(api)
+//                    console.log(result);
                 });
             });
         </script>

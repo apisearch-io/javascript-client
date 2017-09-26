@@ -342,24 +342,26 @@ module.exports = function (apiKey, endpoint) {
  */
 
 var Apisearch = function () {
-    function Apisearch(appId, apiKey, endpoint) {
+    function Apisearch(appId, apiKey) {
+        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
         _classCallCheck(this, Apisearch);
 
         this.appId = appId;
         this.apiKey = apiKey;
-        this.endpoint = endpoint || 'http://127.0.0.1:9002/app.php';
+        this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
-        this.cache = {};
         this.query = _QueryFactory2.default;
         this.createObject = _SecureObjectFactory2.default;
+
+        this.repository = new _HttpRepository2.default(this.endpoint, this.apiKey, options.cache || true);
     }
 
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
-            var repository = new _HttpRepository2.default(this.endpoint, this.apiKey);
 
-            return repository.query(query).then(function (response) {
+            return this.repository.query(query).then(function (response) {
                 return callback(response, null);
             }).catch(function (error) {
                 return callback(null, error);
@@ -381,24 +383,32 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Repository class
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+
+var _MemoryCache = __webpack_require__(18);
+
+var _MemoryCache2 = _interopRequireDefault(_MemoryCache);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Repository class
- */
 var HttpRepository = function () {
     /**
      * Constructor
      * @param endpoint
      * @param secret
+     * @param cache
      */
-    function HttpRepository(endpoint, secret) {
+    function HttpRepository(endpoint, secret, cache) {
         _classCallCheck(this, HttpRepository);
 
         this.endpoint = endpoint;
         this.secret = secret;
+        this.cache = cache ? new _MemoryCache2.default() : null;
     }
 
     /**
@@ -411,20 +421,42 @@ var HttpRepository = function () {
     _createClass(HttpRepository, [{
         key: "query",
         value: function query(_query) {
-            _query = JSON.stringify(_query);
+            _query = encodeURI(JSON.stringify(_query));
             var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
+
+            // check if query exists in cache store
+            // return promise with the cached value if key exists
+            // if not exists, fetch data with XMLHttpRequest
+            if (this.cache !== null) {
+                var cachedResponse = this.cache.get(composedQuery);
+                if (cachedResponse) {
+                    return new Promise(function (resolve) {
+                        return resolve(cachedResponse);
+                    });
+                }
+            }
 
             return this.fetchData(composedQuery);
         }
     }, {
         key: "fetchData",
         value: function fetchData(composedQuery) {
+            var self = this;
             return new Promise(function (resolve, reject) {
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (this.readyState === 4) {
                         if (this.status === 200) {
-                            return resolve(JSON.parse(this.responseText));
+                            var parsedResponse = JSON.parse(this.responseText);
+
+                            // check if cache is enabled
+                            // set the composedQuery as a cache key
+                            // and the valid response as a cache value
+                            if (this.cache !== null) {
+                                self.cache.set(composedQuery, parsedResponse);
+                            }
+
+                            return resolve(parsedResponse);
                         } else {
                             return reject("Request error.");
                         }
@@ -1267,12 +1299,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * SecureObjectFactory class.
  */
-var SecureApiObjectFactory = function () {
-    function SecureApiObjectFactory() {
-        _classCallCheck(this, SecureApiObjectFactory);
+var SecureObjectFactory = function () {
+    function SecureObjectFactory() {
+        _classCallCheck(this, SecureObjectFactory);
     }
 
-    _createClass(SecureApiObjectFactory, null, [{
+    _createClass(SecureObjectFactory, null, [{
         key: "uuid",
         value: function uuid(id, type) {
             return new _ItemUUID2.default(id, type);
@@ -1303,10 +1335,10 @@ var SecureApiObjectFactory = function () {
         }
     }]);
 
-    return SecureApiObjectFactory;
+    return SecureObjectFactory;
 }();
 
-exports.default = SecureApiObjectFactory;
+exports.default = SecureObjectFactory;
 
 /***/ }),
 /* 15 */
@@ -1415,6 +1447,66 @@ var QueryFactory = function () {
 }();
 
 exports.default = QueryFactory;
+
+/***/ }),
+/* 16 */,
+/* 17 */,
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Cache class
+ */
+var MemoryCache = function () {
+    function MemoryCache() {
+        _classCallCheck(this, MemoryCache);
+
+        this.cache = {};
+        this.size = 0;
+
+        return this;
+    }
+
+    _createClass(MemoryCache, [{
+        key: "set",
+        value: function set(key, value) {
+            this.cache = _extends({}, this.cache, _defineProperty({}, key, value));
+            this.size = this.size + 1;
+
+            return this;
+        }
+    }, {
+        key: "get",
+        value: function get(key) {
+            return this.cache[key];
+        }
+    }, {
+        key: "clear",
+        value: function clear() {
+            this.cache = {};
+            this.size = 0;
+        }
+    }]);
+
+    return MemoryCache;
+}();
+
+exports.default = MemoryCache;
 
 /***/ })
 /******/ ]);
