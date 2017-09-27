@@ -6,7 +6,7 @@ const Aggregation = require("./Aggregation").Aggregation;
 const Filter = require('./Filter').Filter;
 const AbstractLocationRange = require("../Geo/AbstractLocationRange").AbstractLocationRange;
 
-const SORT_BY_SCORE = require("./SortBy");
+const SORT_BY_SCORE = require("./SortBy").SORT_BY_SCORE;
 const {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,

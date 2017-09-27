@@ -313,7 +313,7 @@ var Aggregation = __webpack_require__(6).Aggregation;
 var Filter = __webpack_require__(3).Filter;
 var AbstractLocationRange = __webpack_require__(1).AbstractLocationRange;
 
-var SORT_BY_SCORE = __webpack_require__(16);
+var SORT_BY_SCORE = __webpack_require__(16).SORT_BY_SCORE;
 
 var _require = __webpack_require__(3),
     FILTER_AT_LEAST_ONE = _require.FILTER_AT_LEAST_ONE,
