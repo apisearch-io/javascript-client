@@ -1,8 +1,9 @@
+const MemoryCache = require("../Cache/MemoryCache");
+const fetch = require('node-fetch');
+
 /**
  * Repository class
  */
-const MemoryCache = require("../Cache/MemoryCache");
-
 class HttpRepository {
     /**
      * Constructor
@@ -33,43 +34,43 @@ class HttpRepository {
         if (this.cache !== null) {
             let cachedResponse = this.cache.get(composedQuery);
             if (cachedResponse) {
-                return new Promise(resolve => resolve(cachedResponse));
+                return new Promise(
+                    resolve => resolve(cachedResponse)
+                );
             }
         }
 
         return this.fetchData(composedQuery);
     }
 
+    /**
+     * Fetch data using Node-Fetch method
+     * @param composedQuery
+     * @returns {Promise}
+     */
     fetchData(composedQuery) {
         let self = this;
-        return new Promise((resolve, reject) => {
-                let xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4) {
-                        if (this.status === 200) {
-                            let parsedResponse = JSON.parse(this.responseText);
 
-                            // check if cache is enabled
-                            // set the composedQuery as a cache key
-                            // and the valid response as a cache value
-                            if (this.cache !== null) {
-                                self.cache.set(
-                                    composedQuery,
-                                    parsedResponse
-                                );
-                            }
+        return fetch(composedQuery, {body: null})
+            .then(res => {
+                let jsonResponse = res.json();
 
-                            return resolve(parsedResponse);
-                        } else {
-                            return reject(`Request error.`)
-                        }
-                    }
-                };
+                // check if cache is enabled
+                // set the composedQuery as a cache key
+                // and the valid response as a cache value
+                if (self.cache !== null) {
+                    self.cache.set(
+                        composedQuery,
+                        jsonResponse
+                    );
+                }
 
-                xhr.open("GET", composedQuery, true);
-                xhr.send();
-            }
-        );
+                return jsonResponse;
+            })
+            .catch(
+                err => err
+            )
+        ;
     }
 }
 

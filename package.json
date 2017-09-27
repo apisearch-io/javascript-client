@@ -34,5 +34,8 @@
     "mocha": "^3.5.3",
     "webpack": "^3.5.5",
     "yargs": "^8.0.2"
+  },
+  "dependencies": {
+    "node-fetch": "^1.7.3"
   }
 }
