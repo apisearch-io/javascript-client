@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-import MemoryCache from '../src/Cache/MemoryCache'
+const MemoryCache = require('../src/Cache/MemoryCache');
 
 /**
  * MemorCache test

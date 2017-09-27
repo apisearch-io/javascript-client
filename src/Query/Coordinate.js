@@ -2,9 +2,7 @@
  * Coordinate Type cast
  * @param coordinate
  */
-
-
-export default class Coordinate {
+class Coordinate {
     constructor(latitude, longitude) {
         if (
             typeof latitude === 'undefined' ||
@@ -17,3 +15,5 @@ export default class Coordinate {
         this.lon = longitude;
     }
 }
+
+module.exports.Coordinate = Coordinate;

@@ -1,9 +1,9 @@
 /**
  * Repository class
  */
-import MemoryCache from "../Cache/MemoryCache";
+const MemoryCache = require("../Cache/MemoryCache");
 
-export default class HttpRepository {
+class HttpRepository {
     /**
      * Constructor
      * @param endpoint
@@ -72,3 +72,5 @@ export default class HttpRepository {
         );
     }
 }
+
+module.exports = HttpRepository;

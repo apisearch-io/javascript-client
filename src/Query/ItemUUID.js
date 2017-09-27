@@ -1,7 +1,7 @@
 /**
  * ItemUUID class
  */
-export default class ItemUUID {
+class ItemUUID {
     constructor(id, type) {
         this.id = id;
         this.type = type;
@@ -11,3 +11,5 @@ export default class ItemUUID {
         return `${this.type}~${this.id}`;
     }
 }
+
+module.exports.ItemUUID = ItemUUID;

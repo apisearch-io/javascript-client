@@ -1,7 +1,5 @@
 const expect = require('chai').expect;
-
-import {createLocatedQuery, createMatchAllQuery, defaultQuery} from './mocks/queries';
-
+const {createLocatedQuery, createMatchAllQuery, defaultQuery} = require('./mocks/queries');
 const apisearch = require('../src/apisearch');
 
 /**

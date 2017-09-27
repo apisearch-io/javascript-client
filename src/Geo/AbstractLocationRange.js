@@ -1,7 +1,7 @@
 /**
  * Abstract Location Range class
  */
-export default class AbstractLocationRange {
+class AbstractLocationRange {
     constructor() {
         if (this.constructor.name === AbstractLocationRange) {
             throw TypeError(`You can't instantiate an Abstract class`);
@@ -12,3 +12,5 @@ export default class AbstractLocationRange {
         }
     }
 }
+
+module.exports.AbstractLocationRange = AbstractLocationRange;

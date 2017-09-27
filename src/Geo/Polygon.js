@@ -1,8 +1,8 @@
-import AbstractLocationRange from "./AbstractLocationRange";
-import Coordinate from "../Query/Coordinate";
-import TypeChecker from "../TypeChecker";
+const AbstractLocationRange = require("./AbstractLocationRange").AbstractLocationRange;
+const Coordinate = require("../Query/Coordinate").Coordinate;
+const TypeChecker = require("../TypeChecker").TypeChecker;
 
-export default class Polygon extends AbstractLocationRange {
+class Polygon extends AbstractLocationRange {
     constructor(...coordinates) {
         super();
 
@@ -26,3 +26,5 @@ export default class Polygon extends AbstractLocationRange {
         }
     }
 }
+
+module.exports.Polygon = Polygon;
