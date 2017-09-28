@@ -35,7 +35,7 @@ module.exports = {
     output: {
         path: DIST_DIR,
         filename: filename,
-        libraryTarget: 'var',
+        libraryTarget: 'umd',
         library: 'apisearch',
     },
     module: {

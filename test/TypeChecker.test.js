@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const TypeChecker = require('../src/TypeChecker').TypeChecker;
+import TypeChecker from '../src/TypeChecker';
 
 /**
  * Query object tests

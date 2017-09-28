@@ -1,8 +1,8 @@
-const AbstractLocationRange = require("./AbstractLocationRange").AbstractLocationRange;
-const Coordinate = require("../Query/Coordinate").Coordinate;
-const TypeChecker = require("../TypeChecker").TypeChecker;
+import AbstractLocationRange from "./AbstractLocationRange";
+import Coordinate from "../Query/Coordinate";
+import TypeChecker from "../TypeChecker";
 
-class Square extends AbstractLocationRange {
+export default class Square extends AbstractLocationRange {
     constructor(
         topLeftCoordinate,
         bottomRightCoordinate
@@ -28,5 +28,3 @@ class Square extends AbstractLocationRange {
         }
     }
 }
-
-module.exports.Square = Square;

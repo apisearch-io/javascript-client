@@ -1,7 +1,7 @@
 /**
  * Typechecking
  */
-class TypeChecker {
+export default class TypeChecker {
     static isDefined(value) {
         if (typeof value === 'undefined') {
             throw new TypeError(`Method parameter must be defined.`);
@@ -56,5 +56,3 @@ class TypeChecker {
         }
     }
 }
-
-module.exports.TypeChecker = TypeChecker;

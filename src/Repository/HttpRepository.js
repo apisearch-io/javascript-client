@@ -1,10 +1,10 @@
-const MemoryCache = require("../Cache/MemoryCache");
-const fetch = require('node-fetch');
+import MemoryCache from "../Cache/MemoryCache";
+const axios = require('axios/lib/axios');
 
 /**
  * Repository class
  */
-class HttpRepository {
+export default class HttpRepository {
     /**
      * Constructor
      * @param endpoint
@@ -51,27 +51,24 @@ class HttpRepository {
     fetchData(composedQuery) {
         let self = this;
 
-        return fetch(composedQuery, {body: null})
-            .then(res => {
-                let jsonResponse = res.json();
+        return new Promise((resolve, reject) => {
+            axios.get(composedQuery)
+                .then(response => {
+                    // check if cache is enabled
+                    // set the composedQuery as a cache key
+                    // and the valid response as a cache value
+                    if (self.cache !== null) {
+                        self.cache.set(
+                            composedQuery,
+                            response.data
+                        );
+                    }
 
-                // check if cache is enabled
-                // set the composedQuery as a cache key
-                // and the valid response as a cache value
-                if (self.cache !== null) {
-                    self.cache.set(
-                        composedQuery,
-                        jsonResponse
-                    );
-                }
-
-                return jsonResponse;
-            })
-            .catch(
-                err => err
-            )
-        ;
+                    return resolve(response.data);
+                })
+                .catch(
+                    error => reject(error)
+                );
+        });
     }
 }
-
-module.exports = HttpRepository;

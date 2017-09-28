@@ -2,24 +2,28 @@
   "name": "apisearch",
   "version": "0.1.2",
   "description": "Javascript client for Apisearch.",
-  "main": "./src/apisearch.js",
+  "main": "./dist/apisearch.js",
+  "scripts": {
+    "build": "webpack --display-modules --env build",
+    "dev": "webpack --progress --colors --watch --env dev",
+    "test": "mocha --colors --compilers js:babel-core/register"
+  },
   "license": "MIT",
   "author": "alexhoma <alexcm.14@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/apisearch/javascript-search-client.git"
   },
+  "bugs": {
+    "url": "https://github.com/apisearch/javascript-search-client/issues"
+  },
+  "homepage": "https://github.com/apisearch/javascript-search-client",
   "keywords": [
     "es6",
     "search-engine",
     "apisearch",
     "webpack"
   ],
-  "scripts": {
-    "build": "webpack --env build",
-    "dev": "webpack --progress --colors --watch --env dev",
-    "test": "mocha --colors --compilers js:babel-core/register"
-  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -36,6 +40,6 @@
     "yargs": "^8.0.2"
   },
   "dependencies": {
-    "node-fetch": "^1.7.3"
+    "axios": "^0.16.2"
   }
 }

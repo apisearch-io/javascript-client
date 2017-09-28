@@ -1,16 +1,16 @@
 const expect = require('chai').expect;
 const defaultQuery = require('./mocks/queries');
 
-const ItemUUID = require("../src/Query/ItemUUID").ItemUUID;
-const User = require("../src/Query/User").User;
-const Query = require('../src/Query/Query').Query;
-const CoordinateAndDistance = require("../src/Geo/CoordinateAndDistance").CoordinateAndDistance;
-const Square = require("../src/Geo/Square").Square;
-const Polygon = require("../src/Geo/Polygon").Polygon;
-const Coordinate = require("../src/Query/Coordinate").Coordinate;
+import ItemUUID from "../src/Query/ItemUUID";
+import User from "../src/Query/User";
+import Query from '../src/Query/Query';
+import CoordinateAndDistance from "../src/Geo/CoordinateAndDistance";
+import Square from "../src/Geo/Square";
+import Polygon from "../src/Geo/Polygon";
+import Coordinate from "../src/Query/Coordinate";
 
-const {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} = require('../src/Query/Query');
-const {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} = require("../src/Query/Filter");
+import {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../src/Query/Query';
+import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../src/Query/Filter";
 
 /**
  * Query object tests

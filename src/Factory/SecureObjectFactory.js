@@ -1,13 +1,13 @@
-const ItemUUID = require("../Query/ItemUUID").ItemUUID;
-const Coordinate = require("../Query/Coordinate").Coordinate;
-const CoordinateAndDistance = require("../Geo/CoordinateAndDistance").CoordinateAndDistance;
-const Square = require("../Geo/Square").Square;
-const Polygon = require("../Geo/Polygon").Polygon;
+import ItemUUID from "../Query/ItemUUID";
+import Coordinate from "../Query/Coordinate";
+import CoordinateAndDistance from "../Geo/CoordinateAndDistance";
+import Square from "../Geo/Square";
+import Polygon from "../Geo/Polygon";
 
 /**
  * SecureObjectFactory class.
  */
-class SecureObjectFactory {
+export default class SecureObjectFactory {
     static uuid(id, type) {
         return new ItemUUID(
             id,
@@ -46,5 +46,3 @@ class SecureObjectFactory {
         return new Polygon(...coordinates);
     }
 }
-
-module.exports.SecureObjectFactory = SecureObjectFactory;

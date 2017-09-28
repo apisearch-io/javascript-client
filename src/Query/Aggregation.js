@@ -1,16 +1,16 @@
 /**
  * Aggregation constants
  */
-const AGGREGATION_SORT_BY_COUNT_ASC = ['_count', 'asc'];
-const AGGREGATION_SORT_BY_COUNT_DESC = ['_count', 'desc'];
-const AGGREGATION_SORT_BY_NAME_ASC = ['_term', 'asc'];
-const AGGREGATION_SORT_BY_NAME_DESC = ['_term', 'desc'];
-const AGGREGATION_NO_LIMIT = 0;
+export const AGGREGATION_SORT_BY_COUNT_ASC = ['_count', 'asc'];
+export const AGGREGATION_SORT_BY_COUNT_DESC = ['_count', 'desc'];
+export const AGGREGATION_SORT_BY_NAME_ASC = ['_term', 'asc'];
+export const AGGREGATION_SORT_BY_NAME_DESC = ['_term', 'desc'];
+export const AGGREGATION_NO_LIMIT = 0;
 
 /**
  * Aggregation class
  */
-class Aggregation {
+export default class Aggregation {
     constructor(
         name,
         field,
@@ -29,12 +29,3 @@ class Aggregation {
         this.limit = limit || AGGREGATION_NO_LIMIT;
     }
 }
-
-module.exports = {
-    AGGREGATION_SORT_BY_COUNT_ASC,
-    AGGREGATION_SORT_BY_COUNT_DESC,
-    AGGREGATION_SORT_BY_NAME_ASC,
-    AGGREGATION_SORT_BY_NAME_DESC,
-    AGGREGATION_NO_LIMIT
-};
-module.exports.Aggregation = Aggregation;

@@ -1,10 +1,8 @@
 /**
  * User class
  */
-class User {
+export default class User {
     constructor(id) {
         this.id = id;
     }
 }
-
-module.exports.User = User;

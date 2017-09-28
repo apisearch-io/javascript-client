@@ -1,21 +1,18 @@
-const {
+import Query, {
     QUERY_DEFAULT_PAGE,
     QUERY_DEFAULT_SIZE,
     QUERY_INFINITE_SIZE
-} = require("../Query/Query");
-const Query = require("../Query/Query").Query;
+} from "../Query/Query";
 
-const {
+import Filter, {
     FILTER_AT_LEAST_ONE,
     FILTER_TYPE_FIELD
-} = require("../Query/Filter");
-const Filter = require("../Query/Filter").Filter;
-
+} from "../Query/Filter";
 
 /**
  * QueryFactory class
  */
-class QueryFactory {
+export default class QueryFactory {
     static create(
         q,
         page = QUERY_DEFAULT_PAGE,
@@ -82,5 +79,3 @@ class QueryFactory {
         return query;
     }
 }
-
-module.exports.QueryFactory = QueryFactory;

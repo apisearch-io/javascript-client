@@ -1,7 +1,7 @@
 /**
  * Cache class
  */
-class MemoryCache {
+export default class MemoryCache {
     constructor() {
         this.cache = {};
         this.size = 0;
@@ -28,5 +28,3 @@ class MemoryCache {
         this.size = 0;
     }
 }
-
-module.exports = MemoryCache;

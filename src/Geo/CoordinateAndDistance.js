@@ -1,8 +1,8 @@
-const AbstractLocationRange = require("./AbstractLocationRange").AbstractLocationRange;
-const Coordinate = require("../Query/Coordinate").Coordinate;
-const TypeChecker = require("../TypeChecker").TypeChecker;
+import AbstractLocationRange from "./AbstractLocationRange";
+import Coordinate from "../Query/Coordinate";
+import TypeChecker from "../TypeChecker";
 
-class CoordinateAndDistance extends AbstractLocationRange {
+export default class CoordinateAndDistance extends AbstractLocationRange {
     constructor(
         coordinate,
         distance
@@ -28,5 +28,3 @@ class CoordinateAndDistance extends AbstractLocationRange {
         }
     }
 }
-
-module.exports.CoordinateAndDistance = CoordinateAndDistance;

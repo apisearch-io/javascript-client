@@ -1,37 +1,38 @@
-const ItemUUID = require("./ItemUUID").ItemUUID;
-const Coordinate = require("./Coordinate").Coordinate;
-const TypeChecker = require("../TypeChecker").TypeChecker;
-const User = require("./User").User;
-const Aggregation = require("./Aggregation").Aggregation;
-const Filter = require('./Filter').Filter;
-const AbstractLocationRange = require("../Geo/AbstractLocationRange").AbstractLocationRange;
+import ItemUUID from "./ItemUUID";
+import Coordinate from "./Coordinate";
+import TypeChecker from "../TypeChecker";
+import User from "./User";
+import Aggregation from "./Aggregation";
+import Filter from './Filter';
+import AbstractLocationRange from "../Geo/AbstractLocationRange";
 
-const SORT_BY_SCORE = require("./SortBy").SORT_BY_SCORE;
-const {
+import {SORT_BY_SCORE} from "./SortBy";
+
+import {
     FILTER_AT_LEAST_ONE,
     FILTER_EXCLUDE,
     FILTER_TYPE_DATE_RANGE,
     FILTER_TYPE_FIELD,
     FILTER_TYPE_GEO,
     FILTER_TYPE_RANGE
-} = require("./Filter");
-const {
+} from "./Filter";
+import {
     AGGREGATION_NO_LIMIT,
     AGGREGATION_SORT_BY_COUNT_DESC
-} = require("./Aggregation");
+} from "./Aggregation";
 
 /**
  * Query constants
  */
-const QUERY_DEFAULT_FROM = 0;
-const QUERY_DEFAULT_PAGE = 1;
-const QUERY_DEFAULT_SIZE = 10;
-const QUERY_INFINITE_SIZE = 1000;
+export const QUERY_DEFAULT_FROM = 0;
+export const QUERY_DEFAULT_PAGE = 1;
+export const QUERY_DEFAULT_SIZE = 10;
+export const QUERY_INFINITE_SIZE = 1000;
 
 /**
  * Query class
  */
-class Query {
+export default class Query {
     constructor(params) {
         this.q = params.q;
         this.universe_filters = params.universe_filters || [];
@@ -558,11 +559,3 @@ class Query {
         return null;
     }
 }
-
-module.exports = {
-    QUERY_DEFAULT_FROM,
-    QUERY_DEFAULT_PAGE,
-    QUERY_DEFAULT_SIZE,
-    QUERY_INFINITE_SIZE
-};
-module.exports.Query = Query;

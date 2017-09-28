@@ -1,6 +1,6 @@
-const HttpRepository = require("./Repository/HttpRepository");
-const SecureObjectFactory = require("./Factory/SecureObjectFactory").SecureObjectFactory;
-const QueryFactory = require("./Factory/QueryFactory").QueryFactory;
+import HttpRepository from "./Repository/HttpRepository";
+import SecureObjectFactory from "./Factory/SecureObjectFactory";
+import QueryFactory from "./Factory/QueryFactory";
 
 /**
  * Entry point for the Apisearch client
