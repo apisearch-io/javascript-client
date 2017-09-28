@@ -2,11 +2,11 @@
   "name": "apisearch",
   "version": "0.1.2",
   "description": "Javascript client for Apisearch.",
-  "main": "./dist/apisearch.js",
+  "main": "./dist/apisearch.node.js",
   "scripts": {
-    "build": "webpack --display-modules --env build",
-    "dev": "webpack --progress --colors --watch --env dev",
-    "test": "mocha --colors --compilers js:babel-core/register"
+    "build": "rm -rf ./dist/*; webpack --config ./webpack.prod.js --progress --colors",
+    "dev": "webpack --config ./webpack.dev.js --progress --colors --watch",
+    "test": "mocha --compilers js:babel-core/register --colors"
   },
   "license": "MIT",
   "author": "alexhoma <alexcm.14@gmail.com>",
@@ -22,7 +22,9 @@
     "es6",
     "search-engine",
     "apisearch",
-    "webpack"
+    "webpack3",
+    "node",
+    "javascript-client"
   ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -37,6 +39,7 @@
     "eslint-loader": "^1.9.0",
     "mocha": "^3.5.3",
     "webpack": "^3.5.5",
+    "webpack-merge": "^4.1.0",
     "yargs": "^8.0.2"
   },
   "dependencies": {
