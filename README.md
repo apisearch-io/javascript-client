@@ -20,7 +20,7 @@ npm install apisearch --save
 ## html tag \<script\>
 
 ```html
-<script src="/apisearch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apisearch/dist/apisearch.min.js"></script>
 ```
 
 # Basic usage
@@ -113,7 +113,7 @@ you will be ableto create a secure ItemUUID object.
 let query = api.query
   .createMatchAll()
   .excludeUUID(
-      apisearch.createUUID('spiderman', 'marvel')
+      api.createObject.uuid('spiderman', 'marvel')
   );
 ```
 
@@ -123,9 +123,9 @@ You can also exclude several items at once:
 let query = api.query
   .createMatchAll()
   .excludeUUIDs(
-      apisearch.createUUID('spiderman', 'marvel'),
-      apisearch.createUUID('hulk', 'marvel'),
-      apisearch.createUUID('daredevil', 'marvel')
+      api.createObject.uuid('spiderman', 'marvel'),
+      api.createObject.uuid('hulk', 'marvel'),
+      api.createObject.uuid('daredevil', 'marvel')
   );
 ```
 
@@ -141,7 +141,7 @@ you will be ableto create a secure ItemUUID object.
 let query = api.query
   .createMatchAll()
   .promoteUUID(
-      apisearch.createUUID('spiderman', 'marvel')
+      api.createObject.uuid('spiderman', 'marvel')
   );
 ```
 
@@ -153,9 +153,9 @@ as an array like this:
 let query = api.query
   .createMatchAll()
   .promoteUUIDs(
-      apisearch.createUUID('spiderman', 'marvel'),
-      apisearch.createUUID('ironman', 'marvel'),
-      apisearch.createUUID('thor', 'marvel')
+      api.createObject.uuid('spiderman', 'marvel'),
+      api.createObject.uuid('ironman', 'marvel'),
+      api.createObject.uuid('thor', 'marvel')
   );
 ```
 
@@ -170,4 +170,4 @@ on your browser:
 change and export it on `./dist/apisearch.js`.
 * `npm run build`: will bundle and minify all code and export it on 
 `./dist/apisearch.min.js`.
-* `npm run test` or `npm t`: will run the test suite using Mocha.
+* `npm run test` or `npm t`: will run the test suite using Mocha and Chai.
