@@ -30,7 +30,7 @@ export default class HttpRepository {
 
         // check if query exists in cache store
         // return promise with the cached value if key exists
-        // if not exists, fetch data with XMLHttpRequest
+        // if not exists, fetch the data
         if (this.cache !== null) {
             let cachedResponse = this.cache.get(composedQuery);
             if (cachedResponse) {
@@ -44,7 +44,7 @@ export default class HttpRepository {
     }
 
     /**
-     * Fetch data using Node-Fetch method
+     * Fetch data using Axios method
      * @param composedQuery
      * @returns {Promise}
      */

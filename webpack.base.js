@@ -3,6 +3,7 @@ const path = require('path');
 
 module.exports = {
     entry: path.resolve(__dirname, 'src') + '/apisearch.js',
+    output: {},
     module: {
         loaders: [
             {
@@ -17,13 +18,6 @@ module.exports = {
                 exclude: /node_modules/
             }
         ]
-    },
-    output: {
-        chunkFilename: "[name].min.js",
-        devtoolModuleFilenameTemplate: "[absolute-resource-path]",
-        filename: "[name].min.js",
-        libraryTarget: "var",
-        path: path.join(__dirname, "public"),
     },
     resolve: {
         modules: [

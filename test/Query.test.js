@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const defaultQuery = require('./mocks/queries');
 
 import ItemUUID from "../src/Query/ItemUUID";
 import User from "../src/Query/User";
@@ -15,8 +14,8 @@ import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../
 /**
  * Query object tests
  */
-describe('# Test: Query()', () => {
-    describe('-> filterBy...() methods', () => {
+describe('Query()', () => {
+    describe('-> filterBy...()', () => {
         let query = new Query({
             q: '',
             QUERY_DEFAULT_PAGE,
@@ -26,14 +25,13 @@ describe('# Test: Query()', () => {
         it('should filterBy()', () => {
             query.filterBy('source', 'source', ['source_id_123456']);
             expect(query.filters).to.have.own.property('source');
-            expect(query.filters.source).to.include.all.keys(
-                'application_type',
-                'field',
-                'filter_terms',
-                'filter_type',
-                'values'
-            );
-            expect(query.filters.source.values).to.include('source_id_123456');
+            expect(query.filters.source).to.deep.equal({
+                application_type: 8,
+                field: 'indexed_metadata.source',
+                filter_terms: [],
+                filter_type: 'field',
+                values: ['source_id_123456']
+            });
         });
 
         it('should filterByTypes()', () => {
@@ -95,7 +93,7 @@ describe('# Test: Query()', () => {
         });
     });
 
-    describe('-> filterUniverseBy...() methods', () => {
+    describe('-> filterUniverseBy...()', () => {
         let query = new Query({
             q: '',
             QUERY_DEFAULT_PAGE,
@@ -207,6 +205,7 @@ describe('# Test: Query()', () => {
                     }
                 });
             });
+
             it('should filter by square area location', () => {
                 query.filterUniverseByLocation(
                     new Square(
@@ -235,6 +234,7 @@ describe('# Test: Query()', () => {
                     }
                 });
             });
+
             it('should filter by polygon area location', () => {
                 query.filterUniverseByLocation(
                     new Polygon(
@@ -271,7 +271,7 @@ describe('# Test: Query()', () => {
         });
     });
 
-    describe('-> aggregateBy...() methods', () => {
+    describe('-> aggregateBy...()', () => {
         let query = new Query({
             q: '',
             QUERY_DEFAULT_PAGE,

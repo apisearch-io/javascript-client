@@ -4,7 +4,7 @@ import MemoryCache from '../src/Cache/MemoryCache';
 /**
  * MemorCache test
  */
-describe('# Test: MemoryCache()', () => {
+describe('MemoryCache()', () => {
     let cache = new MemoryCache();
     let marvelHeroesList = ['hulk', 'spider-man', 'thing', 'wolverine'];
     let dcHeroesList = ['batman', 'superman', 'wonder-woman']

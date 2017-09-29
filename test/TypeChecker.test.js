@@ -4,7 +4,7 @@ import TypeChecker from '../src/TypeChecker';
 /**
  * Query object tests
  */
-describe('# Test: TypeChecker()', () => {
+describe('TypeChecker()', () => {
     describe('-> isDefined()', () => {
         it('should throw exception when value is not defined', () => {
             let undefinedValue;
