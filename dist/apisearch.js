@@ -1182,7 +1182,7 @@ exports.default = Filter;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _HttpClient = __webpack_require__(43);
+var _HttpClient = __webpack_require__(14);
 
 var _HttpClient2 = _interopRequireDefault(_HttpClient);
 
@@ -1252,7 +1252,102 @@ var Apisearch = function () {
 }();
 
 /***/ }),
-/* 14 */,
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _MemoryCache = __webpack_require__(15);
+
+var _MemoryCache2 = _interopRequireDefault(_MemoryCache);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var axios = __webpack_require__(16);
+
+/**
+ * Http class
+ */
+
+var HttpClient = function () {
+    /**
+     * Constructor
+     * @param cache
+     */
+    function HttpClient(cache) {
+        _classCallCheck(this, HttpClient);
+
+        this.cache = cache ? new _MemoryCache2.default() : null;
+    }
+
+    /**
+     * Make query against the server
+     * @param query
+     * @returns {Promise}
+     */
+
+
+    _createClass(HttpClient, [{
+        key: "query",
+        value: function query(_query) {
+            // check if query exists in cache store
+            // return promise with the cached value if key exists
+            // if not exists, fetch the data
+            if (this.cache !== null) {
+                var cachedResponse = this.cache.get(_query);
+                if (cachedResponse) {
+                    return new Promise(function (resolve) {
+                        return resolve(cachedResponse);
+                    });
+                }
+            }
+
+            return this.fetchData(_query);
+        }
+
+        /**
+         * Fetch data using Axios
+         * @param query
+         * @returns {Promise}
+         */
+
+    }, {
+        key: "fetchData",
+        value: function fetchData(query) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                axios.get(query).then(function (response) {
+                    // check if cache is enabled
+                    // set the query as a cache key
+                    // and the valid response as a cache value
+                    if (self.cache !== null) {
+                        self.cache.set(query, response.data);
+                    }
+
+                    return resolve(response.data);
+                }).catch(function (error) {
+                    return reject(error);
+                });
+            });
+        }
+    }]);
+
+    return HttpClient;
+}();
+
+exports.default = HttpClient;
+
+/***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3151,102 +3246,6 @@ var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
         'unit': 'mi'
     }
 };
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _MemoryCache = __webpack_require__(15);
-
-var _MemoryCache2 = _interopRequireDefault(_MemoryCache);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var axios = __webpack_require__(16);
-
-/**
- * Http class
- */
-
-var HttpClient = function () {
-    /**
-     * Constructor
-     * @param cache
-     */
-    function HttpClient(cache) {
-        _classCallCheck(this, HttpClient);
-
-        this.cache = cache ? new _MemoryCache2.default() : null;
-    }
-
-    /**
-     * Make query against the server
-     * @param query
-     * @returns {Promise}
-     */
-
-
-    _createClass(HttpClient, [{
-        key: "query",
-        value: function query(_query) {
-            // check if query exists in cache store
-            // return promise with the cached value if key exists
-            // if not exists, fetch the data
-            if (this.cache !== null) {
-                var cachedResponse = this.cache.get(_query);
-                if (cachedResponse) {
-                    return new Promise(function (resolve) {
-                        return resolve(cachedResponse);
-                    });
-                }
-            }
-
-            return this.fetchData(_query);
-        }
-
-        /**
-         * Fetch data using Axios
-         * @param query
-         * @returns {Promise}
-         */
-
-    }, {
-        key: "fetchData",
-        value: function fetchData(query) {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                axios.get(query).then(function (response) {
-                    // check if cache is enabled
-                    // set the query as a cache key
-                    // and the valid response as a cache value
-                    if (self.cache !== null) {
-                        self.cache.set(query, response.data);
-                    }
-
-                    return resolve(response.data);
-                }).catch(function (error) {
-                    return reject(error);
-                });
-            });
-        }
-    }]);
-
-    return HttpClient;
-}();
-
-exports.default = HttpClient;
 
 /***/ })
 /******/ ]);
