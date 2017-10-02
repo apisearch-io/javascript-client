@@ -6,8 +6,20 @@ Apisearch Javascript client
 > by [Puntmig Development SLU](http://puntmig.com)
 
 This library aims to provide to any Javascript developer nicely interfaces to 
-manage search-only processes related to Apisearch from the frontend side, using 
+manage search-only processes related to Apisearch, , using 
 basic ES6 modules.
+
+Is UMD compatible if you are using module loaders, otherwise apisearch will be 
+in the `window` object as `apisearch`. 
+
+# Table of contents
+
+1. [Install](#Install)
+    - npm
+    - script tag / CDN
+    - CDN
+2. [Quick start](#Quick-start)
+3. 
 
 # Install
 
@@ -18,22 +30,20 @@ npm install apisearch --save
 ```
 
 ## html tag \<script\>
-
+You can either download the library and use a relative path to your assets folder, 
+or use a CDN like jsDelivr. 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/apisearch/dist/apisearch.min.js"></script>
 ```
 
-# Basic usage
-
+# Quick start
+Let's see a simple example on how to make queries
 ```javascript
-// 1.- create the api client
 let api = apisearch('your_api_key');
 
-// 2.- build a query
 let query = api.query
-  .create('Your query text');
+  .create('Your search query');
 
-// 3.- go search!
 api.search(query, function(result) {
    console.log(result) 
 });

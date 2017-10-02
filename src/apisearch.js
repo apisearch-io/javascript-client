@@ -1,4 +1,4 @@
-import HttpRepository from "./Repository/HttpRepository";
+import HttpClient from "./Http/HttpClient";
 import SecureObjectFactory from "./Factory/SecureObjectFactory";
 import QueryFactory from "./Factory/QueryFactory";
 
@@ -34,16 +34,19 @@ class Apisearch {
         this.query = QueryFactory;
         this.createObject = SecureObjectFactory;
 
-        this.repository = new HttpRepository(
-            this.endpoint,
-            this.apiKey,
+        this.repository = new HttpClient(
             options.cache || true
         );
     }
 
     search(query, callback) {
+        let encodedQuery = encodeURI(JSON.stringify(query));
+        let composedQuery = (
+            `${this.endpoint}?key=${this.apiKey}&query=${encodedQuery}`
+        );
+
         return this.repository
-            .query(query)
+            .query(composedQuery)
             .then(
                 response => callback(response, null)
             )

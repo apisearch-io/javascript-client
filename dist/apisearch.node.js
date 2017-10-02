@@ -1410,9 +1410,9 @@ exports.default = Filter;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _HttpRepository = __webpack_require__(20);
+var _HttpClient = __webpack_require__(60);
 
-var _HttpRepository2 = _interopRequireDefault(_HttpRepository);
+var _HttpClient2 = _interopRequireDefault(_HttpClient);
 
 var _SecureObjectFactory = __webpack_require__(51);
 
@@ -1459,13 +1459,16 @@ var Apisearch = function () {
         this.query = _QueryFactory2.default;
         this.createObject = _SecureObjectFactory2.default;
 
-        this.repository = new _HttpRepository2.default(this.endpoint, this.apiKey, options.cache || true);
+        this.repository = new _HttpClient2.default(options.cache || true);
     }
 
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
-            return this.repository.query(query).then(function (response) {
+            var encodedQuery = encodeURI(JSON.stringify(query));
+            var composedQuery = this.endpoint + "?key=" + this.apiKey + "&query=" + encodedQuery;
+
+            return this.repository.query(composedQuery).then(function (response) {
                 return callback(response, null);
             }).catch(function (error) {
                 return callback(null, error);
@@ -1477,109 +1480,7 @@ var Apisearch = function () {
 }();
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _MemoryCache = __webpack_require__(21);
-
-var _MemoryCache2 = _interopRequireDefault(_MemoryCache);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var axios = __webpack_require__(22);
-
-/**
- * Repository class
- */
-
-var HttpRepository = function () {
-    /**
-     * Constructor
-     * @param endpoint
-     * @param secret
-     * @param cache
-     */
-    function HttpRepository(endpoint, secret, cache) {
-        _classCallCheck(this, HttpRepository);
-
-        this.endpoint = endpoint;
-        this.secret = secret;
-        this.cache = cache ? new _MemoryCache2.default() : null;
-    }
-
-    /**
-     * Make query against the server
-     * @param query
-     * @returns {Promise}
-     */
-
-
-    _createClass(HttpRepository, [{
-        key: "query",
-        value: function query(_query) {
-            _query = encodeURI(JSON.stringify(_query));
-            var composedQuery = this.endpoint + "?key=" + this.secret + "&query=" + _query;
-
-            // check if query exists in cache store
-            // return promise with the cached value if key exists
-            // if not exists, fetch data with XMLHttpRequest
-            if (this.cache !== null) {
-                var cachedResponse = this.cache.get(composedQuery);
-                if (cachedResponse) {
-                    return new Promise(function (resolve) {
-                        return resolve(cachedResponse);
-                    });
-                }
-            }
-
-            return this.fetchData(composedQuery);
-        }
-
-        /**
-         * Fetch data using Node-Fetch method
-         * @param composedQuery
-         * @returns {Promise}
-         */
-
-    }, {
-        key: "fetchData",
-        value: function fetchData(composedQuery) {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                axios.get(composedQuery).then(function (response) {
-                    // check if cache is enabled
-                    // set the composedQuery as a cache key
-                    // and the valid response as a cache value
-                    if (self.cache !== null) {
-                        self.cache.set(composedQuery, response.data);
-                    }
-
-                    return resolve(response.data);
-                }).catch(function (error) {
-                    return reject(error);
-                });
-            });
-        }
-    }]);
-
-    return HttpRepository;
-}();
-
-exports.default = HttpRepository;
-
-/***/ }),
+/* 20 */,
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4432,6 +4333,102 @@ var SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_MI_ASC = {
         'unit': 'mi'
     }
 };
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _MemoryCache = __webpack_require__(21);
+
+var _MemoryCache2 = _interopRequireDefault(_MemoryCache);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var axios = __webpack_require__(22);
+
+/**
+ * Http class
+ */
+
+var HttpClient = function () {
+    /**
+     * Constructor
+     * @param cache
+     */
+    function HttpClient(cache) {
+        _classCallCheck(this, HttpClient);
+
+        this.cache = cache ? new _MemoryCache2.default() : null;
+    }
+
+    /**
+     * Make query against the server
+     * @param query
+     * @returns {Promise}
+     */
+
+
+    _createClass(HttpClient, [{
+        key: "query",
+        value: function query(_query) {
+            // check if query exists in cache store
+            // return promise with the cached value if key exists
+            // if not exists, fetch the data
+            if (this.cache !== null) {
+                var cachedResponse = this.cache.get(_query);
+                if (cachedResponse) {
+                    return new Promise(function (resolve) {
+                        return resolve(cachedResponse);
+                    });
+                }
+            }
+
+            return this.fetchData(_query);
+        }
+
+        /**
+         * Fetch data using Axios
+         * @param query
+         * @returns {Promise}
+         */
+
+    }, {
+        key: "fetchData",
+        value: function fetchData(query) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                axios.get(query).then(function (response) {
+                    // check if cache is enabled
+                    // set the query as a cache key
+                    // and the valid response as a cache value
+                    if (self.cache !== null) {
+                        self.cache.set(query, response.data);
+                    }
+
+                    return resolve(response.data);
+                }).catch(function (error) {
+                    return reject(error);
+                });
+            });
+        }
+    }]);
+
+    return HttpClient;
+}();
+
+exports.default = HttpClient;
 
 /***/ })
 /******/ ]);
