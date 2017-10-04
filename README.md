@@ -49,6 +49,7 @@ npm install apisearch --save
 
 You can either download the library and use a relative path to your assets folder, 
 or use a CDN like jsDelivr. 
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/apisearch/dist/apisearch.min.js"></script>
 ```

@@ -29,7 +29,9 @@ const browserConfig = merge(baseConfig, {
 
 const nodeConfig = merge(baseConfig, {
     devtool: 'source-map',
-    target: 'node',
+    node: {
+        fs: 'empty'
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'apisearch.node.min.js',
