@@ -29,13 +29,13 @@
 
         <!-- Apisearch -->
         <script>
-            var searchInput = document.getElementById('search'),
+            let searchInput = document.getElementById('search'),
                 resultBlock = document.getElementById('result'),
                 compiled = _.template(document.getElementById('template').innerHTML)
             ;
 
             // 1. Create the client
-            let api = apisearch('sandbox_comments_secret', {
+            let api = apisearch('laie_ca', {
                 cache: true
             });
             let query;
@@ -51,7 +51,7 @@
                 api.search(query, function (result, error) {
                     // Handle error
                     if (error) {
-                        console.log(error)
+                        console.log(error);
                         return;
                     }
 

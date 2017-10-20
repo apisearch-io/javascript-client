@@ -1211,7 +1211,7 @@ module.exports = function (apiKey, endpoint) {
         throw new TypeError("ApiKey parameter must be defined.");
     }
 
-    return new Apisearch('apisearch-app-id', apiKey, endpoint);
+    return new Apisearch(apiKey, endpoint);
 };
 
 /**
@@ -1225,7 +1225,6 @@ var Apisearch = function () {
         _classCallCheck(this, Apisearch);
 
         this.appId = appId;
-        this.apiKey = apiKey;
         this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
         this.query = _QueryFactory2.default;

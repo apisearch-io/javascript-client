@@ -16,7 +16,6 @@ module.exports = function(apiKey, endpoint) {
     }
 
     return new Apisearch(
-        'apisearch-app-id',
         apiKey,
         endpoint
     );
@@ -28,7 +27,6 @@ module.exports = function(apiKey, endpoint) {
 class Apisearch {
     constructor(appId, apiKey, options = {}) {
         this.appId = appId;
-        this.apiKey = apiKey;
         this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
         this.query = QueryFactory;
