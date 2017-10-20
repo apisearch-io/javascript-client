@@ -1219,12 +1219,12 @@ module.exports = function (apiKey, endpoint) {
  */
 
 var Apisearch = function () {
-    function Apisearch(appId, apiKey) {
-        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    function Apisearch(apiKey) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         _classCallCheck(this, Apisearch);
 
-        this.appId = appId;
+        this.apiKey = apiKey;
         this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
         this.query = _QueryFactory2.default;

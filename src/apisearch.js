@@ -25,8 +25,8 @@ module.exports = function(apiKey, endpoint) {
  * Apisearch class
  */
 class Apisearch {
-    constructor(appId, apiKey, options = {}) {
-        this.appId = appId;
+    constructor(apiKey, options = {}) {
+        this.apiKey = apiKey;
         this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
         this.query = QueryFactory;
