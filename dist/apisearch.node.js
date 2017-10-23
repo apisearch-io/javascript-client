@@ -1236,7 +1236,7 @@ var Apisearch = function () {
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
-            var encodedQuery = encodeURI(JSON.stringify(query));
+            var encodedQuery = encodeURIComponent(JSON.stringify(query));
             var composedQuery = this.endpoint + "?key=" + this.apiKey + "&query=" + encodedQuery;
 
             return this.repository.query(composedQuery).then(function (response) {
@@ -1324,11 +1324,8 @@ var HttpClient = function () {
         value: function fetchData(query) {
             var self = this;
 
-            // to avoid "#" problems on query text
-            var encodedQuery = encodeURIComponent(query);
-
             return new Promise(function (resolve, reject) {
-                axios.get(encodedQuery).then(function (response) {
+                axios.get(query).then(function (response) {
                     // check if cache is enabled
                     // set the query as a cache key
                     // and the valid response as a cache value
@@ -2772,6 +2769,8 @@ var Query = function () {
         key: "setQueryText",
         value: function setQueryText(text) {
             this.q = text;
+
+            return this;
         }
     }, {
         key: "filterBy",

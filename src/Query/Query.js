@@ -60,6 +60,8 @@ export default class Query {
 
     setQueryText(text) {
         this.q = text;
+
+        return this;
     }
 
     filterBy(

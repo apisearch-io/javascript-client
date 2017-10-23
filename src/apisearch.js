@@ -38,7 +38,7 @@ class Apisearch {
     }
 
     search(query, callback) {
-        let encodedQuery = encodeURI(JSON.stringify(query));
+        let encodedQuery = encodeURIComponent(JSON.stringify(query));
         let composedQuery = (
             `${this.endpoint}?key=${this.apiKey}&query=${encodedQuery}`
         );
