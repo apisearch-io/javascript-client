@@ -1324,8 +1324,11 @@ var HttpClient = function () {
         value: function fetchData(query) {
             var self = this;
 
+            // to avoid "#" problems on query text
+            var encodedQuery = encodeURIComponent(query);
+
             return new Promise(function (resolve, reject) {
-                axios.get(query).then(function (response) {
+                axios.get(encodedQuery).then(function (response) {
                     // check if cache is enabled
                     // set the query as a cache key
                     // and the valid response as a cache value
@@ -2766,6 +2769,11 @@ var Query = function () {
     }
 
     _createClass(Query, [{
+        key: "setQueryText",
+        value: function setQueryText(text) {
+            this.q = text;
+        }
+    }, {
         key: "filterBy",
         value: function filterBy(filterName, field, values) {
             var applicationType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Filter.FILTER_AT_LEAST_ONE;

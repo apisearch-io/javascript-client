@@ -15,6 +15,19 @@ import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL, FILTER_IT_DOESNT_MATTER} from "../
  * Query object tests
  */
 describe('Query()', () => {
+    describe('-> setQueryText()', () => {
+        let query = new Query({
+            q: '',
+            QUERY_DEFAULT_PAGE,
+            QUERY_DEFAULT_SIZE
+        });
+
+        it('should change the query text', () => {
+            query.setQueryText('hello this is a new query text');
+            expect(query.q).to.be.equal('hello this is a new query text');
+        });
+    });
+
     describe('-> filterBy...()', () => {
         let query = new Query({
             q: '',

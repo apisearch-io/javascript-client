@@ -45,8 +45,11 @@ export default class HttpClient {
     fetchData(query) {
         let self = this;
 
+        // to avoid "#" problems on query text
+        let encodedQuery = encodeURIComponent(query);
+
         return new Promise((resolve, reject) => {
-            axios.get(query)
+            axios.get(encodedQuery)
                 .then(response => {
                     // check if cache is enabled
                     // set the query as a cache key

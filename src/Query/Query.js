@@ -58,6 +58,10 @@ export default class Query {
         return this;
     }
 
+    setQueryText(text) {
+        this.q = text;
+    }
+
     filterBy(
         filterName,
         field,
