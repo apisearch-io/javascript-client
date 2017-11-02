@@ -28,6 +28,26 @@ describe('Query()', () => {
         });
     });
 
+    describe('-> setResultSize()', () => {
+        let query = new Query({
+           q: '',
+           QUERY_DEFAULT_PAGE,
+           size: 10
+        });
+
+        it('should throw an exception if size parameter is not an integer', () => {
+            let someRandomString = 'size 3';
+            expect(() => query.setResultSize(someRandomString)).to.throw(TypeError);
+            
+            let someRandomArray = ['3', 1200, 'batman'];
+            expect(() => query.setResultSize(someRandomArray)).to.throw(TypeError);
+        });
+        it('should change the maximum expected result size', () => {
+            query.setResultSize(2);
+            expect(query.size).to.be.equal(2);
+        });
+    });
+
     describe('-> filterBy...()', () => {
         let query = new Query({
             q: '',

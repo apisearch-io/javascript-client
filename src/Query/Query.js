@@ -64,6 +64,13 @@ export default class Query {
         return this;
     }
 
+    setResultSize(size) {
+        TypeChecker.isInteger(size);
+        this.size = size;
+
+        return this;
+    }
+
     filterBy(
         filterName,
         field,

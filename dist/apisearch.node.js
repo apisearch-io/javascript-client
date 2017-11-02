@@ -2773,6 +2773,14 @@ var Query = function () {
             return this;
         }
     }, {
+        key: "setResultSize",
+        value: function setResultSize(size) {
+            _TypeChecker2.default.isInteger(size);
+            this.size = size;
+
+            return this;
+        }
+    }, {
         key: "filterBy",
         value: function filterBy(filterName, field, values) {
             var applicationType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _Filter.FILTER_AT_LEAST_ONE;
