@@ -5,7 +5,7 @@ const apisearch = require('../src/apisearch');
  * Apisearch test
  */
 describe('apisearch()', () => {
-    let client = apisearch('some_client_api_key');
+    let client = apisearch('some_app_id', 'some_api_key');
 
     describe('-> When creating a query', () => {
         it('should create a "Query" object type', () => {

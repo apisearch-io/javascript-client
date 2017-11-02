@@ -5,19 +5,24 @@ import QueryFactory from "./Factory/QueryFactory";
 /**
  * Entry point for the Apisearch client
  *
+ * @param appId
  * @param apiKey
- * @param endpoint
+ * @param options
  *
  * @returns {Apisearch}
  */
-module.exports = function(apiKey, endpoint) {
+module.exports = function(appId, apiKey, options) {
+    if (typeof appId === 'undefined') {
+        throw new TypeError(`AppId parameter must be defined.`)
+    }
     if (typeof apiKey === 'undefined') {
        throw new TypeError(`ApiKey parameter must be defined.`)
     }
 
     return new Apisearch(
+        appId,
         apiKey,
-        endpoint
+        options
     );
 };
 
@@ -25,7 +30,8 @@ module.exports = function(apiKey, endpoint) {
  * Apisearch class
  */
 class Apisearch {
-    constructor(apiKey, options = {}) {
+    constructor(appId, apiKey, options = {}) {
+        this.appId = appId;
         this.apiKey = apiKey;
         this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
 
@@ -40,7 +46,7 @@ class Apisearch {
     search(query, callback) {
         let encodedQuery = encodeURIComponent(JSON.stringify(query));
         let composedQuery = (
-            `${this.endpoint}?key=${this.apiKey}&query=${encodedQuery}`
+            `${this.endpoint}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`
         );
 
         return this.repository

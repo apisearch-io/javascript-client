@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Apisearch Javascript example</title>
-        <script src="https://cdn.jsdelivr.net/npm/apisearch/dist/apisearch.min.js"></script>
+        <script src="../dist/apisearch.min.js"></script>
     </head>
     <body>
         <!-- Content -->
@@ -16,8 +16,9 @@
             <% if (items.length !== 0) { %>
                 <% items.forEach(function(item) { %>
                     <div>
-                        <b><%= item.metadata.author_name %></b>
-                        <div><%= item.metadata.content %></div><br>
+                        <img src="<%= item.metadata.img %>" width="50px" alt="<%= item.metadata.title %>" />
+                        <b><%= item.metadata.title %></b>
+                        <br /><br />
                     </div>
                 <% }) %>
             <% } else { %>
@@ -35,7 +36,8 @@
             ;
 
             // 1. Create the client
-            let api = apisearch('laie_ca', {
+            let api = apisearch('music', '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a', {
+                endpoint: 'http://search.puntmig.net',
                 cache: true
             });
             let query;
