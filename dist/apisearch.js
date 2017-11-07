@@ -2759,6 +2759,7 @@ var Query = function () {
         this.page = params.aggregations || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
+        this.results_enabled = params.results_enabled || true;
         this.aggregations_enabled = params.aggregations_enabled || true;
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
@@ -3039,6 +3040,18 @@ var Query = function () {
 
             this.aggregations = _extends({}, this.aggregations, _defineProperty({}, filterName, new _Aggregation2.default(filterName, _Filter2.default.getFilterPathByField(field), applicationType, _Filter.FILTER_TYPE_DATE_RANGE, aggregationSort, limit)));
 
+            return this;
+        }
+    }, {
+        key: "enableResults",
+        value: function enableResults() {
+            this.results_enabled = true;
+            return this;
+        }
+    }, {
+        key: "disableResults",
+        value: function disableResults() {
+            this.results_enabled = false;
             return this;
         }
     }, {

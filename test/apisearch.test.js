@@ -29,6 +29,7 @@ describe('apisearch()', () => {
                 items_promoted: [],
                 coordinate: null,
                 user: null,
+                results_enabled: true,
                 aggregations_enabled: true,
                 highlight_enabled: false,
                 suggestions_enabled: false,
@@ -54,6 +55,7 @@ describe('apisearch()', () => {
                 items_promoted: [],
                 coordinate: null,
                 user: null,
+                results_enabled: true,
                 aggregations_enabled: true,
                 highlight_enabled: false,
                 suggestions_enabled: false,
@@ -86,6 +88,7 @@ describe('apisearch()', () => {
                     lon: -12.345
                 },
                 user: null,
+                results_enabled: true,
                 aggregations_enabled: true,
                 highlight_enabled: false,
                 suggestions_enabled: false,

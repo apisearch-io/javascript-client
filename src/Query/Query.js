@@ -42,6 +42,7 @@ export default class Query {
         this.page = params.aggregations || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
+        this.results_enabled = params.results_enabled || true;
         this.aggregations_enabled = params.aggregations_enabled || true;
         this.suggestions_enabled = params.suggestions_enabled || false;
         this.highlight_enabled = params.highlight_enabled || false;
@@ -487,6 +488,16 @@ export default class Query {
             )
         };
 
+        return this;
+    }
+
+    enableResults() {
+        this.results_enabled = true;
+        return this;
+    }
+
+    disableResults() {
+        this.results_enabled = false;
         return this;
     }
 

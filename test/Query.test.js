@@ -385,7 +385,7 @@ describe('Query()', () => {
                 'random': {
                     'order': 'asc'
                 }
-            })
+            });
             expect(query.sort).to.deep.equal({
                 'random': {
                     'order': 'asc'
@@ -398,7 +398,7 @@ describe('Query()', () => {
                 'uuid.type': {
                     'order': 'asc'
                 }
-            })
+            });
             expect(query.sort).to.deep.equal({
                 'uuid.type': {
                    'order': 'asc'
@@ -525,6 +525,13 @@ describe('Query()', () => {
             q: '',
             QUERY_DEFAULT_PAGE,
             QUERY_DEFAULT_SIZE
+        });
+
+        it('should set and unset results properly', () => {
+            query.disableResults();
+            expect(query.results_enabled).to.be.false;
+            query.enableResults();
+            expect(query.results_enabled).to.be.true;
         });
 
         it('should set and unset aggregations properly', () => {
