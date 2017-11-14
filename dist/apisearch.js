@@ -1258,8 +1258,6 @@ var Apisearch = function () {
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
-            console.log(query.filters);
-
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
             var composedQuery = this.endpoint + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
 
@@ -2822,7 +2820,7 @@ var Query = function () {
             if (values.length !== 0) {
                 this.filters = _extends({}, this.filters, _defineProperty({}, filterName, new _Filter2.default(fieldPath, values, applicationType, _Filter.FILTER_TYPE_FIELD)));
             } else {
-                delete this.filters[field];
+                delete this.filters[filterName];
             }
 
             if (aggregate) {

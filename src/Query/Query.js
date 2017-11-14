@@ -96,7 +96,7 @@ export default class Query {
                 )
             }
         } else {
-            delete this.filters[field]
+            delete this.filters[filterName]
         }
 
         if (aggregate) {

@@ -22,8 +22,6 @@ class Apisearch {
     }
 
     search(query, callback) {
-        console.log(query.filters);
-
         let encodedQuery = encodeURIComponent(
             JSON.stringify(query)
         );
