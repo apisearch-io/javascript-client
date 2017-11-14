@@ -39,10 +39,12 @@ in the `window` object as `apisearch`.
 
 # Install
 
-## npm
+## npm & yarn
 
 ```shell
 npm install apisearch --save
+# or
+yarn add apisearch
 ```
 
 ## html tag \<script\>

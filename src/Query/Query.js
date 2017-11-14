@@ -54,6 +54,7 @@ export default class Query {
                 params.coordinate.lon
             ) : null
         ;
+        this.sort = {};
         this.sortBy(SORT_BY_SCORE);
 
         return this;

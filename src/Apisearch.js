@@ -3,30 +3,6 @@ import SecureObjectFactory from "./Factory/SecureObjectFactory";
 import QueryFactory from "./Factory/QueryFactory";
 
 /**
- * Entry point for the Apisearch client
- *
- * @param appId
- * @param apiKey
- * @param options
- *
- * @returns {Apisearch}
- */
-module.exports = function(appId, apiKey, options) {
-    if (typeof appId === 'undefined') {
-        throw new TypeError(`AppId parameter must be defined.`)
-    }
-    if (typeof apiKey === 'undefined') {
-       throw new TypeError(`ApiKey parameter must be defined.`)
-    }
-
-    return new Apisearch(
-        appId,
-        apiKey,
-        options
-    );
-};
-
-/**
  * Apisearch class
  */
 class Apisearch {
@@ -39,12 +15,18 @@ class Apisearch {
         this.createObject = SecureObjectFactory;
 
         this.repository = new HttpClient(
-            options.cache || true
+            (typeof options.cache !== 'undefined')
+                ? options.cache
+                : true
         );
     }
 
     search(query, callback) {
-        let encodedQuery = encodeURIComponent(JSON.stringify(query));
+        console.log(query.filters);
+
+        let encodedQuery = encodeURIComponent(
+            JSON.stringify(query)
+        );
         let composedQuery = (
             `${this.endpoint}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`
         );
@@ -60,3 +42,5 @@ class Apisearch {
         ;
     }
 }
+
+export default Apisearch;

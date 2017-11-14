@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const apisearch = require('../src/apisearch');
+const apisearch = require('../src/index');
 
 /**
  * Apisearch test
