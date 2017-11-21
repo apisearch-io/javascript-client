@@ -1196,15 +1196,30 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @returns {Apisearch}
  */
 
-module.exports = function (appId, apiKey, options) {
+module.exports = function (_ref) {
+    var appId = _ref.appId,
+        apiKey = _ref.apiKey,
+        options = _ref.options;
+
     if (typeof appId === 'undefined') {
-        throw new TypeError('AppId parameter must be defined.');
+        throw new TypeError('appId parameter must be defined.');
     }
     if (typeof apiKey === 'undefined') {
-        throw new TypeError('ApiKey parameter must be defined.');
+        throw new TypeError('apiKey parameter must be defined.');
+    }
+    if (typeof options === 'undefined') {
+        options = {};
     }
 
-    return new _Apisearch2.default(appId, apiKey, options);
+    return new _Apisearch2.default({
+        appId: appId,
+        apiKey: apiKey,
+        options: {
+            endpoint: options.endpoint,
+            apiVersion: options.apiVersion,
+            cache: options.cache
+        }
+    });
 };
 
 /***/ }),
@@ -1240,26 +1255,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Apisearch class
  */
 var Apisearch = function () {
-    function Apisearch(appId, apiKey) {
-        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    function Apisearch(_ref) {
+        var appId = _ref.appId,
+            apiKey = _ref.apiKey,
+            _ref$options = _ref.options,
+            endpoint = _ref$options.endpoint,
+            apiVersion = _ref$options.apiVersion,
+            cache = _ref$options.cache;
 
         _classCallCheck(this, Apisearch);
 
         this.appId = appId;
         this.apiKey = apiKey;
-        this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
+        this.apiVersion = apiVersion || 'v1';
+        this.endpoint = endpoint || 'http://puntmig.net:8250';
 
         this.query = _QueryFactory2.default;
         this.createObject = _SecureObjectFactory2.default;
 
-        this.repository = new _HttpClient2.default(typeof options.cache !== 'undefined' ? options.cache : true);
+        this.repository = new _HttpClient2.default(typeof cache !== 'undefined' ? cache : true);
     }
 
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
-            var composedQuery = this.endpoint + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
+            var composedQuery = this.endpoint + "/" + this.apiVersion + "/?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
 
             return this.repository.query(composedQuery).then(function (response) {
                 return callback(response, null);

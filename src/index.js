@@ -10,17 +10,28 @@ import Apisearch from "./Apisearch";
  * @returns {Apisearch}
  */
 
-module.exports = function(appId, apiKey, options) {
+module.exports = function({
+    appId,
+    apiKey,
+    options
+}) {
     if (typeof appId === 'undefined') {
-        throw new TypeError(`AppId parameter must be defined.`)
+        throw new TypeError(`appId parameter must be defined.`)
     }
     if (typeof apiKey === 'undefined') {
-       throw new TypeError(`ApiKey parameter must be defined.`)
+       throw new TypeError(`apiKey parameter must be defined.`)
+    }
+    if (typeof options === 'undefined') {
+        options = {}
     }
 
-    return new Apisearch(
+    return new Apisearch({
         appId,
         apiKey,
-        options
-    );
+        options: {
+            endpoint: options.endpoint,
+            apiVersion: options.apiVersion,
+            cache: options.cache
+        }
+    });
 };

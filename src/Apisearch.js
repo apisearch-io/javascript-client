@@ -6,18 +6,25 @@ import QueryFactory from "./Factory/QueryFactory";
  * Apisearch class
  */
 class Apisearch {
-    constructor(appId, apiKey, options = {}) {
+    constructor({
+        appId,
+        apiKey,
+        options: {
+            endpoint,
+            apiVersion,
+            cache
+        }
+    }) {
         this.appId = appId;
         this.apiKey = apiKey;
-        this.endpoint = options.endpoint || 'http://127.0.0.1:9002/app.php';
+        this.apiVersion = apiVersion || 'v1';
+        this.endpoint = endpoint || 'http://puntmig.net:8250';
 
         this.query = QueryFactory;
         this.createObject = SecureObjectFactory;
 
         this.repository = new HttpClient(
-            (typeof options.cache !== 'undefined')
-                ? options.cache
-                : true
+            (typeof cache !== 'undefined') ? cache : true
         );
     }
 
@@ -26,7 +33,7 @@ class Apisearch {
             JSON.stringify(query)
         );
         let composedQuery = (
-            `${this.endpoint}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`
+            `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`
         );
 
         return this.repository

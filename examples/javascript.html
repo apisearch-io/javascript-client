@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Apisearch Javascript example</title>
-        <script src="../dist/apisearch.min.js"></script>
+        <script src="../dist/apisearch.js"></script>
     </head>
     <body>
         <!-- Content -->
@@ -36,9 +36,9 @@
             ;
 
             // 1. Create the client
-            let api = apisearch('music', '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a', {
-                endpoint: 'http://search.puntmig.net',
-                cache: true
+            let api = apisearch({
+                appId: 'music',
+                apiKey: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
             });
             let query;
 

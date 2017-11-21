@@ -6,7 +6,7 @@
   "scripts": {
     "examples": "webpack-dev-server --content-base examples/ --port 1234 --history-api-fallback index.html",
     "build": "webpack --config ./webpack.prod.js --progress --colors",
-    "dev": "webpack --config ./webpack.dev.js --progress --colors",
+    "dev": "webpack --config ./webpack.dev.js --progress --colors --watch",
     "dist": "rm -rf ./dist/*; npm run build && npm run dev",
     "test": "mocha --compilers js:babel-core/register && eslint --quiet ./src/**/*.js",
     "cover": "nyc npm test"
@@ -32,19 +32,19 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.0",
+    "babel-eslint": "^8.0.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
-    "eslint": "^4.6.1",
+    "eslint": "^4.11.0",
     "eslint-loader": "^1.9.0",
     "mocha": "^3.5.3",
-    "nyc": "^11.2.1",
-    "webpack": "^3.5.5",
-    "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0",
+    "nyc": "^11.3.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4",
+    "webpack-merge": "^4.1.1",
     "yargs": "^8.0.2"
   },
   "dependencies": {

@@ -62,12 +62,19 @@ or use a CDN like jsDelivr.
 Let's see a simple example on how to make queries: Instance the apisearch client, 
 build a query, and search! Super easy right?
 ```javascript
-let api = apisearch('your_api_key');
+const api = apisearch({
+    apiKey: 'music',
+    appId: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
+});
 
-let query = api.query.create('Your search query');
+const query = api.query.create('Your search query');
 
-api.search(query, function(result) {
-   console.log(result) 
+api.search(query, function(error, result) {
+    if (error) {
+        console.log(error)    
+    }
+    
+    console.log(result);
 });
 ```
 
@@ -76,13 +83,30 @@ You can checkout more examples here:
  - [Using module loaders](https://github.com/alexhoma/apisearch-js-client/tree/master/examples)
 
 
+# Apisearch client anatomy
+
+This are the mandatory and optional parameters that
+to configure our Apisearch client:
+
+```javascript
+const api = apisearch({
+    apiKey: !string,
+    appId: !string,
+    options: {
+        endpoint: ?string,
+        apiVersion: ?string,
+        cache: ?bool
+    }
+});
+```
+
 # The query object
 
 ## Building a Query
 
 Let's start with something really easy.
 ```javascript
-let query = api.query.create('Something');
+const query = api.query.create('Something');
 ```
 
 That simple. This small query will look for all entities in the repository, 
@@ -239,8 +263,8 @@ let query = api.query
 
 With a result like that:
 
-[x] Type A
-[x] Type B
+  - [x] Type A
+  - [x] Type B
 
 While if we have this implementation, ignoring our Universe filter, 
 considering that our filter is already working properly:
@@ -255,9 +279,9 @@ Then, our result would be something like that, so our Universe is
 not filtered anymore and is composed by the total set of Items, 
 including the C types.
 
-[x] Type A
-[x] Type B
-[ ] Type C
+  - [x] Type A
+  - [x] Type B
+  - [ ] Type C
 
 On the other hand, if we only want the set of results matching your 
 filter types without the aggregations, we can also set a second 
