@@ -1280,7 +1280,7 @@ var Apisearch = function () {
         key: "search",
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
-            var composedQuery = this.endpoint + "/" + this.apiVersion + "/?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
+            var composedQuery = this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
 
             return this.repository.query(composedQuery).then(function (response) {
                 return callback(response, null);
