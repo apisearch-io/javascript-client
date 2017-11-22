@@ -5,9 +5,10 @@
   "main": "./dist/apisearch.node.js",
   "scripts": {
     "examples": "webpack-dev-server --content-base examples/ --port 1234 --history-api-fallback index.html",
-    "build": "webpack --config ./webpack.prod.js --progress --colors",
     "dev": "webpack --config ./webpack.dev.js --progress --colors --watch",
-    "dist": "rm -rf ./dist/*; npm run build && npm run dev",
+    "build": "webpack --config ./webpack.dev.js",
+    "build:min": "webpack --config ./webpack.prod.js",
+    "dist": "npm t; rm -rf ./dist/*; npm run build && npm run build:min",
     "test": "mocha --compilers js:babel-core/register && eslint --quiet ./src/**/*.js",
     "cover": "nyc npm test"
   },
