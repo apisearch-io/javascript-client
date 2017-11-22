@@ -69,9 +69,10 @@ const api = apisearch({
 
 const query = api.query.create('Your search query');
 
-api.search(query, function(error, result) {
+api.search(query, function(result, error) {
     if (error) {
-        console.log(error)    
+        console.log(error);
+        return;
     }
     
     console.log(result);
@@ -93,9 +94,13 @@ const api = apisearch({
     appId: !string,
     apiKey: !string,
     options: {
-        endpoint: ?string,
-        apiVersion: ?string,
-        cache: ?bool
+        endpoint: ?string,   // (default "http://puntmig.net")
+        apiVersion: ?string, // (default "v1")
+        timeout: ?integer,   // in seconds (default 1000)
+        cache: {
+            inMemory: ?bool, // (default true)
+            http: ?integer   // in seconds (default 0)
+        }
     }
 });
 ```

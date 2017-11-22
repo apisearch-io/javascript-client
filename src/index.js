@@ -13,25 +13,40 @@ import Apisearch from "./Apisearch";
 module.exports = function({
     appId,
     apiKey,
-    options
+    options = {}
 }) {
-    if (typeof appId === 'undefined') {
-        throw new TypeError(`appId parameter must be defined.`)
-    }
-    if (typeof apiKey === 'undefined') {
-       throw new TypeError(`apiKey parameter must be defined.`)
-    }
-    if (typeof options === 'undefined') {
-        options = {}
-    }
+    checkAppId(appId);
+    checkApiKey(apiKey);
+
+    options = {
+        endpoint: 'http://puntmig.net',
+        apiVersion: 'v1',
+        timeout: 1000,
+        ...options,
+        cache: {
+            inMemory: true,
+            http: 0,
+            ...options.cache
+        },
+    };
+
+    console.log(options);
 
     return new Apisearch({
         appId,
         apiKey,
-        options: {
-            endpoint: options.endpoint,
-            apiVersion: options.apiVersion,
-            cache: options.cache
-        }
+        options
     });
 };
+
+function checkAppId(appId) {
+    if (typeof appId === 'undefined') {
+        throw new TypeError(`appId parameter must be defined.`)
+    }
+}
+
+function checkApiKey(apiKey) {
+    if (typeof apiKey === 'undefined') {
+        throw new TypeError(`apiKey parameter must be defined.`)
+    }
+}

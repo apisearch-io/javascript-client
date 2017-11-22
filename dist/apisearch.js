@@ -1180,6 +1180,8 @@ exports.default = Filter;
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _Apisearch = __webpack_require__(14);
 
 var _Apisearch2 = _interopRequireDefault(_Apisearch);
@@ -1199,28 +1201,43 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = function (_ref) {
     var appId = _ref.appId,
         apiKey = _ref.apiKey,
-        options = _ref.options;
+        _ref$options = _ref.options,
+        options = _ref$options === undefined ? {} : _ref$options;
 
-    if (typeof appId === 'undefined') {
-        throw new TypeError('appId parameter must be defined.');
-    }
-    if (typeof apiKey === 'undefined') {
-        throw new TypeError('apiKey parameter must be defined.');
-    }
-    if (typeof options === 'undefined') {
-        options = {};
-    }
+    checkAppId(appId);
+    checkApiKey(apiKey);
+
+    options = _extends({
+        endpoint: 'http://puntmig.net',
+        apiVersion: 'v1',
+        timeout: 1000
+    }, options, {
+        cache: _extends({
+            inMemory: true,
+            http: 0
+        }, options.cache)
+    });
+
+    console.log(options);
 
     return new _Apisearch2.default({
         appId: appId,
         apiKey: apiKey,
-        options: {
-            endpoint: options.endpoint,
-            apiVersion: options.apiVersion,
-            cache: options.cache
-        }
+        options: options
     });
 };
+
+function checkAppId(appId) {
+    if (typeof appId === 'undefined') {
+        throw new TypeError('appId parameter must be defined.');
+    }
+}
+
+function checkApiKey(apiKey) {
+    if (typeof apiKey === 'undefined') {
+        throw new TypeError('apiKey parameter must be defined.');
+    }
+}
 
 /***/ }),
 /* 14 */
@@ -1255,32 +1272,59 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Apisearch class
  */
 var Apisearch = function () {
+    /**
+     * Constructor.
+     */
     function Apisearch(_ref) {
         var appId = _ref.appId,
             apiKey = _ref.apiKey,
             _ref$options = _ref.options,
             endpoint = _ref$options.endpoint,
             apiVersion = _ref$options.apiVersion,
-            cache = _ref$options.cache;
+            timeout = _ref$options.timeout,
+            _ref$options$cache = _ref$options.cache,
+            inMemoryCache = _ref$options$cache.inMemory,
+            httpCacheTTL = _ref$options$cache.http;
 
         _classCallCheck(this, Apisearch);
 
+        /**
+         * Api
+         */
         this.appId = appId;
         this.apiKey = apiKey;
-        this.apiVersion = apiVersion || 'v1';
-        this.endpoint = endpoint || 'http://puntmig.net';
+        this.apiVersion = apiVersion;
+        this.endpoint = endpoint;
+        this.httpCacheTTL = httpCacheTTL;
+        this.timeout = timeout;
 
+        /**
+         * Query
+         */
         this.query = _QueryFactory2.default;
         this.createObject = _SecureObjectFactory2.default;
 
-        this.repository = new _HttpClient2.default(typeof cache !== 'undefined' ? cache : true);
+        /**
+         * HttpClient
+         */
+        this.repository = new _HttpClient2.default(inMemoryCache);
     }
 
     _createClass(Apisearch, [{
         key: "search",
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
-            var composedQuery = this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery;
+            var composedQuery = {
+                url: this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery,
+                options: {
+                    timeout: this.timeout,
+                    headers: {
+                        'X-APISEARCH-APPID': this.appId,
+                        'X-APISEARCH-KEY': this.apiKey,
+                        'X-APISEARCH-TTL': this.httpCacheTTL
+                    }
+                }
+            };
 
             return this.repository.query(composedQuery).then(function (response) {
                 return callback(response, null);
@@ -1347,7 +1391,7 @@ var HttpClient = function () {
             // return promise with the cached value if key exists
             // if not exists, fetch the data
             if (this.cache !== null) {
-                var cachedResponse = this.cache.get(_query);
+                var cachedResponse = this.cache.get(_query.url);
                 if (cachedResponse) {
                     return new Promise(function (resolve) {
                         return resolve(cachedResponse);
@@ -1370,12 +1414,12 @@ var HttpClient = function () {
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                axios.get(query).then(function (response) {
+                axios.get(query.url, query.options).then(function (response) {
                     // check if cache is enabled
                     // set the query as a cache key
                     // and the valid response as a cache value
                     if (self.cache !== null) {
-                        self.cache.set(query, response.data);
+                        self.cache.set(query.url, response.data);
                     }
 
                     return resolve(response.data);

@@ -6,35 +6,59 @@ import QueryFactory from "./Factory/QueryFactory";
  * Apisearch class
  */
 class Apisearch {
+    /**
+     * Constructor.
+     */
     constructor({
         appId,
         apiKey,
         options: {
             endpoint,
             apiVersion,
-            cache
+            timeout,
+            cache: {
+                inMemory: inMemoryCache,
+                http: httpCacheTTL
+            }
         }
     }) {
+        /**
+         * Api
+         */
         this.appId = appId;
         this.apiKey = apiKey;
-        this.apiVersion = apiVersion || 'v1';
-        this.endpoint = endpoint || 'http://puntmig.net';
+        this.apiVersion = apiVersion;
+        this.endpoint = endpoint;
+        this.httpCacheTTL = httpCacheTTL;
+        this.timeout = timeout;
 
+        /**
+         * Query
+         */
         this.query = QueryFactory;
         this.createObject = SecureObjectFactory;
 
-        this.repository = new HttpClient(
-            (typeof cache !== 'undefined') ? cache : true
-        );
+        /**
+         * HttpClient
+         */
+        this.repository = new HttpClient(inMemoryCache);
     }
 
     search(query, callback) {
         let encodedQuery = encodeURIComponent(
             JSON.stringify(query)
         );
-        let composedQuery = (
-            `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`
-        );
+        let composedQuery = {
+            url: `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`,
+            options: {
+                timeout: this.timeout,
+                headers: {
+                    'X-APISEARCH-APPID': this.appId,
+                    'X-APISEARCH-KEY': this.apiKey,
+                    'X-APISEARCH-TTL': this.httpCacheTTL
+                }
+            }
+        };
 
         return this.repository
             .query(composedQuery)

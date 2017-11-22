@@ -26,7 +26,7 @@ export default class HttpClient {
         // return promise with the cached value if key exists
         // if not exists, fetch the data
         if (this.cache !== null) {
-            let cachedResponse = this.cache.get(query);
+            let cachedResponse = this.cache.get(query.url);
             if (cachedResponse) {
                 return new Promise(
                     resolve => resolve(cachedResponse)
@@ -46,14 +46,14 @@ export default class HttpClient {
         let self = this;
 
         return new Promise((resolve, reject) => {
-            axios.get(query)
+            axios.get(query.url, query.options)
                 .then(response => {
                     // check if cache is enabled
                     // set the query as a cache key
                     // and the valid response as a cache value
                     if (self.cache !== null) {
                         self.cache.set(
-                            query,
+                            query.url,
                             response.data
                         );
                     }
