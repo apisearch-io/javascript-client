@@ -18,8 +18,8 @@ describe('Query()', () => {
     describe('-> setQueryText()', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should change the query text', () => {
@@ -28,10 +28,23 @@ describe('Query()', () => {
         });
     });
 
+    describe('-> setPage()', () => {
+        let query = new Query({
+            q: '',
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
+        });
+
+        it('should change the query page', () => {
+            query.setPage(4);
+            expect(query.page).to.be.equal(4);
+        });
+    });
+
     describe('-> setResultSize()', () => {
         let query = new Query({
            q: '',
-           QUERY_DEFAULT_PAGE,
+           page: QUERY_DEFAULT_PAGE,
            size: 10
         });
 
@@ -51,8 +64,8 @@ describe('Query()', () => {
     describe('-> filterBy...()', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should filterBy()', () => {
@@ -129,8 +142,8 @@ describe('Query()', () => {
     describe('-> filterUniverseBy...()', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should filterUniverseBy()', () => {
@@ -205,8 +218,8 @@ describe('Query()', () => {
         describe('--> When filterUniverseByLocation()', () => {
             let query = new Query({
                 q: '',
-                QUERY_DEFAULT_PAGE,
-                QUERY_DEFAULT_SIZE,
+                page: QUERY_DEFAULT_PAGE,
+                size: QUERY_DEFAULT_SIZE,
                 coordinate:  {
                     lat: 1.234,
                     lon: -1.234
@@ -307,8 +320,8 @@ describe('Query()', () => {
     describe('-> aggregateBy...()', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should aggregateBy()', () => {
@@ -372,8 +385,8 @@ describe('Query()', () => {
     describe('-> sortBy...() method', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should throw an error when sortBy() without parameters', () => {
@@ -418,8 +431,8 @@ describe('Query()', () => {
         it('should sortBy() "_geo_distance" when Query has been created with createLocated() method', () => {
             let query = new Query({
                 q: '',
-                QUERY_DEFAULT_PAGE,
-                QUERY_DEFAULT_SIZE,
+                page: QUERY_DEFAULT_PAGE,
+                size: QUERY_DEFAULT_SIZE,
                 coordinate:  {
                     lat: 1.234,
                     lon: 1.234
@@ -447,8 +460,8 @@ describe('Query()', () => {
     describe('-> When promoting uuids', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should promote one uuid when calling promoteUUID()', () => {
@@ -489,8 +502,8 @@ describe('Query()', () => {
     describe('-> When excluding uuids', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
         query.excludeUUID(
             new ItemUUID('hulk', 'marvel')
@@ -523,8 +536,8 @@ describe('Query()', () => {
     describe('-> When switching query setters', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should set and unset results properly', () => {
@@ -559,8 +572,8 @@ describe('Query()', () => {
     describe('-> When setting/unsetting a User on query', () => {
         let query = new Query({
             q: '',
-            QUERY_DEFAULT_PAGE,
-            QUERY_DEFAULT_SIZE
+            page: QUERY_DEFAULT_PAGE,
+            size: QUERY_DEFAULT_SIZE
         });
 
         it('should set a user when calling byUser() method', () => {

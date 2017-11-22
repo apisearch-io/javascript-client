@@ -1218,8 +1218,6 @@ module.exports = function (_ref) {
         }, options.cache)
     });
 
-    console.log(options);
-
     return new _Apisearch2.default({
         appId: appId,
         apiKey: apiKey,
@@ -2840,7 +2838,7 @@ var Query = function () {
         this.filters = params.filters || [];
         this.items_promoted = params.items_promoted || [];
         this.aggregations = params.aggregations || [];
-        this.page = params.aggregations || QUERY_DEFAULT_PAGE;
+        this.page = params.page || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
         this.results_enabled = params.results_enabled || true;
@@ -2860,6 +2858,13 @@ var Query = function () {
         key: "setQueryText",
         value: function setQueryText(text) {
             this.q = text;
+
+            return this;
+        }
+    }, {
+        key: "setPage",
+        value: function setPage(page) {
+            this.page = page;
 
             return this;
         }

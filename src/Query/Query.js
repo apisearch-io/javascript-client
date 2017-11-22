@@ -39,7 +39,7 @@ export default class Query {
         this.filters = params.filters || [];
         this.items_promoted = params.items_promoted || [];
         this.aggregations = params.aggregations || [];
-        this.page = params.aggregations || QUERY_DEFAULT_PAGE;
+        this.page = params.page || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
         this.results_enabled = params.results_enabled || true;
@@ -62,6 +62,12 @@ export default class Query {
 
     setQueryText(text) {
         this.q = text;
+
+        return this;
+    }
+
+    setPage(page) {
+        this.page = page;
 
         return this;
     }

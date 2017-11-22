@@ -30,8 +30,6 @@ module.exports = function({
         },
     };
 
-    console.log(options);
-
     return new Apisearch({
         appId,
         apiKey,
