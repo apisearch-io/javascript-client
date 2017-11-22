@@ -1268,7 +1268,7 @@ var Apisearch = function () {
         this.appId = appId;
         this.apiKey = apiKey;
         this.apiVersion = apiVersion || 'v1';
-        this.endpoint = endpoint || 'http://puntmig.net:8250';
+        this.endpoint = endpoint || 'http://puntmig.net';
 
         this.query = _QueryFactory2.default;
         this.createObject = _SecureObjectFactory2.default;

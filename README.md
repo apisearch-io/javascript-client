@@ -14,12 +14,12 @@ in the `window` object as `apisearch`.
 
 # Table of contents
 
-1. [Install](#Install)
+- [Install](#Install)
   - npm
   - script tag / CDN
   - CDN
-2. [Quick start](#Quick-start)
-3. [The Query object](#The-query-object)
+- [Quick start](#Quick-start)
+- [The Query object](#The-query-object)
   - Building a query
   - Filters
   - Filter types
@@ -63,8 +63,8 @@ Let's see a simple example on how to make queries: Instance the apisearch client
 build a query, and search! Super easy right?
 ```javascript
 const api = apisearch({
-    apiKey: 'music',
-    appId: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
+    appId: 'music',
+    apiKey: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
 });
 
 const query = api.query.create('Your search query');
@@ -90,8 +90,8 @@ to configure our Apisearch client:
 
 ```javascript
 const api = apisearch({
-    apiKey: !string,
     appId: !string,
+    apiKey: !string,
     options: {
         endpoint: ?string,
         apiVersion: ?string,
