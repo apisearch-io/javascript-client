@@ -10,7 +10,7 @@
         <div id="result"></div>
         <!-- /Content -->
 
-        <!-- Underscore templating -->
+        <!-- Underscore template -->
         <script type="text/template" id="template">
             <b><%= total_hits %></b><br>
             <% if (items.length !== 0) { %>
@@ -30,20 +30,20 @@
 
         <!-- Apisearch -->
         <script>
-            let searchInput = document.getElementById('search'),
+            var searchInput = document.getElementById('search'),
                 resultBlock = document.getElementById('result'),
                 compiled = _.template(document.getElementById('template').innerHTML)
             ;
 
             // 1. Create the client
-            let api = apisearch({
+            var api = apisearch({
                 appId: 'music',
-                apiKey: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a',
-                cache: {
-                    inMemory: false
+                apiKey: '5fadd8c4-c966-11e7-abc4-cec278b6b50a',
+                options: {
+                    endpoint: 'http://192.168.0.101:81/app.php',
                 }
             });
-            let query;
+            var query;
 
             searchInput.addEventListener('keyup', function (e) {
                 // 2.- compose query

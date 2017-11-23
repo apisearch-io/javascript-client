@@ -21,7 +21,7 @@ module.exports = function({
     options = {
         endpoint: 'http://puntmig.net',
         apiVersion: 'v1',
-        timeout: 1000,
+        timeout: 10000,
         ...options,
         cache: {
             inMemory: true,

@@ -52,11 +52,6 @@ class Apisearch {
             url: `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`,
             options: {
                 timeout: this.timeout,
-                headers: {
-                    'X-APISEARCH-APPID': this.appId,
-                    'X-APISEARCH-KEY': this.apiKey,
-                    'X-APISEARCH-TTL': this.httpCacheTTL
-                }
             }
         };
 

@@ -1210,7 +1210,7 @@ module.exports = function (_ref) {
     options = _extends({
         endpoint: 'http://puntmig.net',
         apiVersion: 'v1',
-        timeout: 1000
+        timeout: 10000
     }, options, {
         cache: _extends({
             inMemory: true,
@@ -1315,12 +1315,7 @@ var Apisearch = function () {
             var composedQuery = {
                 url: this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery,
                 options: {
-                    timeout: this.timeout,
-                    headers: {
-                        'X-APISEARCH-APPID': this.appId,
-                        'X-APISEARCH-KEY': this.apiKey,
-                        'X-APISEARCH-TTL': this.httpCacheTTL
-                    }
+                    timeout: this.timeout
                 }
             };
 
