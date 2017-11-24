@@ -1272,7 +1272,7 @@ module.exports = function (_ref) {
     checkApiKey(apiKey);
 
     options = _extends({
-        endpoint: 'http://puntmig.net',
+        endpoint: '//puntmig.net',
         apiVersion: 'v1',
         timeout: 10000,
         cancelToken: true
