@@ -1,5 +1,5 @@
-import MemoryCache from "../Cache/MemoryCache";
 const axios = require('axios/lib/axios');
+const CancelToken = require('axios/lib/cancel/CancelToken');
 
 /**
  * Http class
@@ -10,10 +10,8 @@ export default class HttpClient {
      * @param cache
      */
     constructor(cache) {
-        this.cache = cache
-            ? new MemoryCache()
-            : null
-        ;
+        this.cache = cache;
+        this.cancelToken = CancelToken.source();
     }
 
     /**
@@ -25,7 +23,7 @@ export default class HttpClient {
         // check if query exists in cache store
         // return promise with the cached value if key exists
         // if not exists, fetch the data
-        if (this.cache !== null) {
+        if (this.cache) {
             let cachedResponse = this.cache.get(query.url);
             if (cachedResponse) {
                 return new Promise(
@@ -43,15 +41,27 @@ export default class HttpClient {
      * @returns {Promise}
      */
     fetchData(query) {
-        let self = this;
+        /**
+         * Attach new cancellation token
+         */
+        query.options = {
+            ...query.options,
+            cancelToken: this.cancelToken.token
+        };
 
+        /**
+         * Request promise
+         */
+        const self = this;
         return new Promise((resolve, reject) => {
             axios.get(query.url, query.options)
                 .then(response => {
-                    // check if cache is enabled
-                    // set the query as a cache key
-                    // and the valid response as a cache value
-                    if (self.cache !== null) {
+                    /**
+                     * Check if cache is enabled
+                     * set the query as a cache key
+                     * and the valid response as a cache value
+                     */
+                    if (self.cache) {
                         self.cache.set(
                             query.url,
                             response.data
@@ -61,8 +71,18 @@ export default class HttpClient {
                     return resolve(response.data);
                 })
                 .catch(
-                    error => reject(error)
-                );
+                    thrown => reject(thrown)
+                )
+            ;
         });
+    }
+
+    /**
+     * Abort current request
+     * And regenerate the cancellation token
+     */
+    abort() {
+        this.cancelToken.cancel();
+        this.cancelToken = CancelToken.source();
     }
 }

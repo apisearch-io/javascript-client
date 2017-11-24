@@ -94,9 +94,10 @@ const api = apisearch({
     appId: !string,
     apiKey: !string,
     options: {
-        endpoint: ?string,   // (default "http://puntmig.net")
-        apiVersion: ?string, // (default "v1")
-        timeout: ?integer,   // in seconds (default 1000)
+        endpoint: ?string,       // (default "http://puntmig.net")
+        apiVersion: ?string,     // (default "v1")
+        timeout: ?integer,       // in seconds (default 1000)
+        overrideQueries: ?bool,  // (default true)
         cache: {
             inMemory: ?bool, // (default true)
             http: ?integer   // in seconds (default 0)

@@ -1,6 +1,7 @@
 import HttpClient from "./Http/HttpClient";
 import SecureObjectFactory from "./Factory/SecureObjectFactory";
 import QueryFactory from "./Factory/QueryFactory";
+import MemoryCache from "./Cache/MemoryCache";
 
 /**
  * Apisearch class
@@ -16,6 +17,7 @@ class Apisearch {
             endpoint,
             apiVersion,
             timeout,
+            overrideQueries,
             cache: {
                 inMemory: inMemoryCache,
                 http: httpCacheTTL
@@ -31,6 +33,7 @@ class Apisearch {
         this.endpoint = endpoint;
         this.httpCacheTTL = httpCacheTTL;
         this.timeout = timeout;
+        this.overrideQueries = overrideQueries;
 
         /**
          * Query
@@ -41,7 +44,9 @@ class Apisearch {
         /**
          * HttpClient
          */
-        this.repository = new HttpClient(inMemoryCache);
+        this.repository = new HttpClient(
+            inMemoryCache ? new MemoryCache() : false
+        );
     }
 
     search(query, callback) {
@@ -51,10 +56,20 @@ class Apisearch {
         let composedQuery = {
             url: `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`,
             options: {
-                timeout: this.timeout,
+                timeout: this.timeout
             }
         };
 
+        /**
+         * Abort any previous existing request
+         */
+        if (this.overrideQueries) {
+            this.repository.abort();
+        }
+
+        /**
+         * Start new request
+         */
         return this.repository
             .query(composedQuery)
             .then(
