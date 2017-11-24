@@ -22,7 +22,7 @@ module.exports = function({
         endpoint: '//puntmig.net',
         apiVersion: 'v1',
         timeout: 10000,
-        cancelToken: true,
+        overrideQueries: true,
         ...options,
         cache: {
             inMemory: true,

@@ -10,7 +10,7 @@
     "build:min": "webpack --config ./webpack.prod.js",
     "dist": "npm t; rm -rf ./dist/*; npm run build && npm run build:min",
     "test": "mocha --compilers js:babel-core/register && eslint --quiet ./src/**/*.js",
-    "cover": "nyc npm test"
+    "cover": "nyc npm test; rm -rf .nyc_output;"
   },
   "license": "MIT",
   "author": "alexhoma <alexcm.14@gmail.com>",

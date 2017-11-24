@@ -1275,7 +1275,7 @@ module.exports = function (_ref) {
         endpoint: '//puntmig.net',
         apiVersion: 'v1',
         timeout: 10000,
-        cancelToken: true
+        overrideQueries: true
     }, options, {
         cache: _extends({
             inMemory: true,
@@ -1459,9 +1459,11 @@ var HttpClient = function () {
     _createClass(HttpClient, [{
         key: 'query',
         value: function query(_query) {
-            // check if query exists in cache store
-            // return promise with the cached value if key exists
-            // if not exists, fetch the data
+            /**
+             * Check if query exists in cache store
+             * return promise with the cached value if key exists
+             * if not exists, fetch the data
+             */
             if (this.cache) {
                 var cachedResponse = this.cache.get(_query.url);
                 if (cachedResponse) {

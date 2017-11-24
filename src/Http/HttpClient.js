@@ -20,9 +20,11 @@ export default class HttpClient {
      * @returns {Promise}
      */
     query(query) {
-        // check if query exists in cache store
-        // return promise with the cached value if key exists
-        // if not exists, fetch the data
+        /**
+         * Check if query exists in cache store
+         * return promise with the cached value if key exists
+         * if not exists, fetch the data
+         */
         if (this.cache) {
             let cachedResponse = this.cache.get(query.url);
             if (cachedResponse) {
