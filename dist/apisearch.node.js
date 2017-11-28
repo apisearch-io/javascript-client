@@ -1272,8 +1272,9 @@ module.exports = function (_ref) {
     checkApiKey(apiKey);
 
     options = _extends({
-        endpoint: '//api.apisear.ch',
+        endpoint: 'api.apisear.ch',
         apiVersion: 'v1',
+        protocol: 'http',
         timeout: 10000,
         overrideQueries: true,
         cache: true
@@ -1344,6 +1345,7 @@ var Apisearch = function () {
             _ref$options = _ref.options,
             endpoint = _ref$options.endpoint,
             apiVersion = _ref$options.apiVersion,
+            protocol = _ref$options.protocol,
             timeout = _ref$options.timeout,
             overrideQueries = _ref$options.overrideQueries,
             inMemoryCache = _ref$options.cache;
@@ -1357,6 +1359,7 @@ var Apisearch = function () {
         this.apiKey = apiKey;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
+        this.protocol = protocol;
         this.timeout = timeout;
         this.overrideQueries = overrideQueries;
 
@@ -1386,7 +1389,7 @@ var Apisearch = function () {
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
             var composedQuery = {
-                url: this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery,
+                url: this.protocol + "://" + this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&key=" + this.apiKey + "&query=" + encodedQuery,
                 options: {
                     timeout: this.timeout
                 }

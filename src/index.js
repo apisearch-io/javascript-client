@@ -19,8 +19,9 @@ module.exports = function({
     checkApiKey(apiKey);
 
     options = {
-        endpoint: '//api.apisear.ch',
+        endpoint: 'api.apisear.ch',
         apiVersion: 'v1',
+        protocol: 'http',
         timeout: 10000,
         overrideQueries: true,
         cache: true,
