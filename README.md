@@ -98,10 +98,7 @@ const api = apisearch({
         apiVersion: ?string,     // (default "v1")
         timeout: ?integer,       // in seconds (default 1000)
         overrideQueries: ?bool,  // (default true)
-        cache: {
-            inMemory: ?bool, // (default true)
-            http: ?integer   // in seconds (default 0)
-        }
+        cache: ?bool             // in memory cache (default true)
     }
 });
 ```
@@ -226,7 +223,7 @@ universe by types A and B. Let's see how to do it.
 ```javascript
 let query = api.query
   .createMatchAll()
-  filterUniverseByTypes(['A', 'B']);
+  .filterUniverseByTypes(['A', 'B']);
 ```
 
 All possible results will only include A and B. Think about this filter as 
@@ -323,7 +320,7 @@ maximum 3 items.
 ```javascript
 let query = api.query
   .createMatchAll()
-  filterByIds(['10', '11', '12']);
+  .filterByIds(['10', '11', '12']);
 ```
 
 ## Filter by location
@@ -363,8 +360,8 @@ let to =  (new Date('01 October 2017 20:00 UTC')).toISOString();
 
 let query = api.query
   .createMatchAll()
-  filterUniverseByRange('price', ['0..20'], 'FILTER_MUST_ALL')
-  filterUniverseByDateRange('created_at', [`${from}..${to}`], 'FILTER_MUST_ALL');
+  .filterUniverseByRange('price', ['0..20'], 'FILTER_MUST_ALL')
+  .filterUniverseByDateRange('created_at', [`${from}..${to}`], 'FILTER_MUST_ALL');
 ```
 
 Furthermore, once defined your subset of available values, you can 
@@ -382,7 +379,7 @@ filter.
 ```javascript
 let query = api.query
   .createMatchAll()
-  filterByRange(
+  .filterByRange(
     'price',
     'price',
     [],
@@ -513,8 +510,10 @@ on your browser:
 
 # Developer resources:
 
-* `npm run dev`: will start a watcher on `./src/**/*`, bundle at every code 
+* `npm run dev` or `yarn dev`: will start a watcher on `./src/**/*`, bundle at every code 
 change and export it on `./dist/apisearch.js`.
-* `npm run build`: will bundle and minify all code and export it on 
+* `npm run build` or `yarn build`: will bundle and minify all code and export it on 
 `./dist/apisearch.min.js`.
-* `npm run test` or `npm t`: will run the test suite using Mocha and Chai.
+* `npm run dist` or `yarn dist`: cleans the `dist` directory and bundles the dev 
+and build version. Ready for release.
+* `npm t` or `yarn test`: will run the test suite using Mocha and Chai.

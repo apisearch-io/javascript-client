@@ -19,16 +19,12 @@ module.exports = function({
     checkApiKey(apiKey);
 
     options = {
-        endpoint: '//puntmig.net',
+        endpoint: '//api.apisear.ch',
         apiVersion: 'v1',
         timeout: 10000,
         overrideQueries: true,
+        cache: true,
         ...options,
-        cache: {
-            inMemory: true,
-            http: 0,
-            ...options.cache
-        },
     };
 
     return new Apisearch({

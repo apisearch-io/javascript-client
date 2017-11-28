@@ -18,10 +18,7 @@ class Apisearch {
             apiVersion,
             timeout,
             overrideQueries,
-            cache: {
-                inMemory: inMemoryCache,
-                http: httpCacheTTL
-            }
+            cache: inMemoryCache
         }
     }) {
         /**
@@ -31,7 +28,6 @@ class Apisearch {
         this.apiKey = apiKey;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
-        this.httpCacheTTL = httpCacheTTL;
         this.timeout = timeout;
         this.overrideQueries = overrideQueries;
 
@@ -49,6 +45,13 @@ class Apisearch {
         );
     }
 
+    /**
+     * Search entry point
+     *
+     * @param query
+     * @param callback
+     * @returns {Promise}
+     */
     search(query, callback) {
         let encodedQuery = encodeURIComponent(
             JSON.stringify(query)
