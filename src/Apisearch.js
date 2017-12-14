@@ -12,7 +12,8 @@ class Apisearch {
      */
     constructor({
         appId,
-        apiKey,
+        index,
+        token,
         options: {
             endpoint,
             apiVersion,
@@ -26,7 +27,8 @@ class Apisearch {
          * Api
          */
         this.appId = appId;
-        this.apiKey = apiKey;
+        this.index = index;
+        this.token = token;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
         this.protocol = protocol;
@@ -59,7 +61,7 @@ class Apisearch {
             JSON.stringify(query)
         );
         let composedQuery = {
-            url: `${this.protocol}://${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&key=${this.apiKey}&query=${encodedQuery}`,
+            url: `${this.protocol}://${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&index=${this.index}&token=${this.token}&query=${encodedQuery}`,
             options: {
                 timeout: this.timeout
             }

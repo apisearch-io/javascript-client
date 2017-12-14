@@ -12,11 +12,13 @@ import Apisearch from "./Apisearch";
 
 module.exports = function({
     appId,
-    apiKey,
+    index,
+    token,
     options = {}
 }) {
     checkAppId(appId);
-    checkApiKey(apiKey);
+    checkIndex(index);
+    checkApiKey(token);
 
     options = {
         endpoint: 'api.apisear.ch',
@@ -30,7 +32,8 @@ module.exports = function({
 
     return new Apisearch({
         appId,
-        apiKey,
+        index,
+        token,
         options
     });
 };
@@ -41,8 +44,14 @@ function checkAppId(appId) {
     }
 }
 
-function checkApiKey(apiKey) {
-    if (typeof apiKey === 'undefined') {
-        throw new TypeError(`apiKey parameter must be defined.`)
+function checkIndex(index) {
+    if (typeof index === 'undefined') {
+        throw new TypeError(`index parameter must be defined.`)
+    }
+}
+
+function checkApiKey(token) {
+    if (typeof token === 'undefined') {
+        throw new TypeError(`token parameter must be defined.`)
     }
 }

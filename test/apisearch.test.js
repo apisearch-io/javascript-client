@@ -7,7 +7,8 @@ const apisearch = require('../src/index');
 describe('apisearch()', () => {
     let client = apisearch({
         appId: 'some_app_id',
-        apiKey: 'some_api_key'
+        index: 'some_index',
+        token: 'some_api_key'
     });
 
     describe('-> When creating a query', () => {

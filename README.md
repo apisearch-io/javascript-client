@@ -64,7 +64,8 @@ build a query, and search! Super easy right?
 ```javascript
 const api = apisearch({
     appId: 'music',
-    apiKey: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
+    index: 'default',
+    token: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
 });
 
 const query = api.query.create('Your search query');

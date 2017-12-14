@@ -38,7 +38,11 @@
             // 1. Create the client
             var api = apisearch({
                 appId: 'music',
-                apiKey: '5fadd8c4-c966-11e7-abc4-cec278b6b50a'
+                index: 'default',
+                token: '5fadd8c4-c966-11e7-abc4-cec278b6b50a',
+                options: {
+                    endpoint: 'b2298209.ngrok.io'
+                }
             });
             var query;
 
