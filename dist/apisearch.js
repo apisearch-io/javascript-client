@@ -1167,7 +1167,7 @@ var ItemUUID = function () {
     _createClass(ItemUUID, [{
         key: "composedUUID",
         value: function composedUUID() {
-            return this.type + "~" + this.id;
+            return this.id + "~" + this.type;
         }
     }]);
 
@@ -1264,14 +1264,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (_ref) {
     var appId = _ref.appId,
-        index = _ref.index,
+        indexId = _ref.indexId,
         token = _ref.token,
         _ref$options = _ref.options,
         options = _ref$options === undefined ? {} : _ref$options;
 
-    checkAppId(appId);
-    checkIndex(index);
-    checkApiKey(token);
+    ensureIsDefined(appId, 'appId');
+    ensureIsDefined(indexId, 'indexId');
+    ensureIsDefined(token, 'token');
 
     options = _extends({
         endpoint: 'api.apisear.ch',
@@ -1284,27 +1284,15 @@ module.exports = function (_ref) {
 
     return new _Apisearch2.default({
         appId: appId,
-        index: index,
+        indexId: indexId,
         token: token,
         options: options
     });
 };
 
-function checkAppId(appId) {
-    if (typeof appId === 'undefined') {
-        throw new TypeError('appId parameter must be defined.');
-    }
-}
-
-function checkIndex(index) {
-    if (typeof index === 'undefined') {
-        throw new TypeError('index parameter must be defined.');
-    }
-}
-
-function checkApiKey(token) {
-    if (typeof token === 'undefined') {
-        throw new TypeError('token parameter must be defined.');
+function ensureIsDefined(param, name) {
+    if (typeof param === 'undefined') {
+        throw new TypeError(name + ' parameter must be defined.');
     }
 }
 
@@ -1350,7 +1338,7 @@ var Apisearch = function () {
      */
     function Apisearch(_ref) {
         var appId = _ref.appId,
-            index = _ref.index,
+            indexId = _ref.indexId,
             token = _ref.token,
             _ref$options = _ref.options,
             endpoint = _ref$options.endpoint,
@@ -1366,7 +1354,7 @@ var Apisearch = function () {
          * Api
          */
         this.appId = appId;
-        this.index = index;
+        this.indexId = indexId;
         this.token = token;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
@@ -1400,7 +1388,7 @@ var Apisearch = function () {
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
             var composedQuery = {
-                url: this.protocol + "://" + this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&index=" + this.index + "&token=" + this.token + "&query=" + encodedQuery,
+                url: this.protocol + "://" + this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&indexId=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery,
                 options: {
                     timeout: this.timeout
                 }

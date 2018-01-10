@@ -8,6 +8,6 @@ export default class ItemUUID {
     }
 
     composedUUID() {
-        return `${this.type}~${this.id}`;
+        return `${this.id}~${this.type}`;
     }
 }

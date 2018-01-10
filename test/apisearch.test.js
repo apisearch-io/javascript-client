@@ -7,7 +7,7 @@ const apisearch = require('../src/index');
 describe('apisearch()', () => {
     let client = apisearch({
         appId: 'some_app_id',
-        index: 'some_index',
+        indexId: 'some_index',
         token: 'some_api_key'
     });
 
@@ -116,7 +116,7 @@ describe('apisearch()', () => {
                     filter_terms: [],
                     filter_type: 'field',
                     values: [
-                        'marvel~captain-america'
+                        'captain-america~marvel'
                     ]
                 }
             })
@@ -136,8 +136,8 @@ describe('apisearch()', () => {
                     filter_terms: [],
                     filter_type: 'field',
                     values: [
-                        'marvel~black-widow',
-                        'marvel~ant-man',
+                        'black-widow~marvel',
+                        'ant-man~marvel',
                     ]
                 }
             })

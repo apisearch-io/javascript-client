@@ -518,7 +518,7 @@ describe('Query()', () => {
         });
 
         it('should exclude one uuid when calling excludeUUID()', () => {
-            expect(query.filters['excluded_ids'].values).to.include('marvel~hulk');
+            expect(query.filters['excluded_ids'].values).to.include('hulk~marvel');
         });
 
         it('should exclude many uuids when calling excludeUUIDs()', () => {
@@ -527,8 +527,8 @@ describe('Query()', () => {
                 new ItemUUID('daredevil', 'marvel')
             );
             expect(query.filters['excluded_ids'].values).to.deep.equal([
-                'marvel~captain-america',
-                'marvel~daredevil'
+                'captain-america~marvel',
+                'daredevil~marvel'
             ]);
         });
     });
