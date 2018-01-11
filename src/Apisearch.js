@@ -17,7 +17,6 @@ class Apisearch {
         options: {
             endpoint,
             apiVersion,
-            protocol,
             timeout,
             overrideQueries,
             cache: inMemoryCache
@@ -31,7 +30,6 @@ class Apisearch {
         this.token = token;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
-        this.protocol = protocol;
         this.timeout = timeout;
         this.overrideQueries = overrideQueries;
 
@@ -61,7 +59,7 @@ class Apisearch {
             JSON.stringify(query)
         );
         let composedQuery = {
-            url: `${this.protocol}://${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&indexId=${this.indexId}&token=${this.token}&query=${encodedQuery}`,
+            url: `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&index=${this.indexId}&token=${this.token}&query=${encodedQuery}`,
             options: {
                 timeout: this.timeout
             }

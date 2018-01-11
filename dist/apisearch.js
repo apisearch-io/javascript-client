@@ -7,7 +7,7 @@
 		exports["apisearch"] = factory();
 	else
 		root["apisearch"] = factory();
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -287,7 +287,7 @@ function forEach(obj, fn) {
   }
 
   // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
+  if (typeof obj !== 'object') {
     /*eslint no-param-reassign:0*/
     obj = [obj];
   }
@@ -896,7 +896,7 @@ module.exports = function xhrAdapter(config) {
       var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
       var response = {
         data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
         status: request.status === 1223 ? 204 : request.status,
         statusText: request.status === 1223 ? 'No Content' : request.statusText,
         headers: responseHeaders,
@@ -1274,9 +1274,8 @@ module.exports = function (_ref) {
     ensureIsDefined(token, 'token');
 
     options = _extends({
-        endpoint: 'api.apisear.ch',
+        endpoint: 'https://apisearch.global.ssl.fastly.net',
         apiVersion: 'v1',
-        protocol: 'http',
         timeout: 10000,
         overrideQueries: true,
         cache: true
@@ -1343,7 +1342,6 @@ var Apisearch = function () {
             _ref$options = _ref.options,
             endpoint = _ref$options.endpoint,
             apiVersion = _ref$options.apiVersion,
-            protocol = _ref$options.protocol,
             timeout = _ref$options.timeout,
             overrideQueries = _ref$options.overrideQueries,
             inMemoryCache = _ref$options.cache;
@@ -1358,7 +1356,6 @@ var Apisearch = function () {
         this.token = token;
         this.apiVersion = apiVersion;
         this.endpoint = endpoint;
-        this.protocol = protocol;
         this.timeout = timeout;
         this.overrideQueries = overrideQueries;
 
@@ -1388,7 +1385,7 @@ var Apisearch = function () {
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
             var composedQuery = {
-                url: this.protocol + "://" + this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&indexId=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery,
+                url: this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&index=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery,
                 options: {
                     timeout: this.timeout
                 }
@@ -1633,8 +1630,6 @@ var defaults = __webpack_require__(4);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(28);
 var dispatchRequest = __webpack_require__(29);
-var isAbsoluteURL = __webpack_require__(31);
-var combineURLs = __webpack_require__(32);
 
 /**
  * Create a new instance of Axios
@@ -1665,11 +1660,6 @@ Axios.prototype.request = function request(config) {
 
   config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
   config.method = config.method.toLowerCase();
-
-  // Support baseURL config
-  if (config.baseURL && !isAbsoluteURL(config.url)) {
-    config.url = combineURLs(config.baseURL, config.url);
-  }
 
   // Hook up interceptors middleware
   var chain = [dispatchRequest, undefined];
@@ -1879,6 +1869,15 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 var utils = __webpack_require__(0);
 
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
 /**
  * Parse headers into an object
  *
@@ -1906,7 +1905,14 @@ module.exports = function parseHeaders(headers) {
     val = utils.trim(line.substr(i + 1));
 
     if (key) {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
     }
   });
 
@@ -2162,6 +2168,8 @@ var utils = __webpack_require__(0);
 var transformData = __webpack_require__(30);
 var isCancel = __webpack_require__(9);
 var defaults = __webpack_require__(4);
+var isAbsoluteURL = __webpack_require__(31);
+var combineURLs = __webpack_require__(32);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -2180,6 +2188,11 @@ function throwIfCancellationRequested(config) {
  */
 module.exports = function dispatchRequest(config) {
   throwIfCancellationRequested(config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
 
   // Ensure headers exist
   config.headers = config.headers || {};

@@ -21,9 +21,8 @@ module.exports = function({
     ensureIsDefined(token, 'token');
 
     options = {
-        endpoint: 'api.apisear.ch',
+        endpoint: 'https://apisearch.global.ssl.fastly.net',
         apiVersion: 'v1',
-        protocol: 'http',
         timeout: 10000,
         overrideQueries: true,
         cache: true,
