@@ -1368,11 +1368,11 @@ var Apisearch = function () {
         /**
          * HttpClient
          */
-        this.repository = new _HttpClient2.default(inMemoryCache ? new _MemoryCache2.default() : false);
+        this.client = new _HttpClient2.default(inMemoryCache ? new _MemoryCache2.default() : false);
     }
 
     /**
-     * Search entry point
+     * Search items
      *
      * @param query
      * @param callback
@@ -1384,8 +1384,48 @@ var Apisearch = function () {
         key: "search",
         value: function search(query, callback) {
             var encodedQuery = encodeURIComponent(JSON.stringify(query));
+            var url = this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&index=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery;
+
+            return this.fetch(url).then(function (response) {
+                return callback(response, null);
+            }).catch(function (error) {
+                return callback(null, error);
+            });
+        }
+
+        /**
+         * Search events
+         *
+         * @param query
+         * @param callback
+         * @returns {Promise}
+         */
+
+    }, {
+        key: "events",
+        value: function events(query, callback) {
+            var encodedQuery = encodeURIComponent(JSON.stringify(query));
+            var url = this.endpoint + "/" + this.apiVersion + "/events?app_id=" + this.appId + "&index=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery;
+
+            return this.fetch(url).then(function (response) {
+                return callback(response, null);
+            }).catch(function (error) {
+                return callback(null, error);
+            });
+        }
+
+        /**
+         * Fetch data
+         *
+         * @param url
+         * @returns {Promise}
+         */
+
+    }, {
+        key: "fetch",
+        value: function fetch(url) {
             var composedQuery = {
-                url: this.endpoint + "/" + this.apiVersion + "?app_id=" + this.appId + "&index=" + this.indexId + "&token=" + this.token + "&query=" + encodedQuery,
+                url: url,
                 options: {
                     timeout: this.timeout
                 }
@@ -1395,17 +1435,13 @@ var Apisearch = function () {
              * Abort any previous existing request
              */
             if (this.overrideQueries) {
-                this.repository.abort();
+                this.client.abort();
             }
 
             /**
              * Start new request
              */
-            return this.repository.query(composedQuery).then(function (response) {
-                return callback(response, null);
-            }).catch(function (error) {
-                return callback(null, error);
-            });
+            return this.client.query(composedQuery);
         }
     }]);
 

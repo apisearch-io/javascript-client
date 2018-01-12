@@ -42,13 +42,13 @@ class Apisearch {
         /**
          * HttpClient
          */
-        this.repository = new HttpClient(
+        this.client = new HttpClient(
             inMemoryCache ? new MemoryCache() : false
         );
     }
 
     /**
-     * Search entry point
+     * Search items
      *
      * @param query
      * @param callback
@@ -58,8 +58,44 @@ class Apisearch {
         let encodedQuery = encodeURIComponent(
             JSON.stringify(query)
         );
+        let url = `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&index=${this.indexId}&token=${this.token}&query=${encodedQuery}`;
+
+        return this
+            .fetch(url)
+            .then(response => callback(response, null))
+            .catch(error => callback(null, error))
+        ;
+    }
+
+    /**
+     * Search events
+     *
+     * @param query
+     * @param callback
+     * @returns {Promise}
+     */
+    events(query, callback) {
+        let encodedQuery = encodeURIComponent(
+            JSON.stringify(query)
+        );
+        let url = `${this.endpoint}/${this.apiVersion}/events?app_id=${this.appId}&index=${this.indexId}&token=${this.token}&query=${encodedQuery}`;
+
+        return this
+            .fetch(url)
+            .then(response => callback(response, null))
+            .catch(error => callback(null, error))
+        ;
+    }
+
+    /**
+     * Fetch data
+     *
+     * @param url
+     * @returns {Promise}
+     */
+    fetch(url) {
         let composedQuery = {
-            url: `${this.endpoint}/${this.apiVersion}?app_id=${this.appId}&index=${this.indexId}&token=${this.token}&query=${encodedQuery}`,
+            url: url,
             options: {
                 timeout: this.timeout
             }
@@ -69,21 +105,13 @@ class Apisearch {
          * Abort any previous existing request
          */
         if (this.overrideQueries) {
-            this.repository.abort();
+            this.client.abort();
         }
 
         /**
          * Start new request
          */
-        return this.repository
-            .query(composedQuery)
-            .then(
-                response => callback(response, null)
-            )
-            .catch(
-                error => callback(null, error)
-            )
-        ;
+        return this.client.query(composedQuery)
     }
 }
 

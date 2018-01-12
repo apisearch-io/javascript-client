@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>Apisearch Javascript example</title>
+    <script src="../dist/apisearch.js"></script>
+</head>
+<body>
+<!-- Content -->
+<h1>Last 10 events:</h1>
+<div id="result"></div>
+<!-- /Content -->
+
+<!-- Underscore template -->
+<script type="text/template" id="template">
+    Total events: <b><%= total_hits %></b><br>
+    <% if (events.length !== 0) { %>
+    <table>
+        <tbody>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Occurred on</th>
+            </tr>
+            <% events.forEach(function(event) { %>
+            <tr>
+                <td><%= event.name %></td>
+                <td><%= event.occurred_on %></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <div>No results found.</div>
+    <% } %>
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<!-- /Underscore templating -->
+
+<!-- Apisearch -->
+<script>
+    (function() {
+        var searchInput = document.getElementById('search'),
+            resultBlock = document.getElementById('result'),
+            compiled = _.template(document.getElementById('template').innerHTML)
+        ;
+
+        // 1. Create the client
+        var api = apisearch({
+            appId: '54725861',
+            indexId: '66777162',
+            token: '456d1875-b940-4e7d-bce2-c164e3737a16'
+        });
+        var query;
+
+        // 2.- compose query
+        query = api.query.create('', 20);
+
+        // 3.- Execute search
+        api.events(query, function (result, error) {
+            // Handle error
+            if (error) {
+                console.log(error);
+                return;
+            }
+
+            console.log(result)
+
+            // Render result
+            resultBlock.innerHTML = compiled({
+                total_hits: result.total_hits,
+                events: result.events || []
+            });
+        });
+    })();
+</script>
+<!-- /Apisearch -->
+</body>
+</html>
