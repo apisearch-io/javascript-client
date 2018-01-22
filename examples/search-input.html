@@ -47,7 +47,7 @@
                 // 2.- compose query
                 query = api.query
                     .create(e.target.value)
-                    .enableHighlights()
+                    .toJSON()
                 ;
 
                 // 3.- Execute search

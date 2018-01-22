@@ -2,7 +2,7 @@
   "name": "apisearch",
   "version": "0.1.21",
   "description": "Javascript client for Apisearch.",
-  "main": "./dist/apisearch.node.js",
+  "main": "./dist/apisearch.js",
   "scripts": {
     "examples": "webpack-dev-server --content-base examples/ --port 1234 --history-api-fallback index.html",
     "dev": "webpack --config ./webpack.dev.js --progress --colors --watch",

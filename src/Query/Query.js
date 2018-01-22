@@ -42,10 +42,10 @@ export default class Query {
         this.page = params.page || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
-        this.results_enabled = params.results_enabled || true;
-        this.aggregations_enabled = params.aggregations_enabled || true;
-        this.suggestions_enabled = params.suggestions_enabled || false;
-        this.highlight_enabled = params.highlight_enabled || false;
+        this.results_enabled = params.results_enabled || null;
+        this.aggregations_enabled = params.aggregations_enabled || null;
+        this.suggestions_enabled = params.suggestions_enabled || null;
+        this.highlight_enabled = params.highlight_enabled || null;
         this.filter_fields = params.filter_fields || [];
         this.user = params.user || null;
         this.coordinate = (typeof params.coordinate !== 'undefined')
@@ -54,8 +54,7 @@ export default class Query {
                 params.coordinate.lon
             ) : null
         ;
-        this.sort = {};
-        this.sortBy(SORT_BY_SCORE);
+        this.sort = null;
 
         return this;
     }
@@ -588,5 +587,31 @@ export default class Query {
         this.user = null;
 
         return null;
+    }
+
+    toJSON() {
+        let object = {
+            q: this.q
+        };
+
+        Object.keys(this).forEach((key) => {
+            let value = this[key];
+
+            /**
+             * When null, server handles its default values
+             */
+            if (value instanceof Array && value.length === 0) return;
+            if (value === null) return;
+            if (key === 'page' && value === QUERY_DEFAULT_PAGE) return;
+            if (key === 'from' && value === QUERY_DEFAULT_FROM) return;
+            if (key === 'size' && value === QUERY_DEFAULT_SIZE) return;
+
+            object = {
+                ...object,
+                [key]: value
+            }
+        });
+
+        return object;
     }
 }

@@ -2871,15 +2871,14 @@ var Query = function () {
         this.page = params.page || QUERY_DEFAULT_PAGE;
         this.size = params.size || QUERY_DEFAULT_SIZE;
         this.from = params.from || QUERY_DEFAULT_FROM;
-        this.results_enabled = params.results_enabled || true;
-        this.aggregations_enabled = params.aggregations_enabled || true;
-        this.suggestions_enabled = params.suggestions_enabled || false;
-        this.highlight_enabled = params.highlight_enabled || false;
+        this.results_enabled = params.results_enabled || null;
+        this.aggregations_enabled = params.aggregations_enabled || null;
+        this.suggestions_enabled = params.suggestions_enabled || null;
+        this.highlight_enabled = params.highlight_enabled || null;
         this.filter_fields = params.filter_fields || [];
         this.user = params.user || null;
         this.coordinate = typeof params.coordinate !== 'undefined' ? new _Coordinate2.default(params.coordinate.lat, params.coordinate.lon) : null;
-        this.sort = {};
-        this.sortBy(_SortBy.SORT_BY_SCORE);
+        this.sort = null;
 
         return this;
     }
@@ -3270,6 +3269,32 @@ var Query = function () {
             this.user = null;
 
             return null;
+        }
+    }, {
+        key: "toJSON",
+        value: function toJSON() {
+            var _this4 = this;
+
+            var object = {
+                q: this.q
+            };
+
+            Object.keys(this).forEach(function (key) {
+                var value = _this4[key];
+
+                /**
+                 * When null, server handles its default values
+                 */
+                if (value instanceof Array && value.length === 0) return;
+                if (value === null) return;
+                if (key === 'page' && value === QUERY_DEFAULT_PAGE) return;
+                if (key === 'from' && value === QUERY_DEFAULT_FROM) return;
+                if (key === 'size' && value === QUERY_DEFAULT_SIZE) return;
+
+                object = _extends({}, object, _defineProperty({}, key, value));
+            });
+
+            return object;
         }
     }]);
 
