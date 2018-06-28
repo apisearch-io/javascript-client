@@ -1,55 +1,26 @@
-Apisearch Javascript client
-===========================
+# Apisearch - Server
 
-This repository is part of the ApiSearch project.
+This library is part of the Apisearch project.
 
-This library aims to provide to any Javascript developer nicely interfaces to 
-manage search-only processes related to Apisearch, using 
-basic ES6 modules.
+[![CircleCI](https://circleci.com/gh/apisearch-io/javascript-client.svg?style=svg)](https://circleci.com/gh/apisearch-io/javascript-client)
+[![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apisearch_io/general)
 
-Is UMD compatible if you are using module loaders, otherwise apisearch will be 
-in the `window` object as `apisearch`. 
-  
+Apisearch is an open source search engine fully based on open source third party
+technologies. The project provides an *in cresciendo* set of language 
+integration libraries for her users, as well as some third party projects 
+integration bundles, plugins, or javascript widgets.
 
-## Install
+Some first steps for you!
 
-```shell
-npm install apisearch --save
-# or
-yarn add apisearch
-```
+- [Download and install Apisearch](http://docs.apisearch.io/#download-and-install-apisearch)
+- [Create your first application](http://docs.apisearch.io/#create-your-first-application)
+- [Add some data](http://docs.apisearch.io/#add-some-data)
+- [Create your first search bar](http://docs.apisearch.io/#create-my-first-search-bar)
 
-You can either download the library and use a relative path to your assets folder, 
-or use a CDN like jsDelivr. 
+Take a tour using these links.
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/apisearch/dist/apisearch.min.js"></script>
-```
-
-
-## Getting started
-
-Let's see a simple example on how to make queries: Instance the apisearch client, 
-build a query, and search! Super easy right?
-```javascript
-const api = apisearch({
-    appId: 'music',
-    index: 'default',
-    token: '1cc7a3e0-bda5-11e7-abc4-cec278b6b50a'
-});
-
-const query = api.query.create('Your search query');
-
-api.search(query, function(result, error) {
-    if (error) {
-        console.log(error);
-        return;
-    }
-    
-    console.log(result);
-});
-```
-
-## More resources:
- - [Github examples](https://github.com/alexhoma/javascript-search-client/blob/master/examples)
- - [Documentation](http://docs.apisearch.io)
+- [Documentation](http://docs.apisearch.io)
+- [View a demo](http://apisearch.io)
+- [Talk with us](https://apisearch.slack.com)
+- [Twitter](https://twitter.com/apisearch_io)
+- [Youtube Channel]()
