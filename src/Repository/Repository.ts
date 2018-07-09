@@ -91,9 +91,18 @@ export default abstract class Repository {
      * @return {Promise<void>}
      */
     public async flush(
-        bulkNumber: number = 500,
-        skipIfLess: boolean = false,
+        bulkNumber?: number,
+        skipIfLess?: boolean,
     ): Promise<void> {
+
+        if (!bulkNumber) {
+            bulkNumber = 500;
+        }
+
+        if (!skipIfLess) {
+            skipIfLess = false;
+        }
+
         if (
             skipIfLess &&
             this.itemsToUpdate.length < bulkNumber
@@ -104,9 +113,10 @@ export default abstract class Repository {
         }
 
         let offset = 0;
+        let items = [];
         try {
             while (true) {
-                const items = this
+                items = this
                     .itemsToUpdate
                     .slice(
                         offset,
@@ -140,10 +150,10 @@ export default abstract class Repository {
      * @param itemsToUpdate
      * @param itemsToDelete
      */
-    public abstract flushItems(
+    public abstract async flushItems(
         itemsToUpdate: Item[],
         itemsToDelete: ItemUUID[],
-    );
+    ): Promise<void>;
 
     /**
      * Query

@@ -134,12 +134,12 @@ export default class SortBy {
      * @return {SortBy}
      */
     public byFieldValue(field: string,
-                 order: string): SortBy {
+                        order: string): SortBy {
         const object = {
             type: SORT_BY_TYPE_FIELD,
         };
         object["indexed_metadata." + field] = {
-            order: order,
+            order,
         };
         this.sortsBy.push(object);
 
@@ -156,14 +156,14 @@ export default class SortBy {
      * @return {SortBy}
      */
     public byNestedField(field: string,
-                  order: string,
-                  mode: string = SORT_BY_MODE_AVG): SortBy {
+                         order: string,
+                         mode: string = SORT_BY_MODE_AVG): SortBy {
         const object = {
             type: SORT_BY_TYPE_NESTED,
-            mode: mode,
+            mode,
         };
         object["indexed_metadata." + field] = {
-            order: order,
+            order,
         };
         this.sortsBy.push(object);
 
@@ -181,20 +181,20 @@ export default class SortBy {
      * @return {SortBy}
      */
     public byNestedFieldAndFilter(field: string,
-                           order: string,
-                           filter: Filter,
-                           mode: string = SORT_BY_MODE_AVG): SortBy {
+                                  order: string,
+                                  filter: Filter,
+                                  mode: string = SORT_BY_MODE_AVG): SortBy {
         const fieldPath = Filter.getFilterPathByField(filter.getField());
         const filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter.createFromArray(filterAsArray);
         const object = {
             type: SORT_BY_TYPE_NESTED,
-            mode: mode,
-            filter: filter,
+            mode,
+            filter,
         };
         object["indexed_metadata." + field] = {
-            order: order,
+            order,
         };
         this.sortsBy.push(object);
 

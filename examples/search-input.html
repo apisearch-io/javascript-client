@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Apisearch Javascript example</title>
-        <script src="../dist/apisearch.min.js"></script>
+        <script src="../dist/apisearch.js"></script>
     </head>
     <body>
         <!-- Content -->
@@ -45,18 +45,9 @@
                 }
             });
 
-            let localRepository = apisearch.createRepository({
-                app_id: 'test_ts_app_id',
-                index_id: 'test_ts_index_id',
-                token: '0e4d75ba-c640-44c1-a745-06ee51db4e93',
-                options: {
-                    endpoint: 'http:127.0.0.1:8999',
-                }
-            });
-
             searchInput.addEventListener('keyup', function (e) {
 
-                localRepository
+                repository
                     .query(apisearch.createQuery(e.target.value))
                     .then(result => {
                         // Render result

@@ -198,5 +198,18 @@ describe('Result/', () => {
                 expect(Object.keys(aggregation.getActiveElements()).length).to.be.equal(1);
             });
         });
+
+        describe('createFromArray() should compute all the needed values', () => {
+            let aggregation = Aggregation.createFromArray({
+                'name': 'agg1',
+                'counters': [
+                    Counter.createByActiveElements('1', 10, ['1']).toArray(),
+                    Counter.createByActiveElements('2', 10, ['1']).toArray(),
+                ],
+                'application_type': FILTER_MUST_ALL,
+                'active_elements': ['1'],
+                'total_elements': 100
+            });
+        })
     });
 });

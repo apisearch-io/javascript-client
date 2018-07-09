@@ -1,5 +1,14 @@
-apisearch =
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["apisearch"] = factory();
+	else
+		root["apisearch"] = factory();
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -1998,13 +2007,17 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 exports.__esModule = true;
+var NoCache_1 = __webpack_require__(/*! ./Cache/NoCache */ "./src/Cache/NoCache.ts");
 var AxiosClient_1 = __webpack_require__(/*! ./Http/AxiosClient */ "./src/Http/AxiosClient.ts");
 var RetryMap_1 = __webpack_require__(/*! ./Http/RetryMap */ "./src/Http/RetryMap.ts");
-var HttpRepository_1 = __webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts");
-var NoCache_1 = __webpack_require__(/*! ./Cache/NoCache */ "./src/Cache/NoCache.ts");
 var Query_1 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var Query_2 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var Query_3 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
+var SortBy_1 = __webpack_require__(/*! ./Query/SortBy */ "./src/Query/SortBy.ts");
+var HttpRepository_1 = __webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts");
+var Aggregations_1 = __webpack_require__(/*! ./Result/Aggregations */ "./src/Result/Aggregations.ts");
+var Result_1 = __webpack_require__(/*! ./Result/Result */ "./src/Result/Result.ts");
+var Transformer_1 = __webpack_require__(/*! ./Transformer/Transformer */ "./src/Transformer/Transformer.ts");
 /**
  * Apisearch class
  */
@@ -2019,12 +2032,12 @@ var Apisearch = /** @class */ (function () {
      * @returns {Repository}
      */
     Apisearch.createRepository = function (config) {
-        config.options = __assign({ api_version: 'v1', timeout: 10000, override_queries: true, cache: new NoCache_1["default"]() }, config.options);
+        config.options = __assign({ api_version: "v1", cache: new NoCache_1["default"](), timeout: 10000, override_queries: true }, config.options);
         /**
          * Client
          */
         var httpClient = new AxiosClient_1["default"](config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1["default"](), config.options.override_queries, config.options.cache);
-        return new HttpRepository_1["default"](httpClient, config.app_id, config.index_id, config.token);
+        return new HttpRepository_1["default"](httpClient, config.app_id, config.index_id, config.token, new Transformer_1["default"]());
     };
     /**
      * Created located
@@ -2086,6 +2099,22 @@ var Apisearch = /** @class */ (function () {
             uuids[_i] = arguments[_i];
         }
         return Query_1["default"].createByUUIDs.apply(Query_1["default"], uuids);
+    };
+    /**
+     * Create empty result
+     *
+     * @return {Result}
+     */
+    Apisearch.createEmptyResult = function () {
+        return Result_1["default"].create(Apisearch.createQueryMatchAll(), 0, 0, new Aggregations_1["default"](0), [], []);
+    };
+    /**
+     * Create empty sortby
+     *
+     * @return {SortBy}
+     */
+    Apisearch.createEmptySortBy = function () {
+        return SortBy_1["default"].create();
     };
     return Apisearch;
 }());
@@ -4076,6 +4105,8 @@ var Query = /** @class */ (function () {
         this.universeFilters = {};
         this.filters = {};
         this.itemsPromoted = [];
+        this.aggregations = {};
+        this.filterFields = [];
         this.sortByInstance = SortBy_1["default"].create();
         this.filters._query = Filter_1["default"].create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
     }
@@ -5509,6 +5540,8 @@ var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError *
 var InvalidTokenError_1 = __webpack_require__(/*! ../Error/InvalidTokenError */ "./src/Error/InvalidTokenError.ts");
 var ResourceExistsError_1 = __webpack_require__(/*! ../Error/ResourceExistsError */ "./src/Error/ResourceExistsError.ts");
 var ResourceNotAvailableError_1 = __webpack_require__(/*! ../Error/ResourceNotAvailableError */ "./src/Error/ResourceNotAvailableError.ts");
+var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
+var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
 var Result_1 = __webpack_require__(/*! ../Result/Result */ "./src/Result/Result.ts");
 var Repository_1 = __webpack_require__(/*! ./Repository */ "./src/Repository/Repository.ts");
 /**
@@ -5523,12 +5556,48 @@ var HttpRepository = /** @class */ (function (_super) {
      * @param appId
      * @param indexId
      * @param token
+     * @param transformer
      */
-    function HttpRepository(httpClient, appId, indexId, token) {
+    function HttpRepository(httpClient, appId, indexId, token, transformer) {
         var _this = _super.call(this, appId, indexId, token) || this;
         _this.httpClient = httpClient;
+        _this.transformer = transformer;
         return _this;
     }
+    /**
+     * Get transformer
+     *
+     * @return {Transformer}
+     */
+    HttpRepository.prototype.getTransformer = function () {
+        return this.transformer;
+    };
+    /**
+     * Generate item document by a simple object.
+     *
+     * @param object
+     */
+    HttpRepository.prototype.addObject = function (object) {
+        var item = this
+            .transformer
+            .toItem(object);
+        if (item instanceof Item_1["default"]) {
+            this.addItem(item);
+        }
+    };
+    /**
+     * Delete item document by uuid.
+     *
+     * @param object
+     */
+    HttpRepository.prototype.deleteObject = function (object) {
+        var itemUUID = this
+            .transformer
+            .toItemUUID(object);
+        if (itemUUID instanceof ItemUUID_1["default"]) {
+            this.deleteItem(itemUUID);
+        }
+    };
     /**
      * flush items
      *
@@ -5627,17 +5696,23 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.query = function (query) {
         return __awaiter(this, void 0, void 0, function () {
+            var that;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/", "get", this.getCredentials(), {
-                            query: JSON.stringify(query.toArray())
-                        }, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return Result_1["default"].createFromArray(response.getBody());
-                        })];
+                    case 0:
+                        that = this;
+                        return [4 /*yield*/, this
+                                .httpClient
+                                .get("/", "get", this.getCredentials(), {
+                                query: JSON.stringify(query.toArray())
+                            }, {})
+                                .then(function (response) {
+                                HttpRepository.throwTransportableExceptionIfNeeded(response);
+                                var result = Result_1["default"].createFromArray(response.getBody());
+                                return Result_1["default"].create(result.getQuery(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), that
+                                    .transformer
+                                    .fromItems(result.getItems()));
+                            })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -5939,18 +6014,23 @@ var Repository = /** @class */ (function () {
      * @return {Promise<void>}
      */
     Repository.prototype.flush = function (bulkNumber, skipIfLess) {
-        if (bulkNumber === void 0) { bulkNumber = 500; }
-        if (skipIfLess === void 0) { skipIfLess = false; }
         return __awaiter(this, void 0, void 0, function () {
             var offset, items, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!bulkNumber) {
+                            bulkNumber = 500;
+                        }
+                        if (!skipIfLess) {
+                            skipIfLess = false;
+                        }
                         if (skipIfLess &&
                             this.itemsToUpdate.length < bulkNumber) {
                             return [2 /*return*/, new Promise(function (resolve) { return resolve(); })];
                         }
                         offset = 0;
+                        items = [];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 6, , 7]);
@@ -6166,6 +6246,11 @@ var Aggregation = /** @class */ (function () {
         return Object.keys(this.activeElements).length == 0 &&
             Object.keys(this.counters).length == 0;
     };
+    /**
+     * To array
+     *
+     * @return {any}
+     */
     Aggregation.prototype.toArray = function () {
         var array = {
             name: this.name,
@@ -6745,6 +6830,149 @@ exports["default"] = Result;
 
 /***/ }),
 
+/***/ "./src/Transformer/Transformer.ts":
+/*!****************************************!*\
+  !*** ./src/Transformer/Transformer.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
+var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
+/**
+ * Transformer
+ */
+var Transformer = /** @class */ (function () {
+    function Transformer() {
+        this.readTransformers = [];
+        this.writeTransformers = [];
+    }
+    /**
+     * Add read transformer
+     *
+     * @param readTransformer
+     */
+    Transformer.prototype.addReadTransformer = function (readTransformer) {
+        this
+            .readTransformers
+            .push(readTransformer);
+    };
+    /**
+     * Add write transformer
+     *
+     * @param writeTransformer
+     */
+    Transformer.prototype.addWriteTransformer = function (writeTransformer) {
+        this
+            .writeTransformers
+            .push(writeTransformer);
+    };
+    /**
+     * Items to objects
+     *
+     * @param items
+     *
+     * @returns {any[]}
+     */
+    Transformer.prototype.fromItems = function (items) {
+        var objects = [];
+        for (var i in items) {
+            objects.push(this.fromItem(items[i]));
+        }
+        return objects;
+    };
+    /**
+     * Item to object
+     *
+     * @param item
+     *
+     * @returns {any}
+     */
+    Transformer.prototype.fromItem = function (item) {
+        for (var i in this.readTransformers) {
+            var transformer = this.readTransformers[i];
+            if (transformer.isValidItem(item)) {
+                return transformer.fromItem(item);
+            }
+        }
+        return item;
+    };
+    /**
+     * Objects to items
+     *
+     * @param objects
+     *
+     * @returns {Item[]}
+     */
+    Transformer.prototype.toItems = function (objects) {
+        var items = [];
+        for (var i in objects) {
+            var item = this.toItem(objects[i]);
+            if (item instanceof Item_1["default"]) {
+                items.push(item);
+            }
+        }
+        return items;
+    };
+    /**
+     * Object to item
+     *
+     * @param object
+     *
+     * @returns {any}
+     */
+    Transformer.prototype.toItem = function (object) {
+        for (var i in this.writeTransformers) {
+            var transformer = this.writeTransformers[i];
+            if (transformer.isValidObject(object)) {
+                return transformer.toItem(object);
+            }
+        }
+        return object;
+    };
+    /**
+     * Objects to items
+     *
+     * @param objects
+     *
+     * @returns {ItemUUID[]}
+     */
+    Transformer.prototype.toItemUUIDs = function (objects) {
+        var itemUUIDs = [];
+        for (var i in objects) {
+            var itemUUID = this.toItemUUID(objects[i]);
+            if (itemUUID instanceof ItemUUID_1["default"]) {
+                itemUUIDs.push(itemUUID);
+            }
+        }
+        return itemUUIDs;
+    };
+    /**
+     * Object to item
+     *
+     * @param object
+     *
+     * @returns {any}
+     */
+    Transformer.prototype.toItemUUID = function (object) {
+        for (var i in this.writeTransformers) {
+            var transformer = this.writeTransformers[i];
+            if (transformer.isValidObject(object)) {
+                return transformer.toItemUUID(object);
+            }
+        }
+        return object;
+    };
+    return Transformer;
+}());
+exports["default"] = Transformer;
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -6762,4 +6990,5 @@ exports["default"] = Apisearch_1["default"];
 /***/ })
 
 /******/ })["default"];
+});
 //# sourceMappingURL=apisearch.node.js.map

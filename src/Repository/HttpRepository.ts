@@ -12,6 +12,7 @@ import Item from "../Model/Item";
 import ItemUUID from "../Model/ItemUUID";
 import Query from "../Query/Query";
 import Result from "../Result/Result";
+import Transformer from "../Transformer/Transformer";
 import Repository from "./Repository";
 /**
  * Aggregation class
@@ -19,6 +20,7 @@ import Repository from "./Repository";
 export default class HttpRepository extends Repository {
 
     private httpClient: HttpClient;
+    private transformer: Transformer;
 
     /**
      * Constructor
@@ -27,15 +29,57 @@ export default class HttpRepository extends Repository {
      * @param appId
      * @param indexId
      * @param token
+     * @param transformer
      */
     constructor(
         httpClient: HttpClient,
         appId: string,
         indexId: string,
         token: string,
+        transformer: Transformer,
     ) {
         super(appId, indexId, token);
         this.httpClient = httpClient;
+        this.transformer = transformer;
+    }
+
+    /**
+     * Get transformer
+     *
+     * @return {Transformer}
+     */
+    public getTransformer(): Transformer {
+        return this.transformer;
+    }
+
+    /**
+     * Generate item document by a simple object.
+     *
+     * @param object
+     */
+    public addObject(object) {
+        const item = this
+            .transformer
+            .toItem(object);
+
+        if (item instanceof Item) {
+            this.addItem(item);
+        }
+    }
+
+    /**
+     * Delete item document by uuid.
+     *
+     * @param object
+     */
+    public deleteObject(object) {
+        const itemUUID = this
+            .transformer
+            .toItemUUID(object);
+
+        if (itemUUID instanceof ItemUUID) {
+            this.deleteItem(itemUUID);
+        }
     }
 
     /**
@@ -134,6 +178,8 @@ export default class HttpRepository extends Repository {
      */
     public async query(query: Query): Promise<Result> {
 
+        const that = this;
+
         return await this
             .httpClient
             .get(
@@ -148,7 +194,18 @@ export default class HttpRepository extends Repository {
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
 
-                return Result.createFromArray(response.getBody());
+                const result = Result.createFromArray(response.getBody());
+
+                return Result.create(
+                    result.getQuery(),
+                    result.getTotalItems(),
+                    result.getTotalHits(),
+                    result.getAggregations(),
+                    result.getSuggests(),
+                    that
+                        .transformer
+                        .fromItems(result.getItems()),
+                );
             });
     }
 

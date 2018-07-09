@@ -64,8 +64,8 @@ export default class Range {
      * @param incremental
      */
     public static createRanges(from: number,
-                        to: number,
-                        incremental: number): string[] {
+                               to: number,
+                               incremental: number): string[] {
         const ranges = [];
         let nextTo;
         while (from < to) {
