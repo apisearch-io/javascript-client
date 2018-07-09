@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.1.22",
+  "version": "0.2.1",
   "description": "Javascript client for Apisearch.",
   "main": "./dist/apisearch.js",
   "scripts": {
