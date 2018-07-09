@@ -112,10 +112,10 @@ export default class Filter {
      * @return {Filter}
      */
     public static create(field: string,
-                  values: any,
-                  applicationType: number,
-                  filterType: string,
-                  filterTerms: string[] = []) {
+                         values: any,
+                         applicationType: number,
+                         filterType: string,
+                         filterTerms: string[] = []) {
         return new Filter(
             field,
             values,

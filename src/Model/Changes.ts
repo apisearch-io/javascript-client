@@ -30,12 +30,12 @@ export default class Changes {
      * @param type
      */
     public addChange(field: string,
-              value: string,
-              type: number = TYPE_VALUE) {
+                     value: string,
+                     type: number = TYPE_VALUE) {
         this.changes.push({
-            field: field,
-            type: type,
-            value: value,
+            field,
+            type,
+            value,
         });
     }
 
@@ -48,14 +48,14 @@ export default class Changes {
      * @param type
      */
     public updateElementFromList(field: string,
-                          condition: string,
-                          value: string,
-                          type: number) {
+                                 condition: string,
+                                 value: string,
+                                 type: number) {
         this.changes.push({
-            field: field,
+            field,
             type: type | TYPE_ARRAY_ELEMENT_UPDATE,
-            condition: condition,
-            value: value,
+            condition,
+            value,
         });
     }
 
@@ -67,12 +67,12 @@ export default class Changes {
      * @param type
      */
     public addElementInList(field: string,
-                     value: string,
-                     type: number) {
+                            value: string,
+                            type: number) {
         this.changes.push({
-            field: field,
+            field,
             type: type | TYPE_ARRAY_ELEMENT_ADD,
-            value: value,
+            value,
         });
     }
 
@@ -83,11 +83,11 @@ export default class Changes {
      * @param condition
      */
     public deleteElementFromList(field: string,
-                          condition: string) {
+                                 condition: string) {
         this.changes.push({
-            field: field,
+            field,
             type: TYPE_ARRAY_ELEMENT_DELETE,
-            condition: condition,
+            condition,
         });
     }
 

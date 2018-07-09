@@ -57,11 +57,11 @@ export default class Item {
      * @returns {Item}
      */
     public static create(uuid: ItemUUID,
-                  metadata: any = {},
-                  indexedMetadata: any = {},
-                  searchableMetadata: any = {},
-                  exactMatchingMetadata: string[] = [],
-                  suggest: string[] = []) {
+                         metadata: any = {},
+                         indexedMetadata: any = {},
+                         searchableMetadata: any = {},
+                         exactMatchingMetadata: string[] = [],
+                         suggest: string[] = []) {
         return new Item(
             uuid,
             null,
@@ -86,12 +86,12 @@ export default class Item {
      * @returns {Item}
      */
     public static createLocated(uuid: ItemUUID,
-                         coordinate: Coordinate,
-                         metadata: any = {},
-                         indexedMetadata: any = {},
-                         searchableMetadata: any = {},
-                         exactMatchingMetadata: string[] = [],
-                         suggest: string[] = []) {
+                                coordinate: Coordinate,
+                                metadata: any = {},
+                                indexedMetadata: any = {},
+                                searchableMetadata: any = {},
+                                exactMatchingMetadata: string[] = [],
+                                suggest: string[] = []) {
         return new Item(
             uuid,
             coordinate,
@@ -173,7 +173,7 @@ export default class Item {
      * @param value
      */
     public addMetadata(key: string,
-                value: any) {
+                       value: any) {
         this.metadata[key] = value;
     }
 
@@ -202,7 +202,7 @@ export default class Item {
      * @param value
      */
     public addIndexedMetadata(key: string,
-                       value: any) {
+                              value: any) {
         this.indexedMetadata[key] = value;
     }
 
@@ -231,7 +231,7 @@ export default class Item {
      * @param value
      */
     public addSearchableMetadata(key: string,
-                          value: any) {
+                                 value: any) {
         this.searchableMetadata[key] = value;
     }
 

@@ -206,6 +206,11 @@ export default class Aggregation {
             Object.keys(this.counters).length == 0;
     }
 
+    /**
+     * To array
+     *
+     * @return {any}
+     */
     public toArray(): any {
         const array: any = {
             name: this.name,

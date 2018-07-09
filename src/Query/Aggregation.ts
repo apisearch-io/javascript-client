@@ -129,12 +129,12 @@ export default class Aggregation {
      * @returns {Aggregation}
      */
     public static create(name: string,
-                  field: string,
-                  applicationType: number,
-                  filterType: string,
-                  subgroup: string[] = [],
-                  sort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                  limit: number = AGGREGATION_NO_LIMIT) {
+                         field: string,
+                         applicationType: number,
+                         filterType: string,
+                         subgroup: string[] = [],
+                         sort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
+                         limit: number = AGGREGATION_NO_LIMIT) {
         return new Aggregation(
             name,
             field,

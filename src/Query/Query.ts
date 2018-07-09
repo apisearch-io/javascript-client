@@ -42,7 +42,7 @@ export default class Query {
     private filters: any = {};
     private itemsPromoted: ItemUUID[] = [];
     private sortByInstance: SortBy;
-    private aggregations: any;
+    private aggregations: any = {};
     private page: number;
     private from: number;
     private size: number;
@@ -50,7 +50,7 @@ export default class Query {
     private aggregationsEnabled: boolean;
     private suggestionsEnabled: boolean;
     private highlightsEnabled: boolean;
-    private filterFields: string[];
+    private filterFields: string[] = [];
     private scoreStrategy: ScoreStrategy;
     private user: User;
 
@@ -80,9 +80,9 @@ export default class Query {
      * @returns {Query}
      */
     public static createLocated(coordinate: Coordinate,
-                         queryText: string,
-                         page: number = QUERY_DEFAULT_PAGE,
-                         size: number = QUERY_DEFAULT_SIZE): Query {
+                                queryText: string,
+                                page: number = QUERY_DEFAULT_PAGE,
+                                size: number = QUERY_DEFAULT_SIZE): Query {
         const query = Query.create(
             queryText,
             page,
@@ -104,8 +104,8 @@ export default class Query {
      * @returns {Query}
      */
     public static create(queryText: string,
-                  page: number = QUERY_DEFAULT_PAGE,
-                  size: number = QUERY_DEFAULT_SIZE): Query {
+                         page: number = QUERY_DEFAULT_PAGE,
+                         size: number = QUERY_DEFAULT_SIZE): Query {
         page = Math.max(1, page);
         const query = new Query(queryText);
         query.from = (page - 1) * size;
@@ -202,8 +202,8 @@ export default class Query {
      * @return {Query}
      */
     public filterByTypes(values: any[],
-                  aggregate: boolean = true,
-                  aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
+                         aggregate: boolean = true,
+                         aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
         const fieldPath = Filter.getFilterPathByField("type");
         if (values.length > 0) {
             this.filters = {
@@ -298,8 +298,8 @@ export default class Query {
      * @return {Query}
      */
     public filterUniverseBy(field: string,
-                     values: any[],
-                     applicationType: number = FILTER_AT_LEAST_ONE): Query {
+                            values: any[],
+                            applicationType: number = FILTER_AT_LEAST_ONE): Query {
         const fieldPath = Filter.getFilterPathByField(field);
         if (values.length > 0) {
             this.universeFilters = {
@@ -331,11 +331,11 @@ export default class Query {
      * @return {Query}
      */
     public filterBy(filterName: string,
-             field: string,
-             values: any[],
-             applicationType: number = FILTER_AT_LEAST_ONE,
-             aggregate: boolean = true,
-             aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
+                    field: string,
+                    values: any[],
+                    applicationType: number = FILTER_AT_LEAST_ONE,
+                    aggregate: boolean = true,
+                    aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
         const fieldPath = Filter.getFilterPathByField(field);
         if (values.length > 0) {
             this.filters = {
@@ -374,9 +374,9 @@ export default class Query {
      * @return {Query}
      */
     public filterUniverseByRange(field: string,
-                          values: any[],
-                          applicationType: number = FILTER_AT_LEAST_ONE,
-                          rangeType: string = FILTER_TYPE_RANGE): Query {
+                                 values: any[],
+                                 applicationType: number = FILTER_AT_LEAST_ONE,
+                                 rangeType: string = FILTER_TYPE_RANGE): Query {
         const fieldPath = Filter.getFilterPathByField(field);
         if (values.length > 0) {
             this.universeFilters = {
@@ -405,8 +405,8 @@ export default class Query {
      * @return {Query}
      */
     public filterUniverseByDateRange(field: string,
-                              values: any[],
-                              applicationType: number = FILTER_AT_LEAST_ONE): Query {
+                                     values: any[],
+                                     applicationType: number = FILTER_AT_LEAST_ONE): Query {
         return this.filterUniverseByRange(
             field,
             values,
@@ -430,13 +430,13 @@ export default class Query {
      * @return {Query}
      */
     public filterByRange(filterName: string,
-                  field: string,
-                  options: string[],
-                  values: any[],
-                  applicationType: number = FILTER_AT_LEAST_ONE,
-                  rangeType: string = FILTER_TYPE_RANGE,
-                  aggregate: boolean = true,
-                  aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
+                         field: string,
+                         options: string[],
+                         values: any[],
+                         applicationType: number = FILTER_AT_LEAST_ONE,
+                         rangeType: string = FILTER_TYPE_RANGE,
+                         aggregate: boolean = true,
+                         aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
         const fieldPath = Filter.getFilterPathByField(field);
         if (values.length !== 0) {
             this.filters = {
@@ -480,12 +480,12 @@ export default class Query {
      * @return {Query}
      */
     public filterByDateRange(filterName: string,
-                      field: string,
-                      options: string[],
-                      values: any[],
-                      applicationType: number = FILTER_AT_LEAST_ONE,
-                      aggregate: boolean = true,
-                      aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
+                             field: string,
+                             options: string[],
+                             values: any[],
+                             applicationType: number = FILTER_AT_LEAST_ONE,
+                             aggregate: boolean = true,
+                             aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
         return this.filterByRange(
             filterName,
             field,
@@ -575,10 +575,10 @@ export default class Query {
      * @return {Query}
      */
     public aggregateBy(filterName: string,
-                field: string,
-                applicationType: number,
-                aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                limit: number = AGGREGATION_NO_LIMIT): Query {
+                       field: string,
+                       applicationType: number,
+                       aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
+                       limit: number = AGGREGATION_NO_LIMIT): Query {
         this.aggregations = {
             ...this.aggregations,
             [filterName]: Aggregation.create(
@@ -609,12 +609,12 @@ export default class Query {
      * @return {Query}
      */
     public aggregateByRange(filterName: string,
-                     field: string,
-                     options: string[],
-                     applicationType: number,
-                     rangeType: string = FILTER_TYPE_RANGE,
-                     aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                     limit: number = AGGREGATION_NO_LIMIT): Query {
+                            field: string,
+                            options: string[],
+                            applicationType: number,
+                            rangeType: string = FILTER_TYPE_RANGE,
+                            aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
+                            limit: number = AGGREGATION_NO_LIMIT): Query {
         if (options.length === 0) {
             return this;
         }
@@ -648,11 +648,11 @@ export default class Query {
      * @return {Query}
      */
     public aggregateByDateRange(filterName: string,
-                         field: string,
-                         options: string[],
-                         applicationType: number,
-                         aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                         limit: number = AGGREGATION_NO_LIMIT): Query {
+                                field: string,
+                                options: string[],
+                                applicationType: number,
+                                aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
+                                limit: number = AGGREGATION_NO_LIMIT): Query {
         return this.aggregateByRange(
             filterName,
             field,
