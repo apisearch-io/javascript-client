@@ -1,5 +1,5 @@
 import Item from "../Model/Item";
-import Aggregation from "../Query/Aggregation";
+import Aggregation from "../Result/Aggregation";
 import Query from "../Query/Query";
 import Aggregations from "./Aggregations";
 /**
