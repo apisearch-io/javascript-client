@@ -1,4 +1,4 @@
-# Apisearch - Server
+# Apisearch - Javascript Client
 
 This library is part of the Apisearch project.
 
