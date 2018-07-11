@@ -1,4 +1,4 @@
-import {InvalidFormatError} from "../../src/Error/InvalidFormatError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {Coordinate} from "./Coordinate";
 import {ItemUUID} from "./ItemUUID";
 
