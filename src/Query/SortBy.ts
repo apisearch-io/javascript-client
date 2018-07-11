@@ -55,8 +55,8 @@ export const SORT_BY_LOCATION_MI_ASC = {
     },
 };
 
-import {Coordinate} from "../../src/Model/Coordinate";
-import {Filter} from "../../src/Query/Filter";
+import {Coordinate} from "../Model/Coordinate";
+import {Filter} from "./Filter";
 
 /**
  * ScoreStrategy
