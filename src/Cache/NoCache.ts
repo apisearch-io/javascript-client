@@ -3,7 +3,7 @@ import {KeyValueCache} from "./KeyValueCache";
 /**
  * Cache class
  */
-export default class NoCache implements KeyValueCache {
+export class NoCache implements KeyValueCache {
 
     /**
      * Set cache element

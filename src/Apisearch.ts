@@ -1,18 +1,18 @@
 import {KeyValueCache} from "./Cache/KeyValueCache";
-import NoCache from "./Cache/NoCache";
-import AxiosClient from "./Http/AxiosClient";
-import RetryMap from "./Http/RetryMap";
-import Coordinate from "./Model/Coordinate";
-import ItemUUID from "./Model/ItemUUID";
-import Query from "./Query/Query";
+import {NoCache} from "./Cache/NoCache";
+import {AxiosClient} from "./Http/AxiosClient";
+import {RetryMap} from "./Http/RetryMap";
+import {Coordinate} from "./Model/Coordinate";
+import {ItemUUID} from "./Model/ItemUUID";
+import {Query} from "./Query/Query";
 import {QUERY_DEFAULT_PAGE} from "./Query/Query";
 import {QUERY_DEFAULT_SIZE} from "./Query/Query";
-import SortBy from "./Query/SortBy";
-import HttpRepository from "./Repository/HttpRepository";
-import Repository from "./Repository/Repository";
-import Aggregations from "./Result/Aggregations";
-import Result from "./Result/Result";
-import Transformer from "./Transformer/Transformer";
+import {SortBy} from "./Query/SortBy";
+import {HttpRepository} from "./Repository/HttpRepository";
+import {Repository} from "./Repository/Repository";
+import {ResultAggregations} from "./Result/ResultAggregations";
+import {Result} from "./Result/Result";
+import {Transformer} from "./Transformer/Transformer";
 
 /**
  * Apisearch class
@@ -38,7 +38,7 @@ export default class Apisearch {
                 override_queries?: boolean,
                 cache?: KeyValueCache,
             },
-        },
+        }
     ): Repository {
         config.options = {
             api_version: "v1",
@@ -151,7 +151,7 @@ export default class Apisearch {
             Apisearch.createQueryMatchAll(),
             0,
             0,
-            new Aggregations(0),
+            new ResultAggregations(0),
             [],
             [],
         );

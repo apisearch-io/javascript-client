@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ConnectionError from "../../src/Error/ConnectionError";
+import {ConnectionError} from "../../src/Error/ConnectionError";
 
 describe('ConnectionError()', () => {
     describe('', () => {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import UnsupportedContentTypeError from "../../src/Error/UnsupportedContentTypeError";
+import {UnsupportedContentTypeError} from "../../src/Error/UnsupportedContentTypeError";
 
 describe('UnsupportedContentTypeError()', () => {
     describe('', () => {

@@ -1,9 +1,9 @@
-import Retry from "./Retry";
+import {Retry} from "./Retry";
 
 /**
  * Http class
  */
-export default class RetryMap {
+export class RetryMap {
 
     private retries: any = {};
 

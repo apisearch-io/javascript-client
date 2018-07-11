@@ -1,4 +1,4 @@
-import Metadata from "../../src/Model/Metadata";
+import {Metadata} from "../../src/Model/Metadata";
 import { expect } from 'chai';
 
 describe('Model/', () => {

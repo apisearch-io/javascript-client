@@ -1,11 +1,11 @@
-import Item from "../Model/Item";
-import ItemUUID from "../Model/ItemUUID";
+import {Item} from "../Model/Item";
+import {ItemUUID} from "../Model/ItemUUID";
 import {ReadTransformer} from "./ReadTransformer";
 import {WriteTransformer} from "./WriteTransformer";
 /**
  * Transformer
  */
-export default class Transformer {
+export class Transformer {
 
     private readTransformers: ReadTransformer[] = [];
     private writeTransformers: WriteTransformer[] = [];

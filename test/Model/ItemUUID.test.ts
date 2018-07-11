@@ -1,4 +1,4 @@
-import ItemUUID from "../../src/Model/ItemUUID";
+import {ItemUUID} from "../../src/Model/ItemUUID";
 import { expect } from 'chai';
 
 describe('Model/', () => {

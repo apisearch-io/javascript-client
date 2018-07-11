@@ -1,14 +1,14 @@
 import Axios from "axios";
 import {KeyValueCache} from "../Cache/KeyValueCache";
-import Client from "./Client";
-import HttpClient from "./HttpClient";
-import Response from "./Response";
-import RetryMap from "./RetryMap";
+import {Client} from "./Client";
+import {HttpClient} from "./HttpClient";
+import {Response} from "./Response";
+import {RetryMap} from "./RetryMap";
 
 /**
  * AxiosClient
  */
-export default class AxiosClient extends Client implements HttpClient {
+export class AxiosClient extends Client implements HttpClient {
 
     private host: string;
     private cache: KeyValueCache;

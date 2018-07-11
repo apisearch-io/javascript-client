@@ -1,9 +1,9 @@
-import Coordinate from "../Model/Coordinate";
+import {Coordinate} from "../Model/Coordinate";
 
 /**
  * Abstract Location Range class
  */
-export default abstract class LocationRange {
+export abstract class LocationRange {
 
     /**
      * To filter object

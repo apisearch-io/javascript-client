@@ -15,7 +15,7 @@ export const FILTER_TYPE_QUERY = "query";
 /**
  * Filter class
  */
-export default class Filter {
+export class Filter {
 
     private field: string;
     private values: any;

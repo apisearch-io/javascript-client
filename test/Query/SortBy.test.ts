@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import SortBy from "../../src/Query/SortBy";
-import Filter from "../../src/Query/Filter";
-import Coordinate from "../../src/Model/Coordinate";
+import {SortBy} from "../../src/Query/SortBy";
+import {Filter} from "../../src/Query/Filter";
+import {Coordinate} from "../../src/Model/Coordinate";
 import {
     SORT_BY_AL_TUN_TUN,
     SORT_BY_RANDOM,

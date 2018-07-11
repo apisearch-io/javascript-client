@@ -8,7 +8,7 @@ export const RANGE_SEPARATOR = "..";
 /**
  * Filter class
  */
-export default class Range {
+export class Range {
 
     /**
      * Strong to array

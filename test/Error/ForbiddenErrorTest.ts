@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ForbiddenError from "../../src/Error/ForbiddenError";
+import {ForbiddenError} from "../../src/Error/ForbiddenError";
 
 describe('ForbiddenError()', () => {
     describe('', () => {

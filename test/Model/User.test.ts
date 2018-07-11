@@ -1,4 +1,4 @@
-import User from "../../src/Model/User";
+import {User} from "../../src/Model/User";
 import { expect } from 'chai';
 
 describe('Model/', () => {

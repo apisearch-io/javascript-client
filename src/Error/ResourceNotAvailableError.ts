@@ -1,6 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
-export default class ResourceNotAvailableError extends ErrorWithMessage {
+/**
+ * Resource not available error
+ */
+export class ResourceNotAvailableError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

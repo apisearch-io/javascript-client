@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import InvalidFormatError from "../../src/Error/InvalidFormatError";
+import {expect} from 'chai';
+import {InvalidFormatError} from "../../src/Error/InvalidFormatError";
 
 describe('InvalidFormatError()', () => {
     describe('', () => {

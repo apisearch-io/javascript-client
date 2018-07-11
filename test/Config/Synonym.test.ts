@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Synonym from "../../src/Config/Synonym";
+import {Synonym} from "../../src/Config/Synonym";
 
 describe('Config/', () => {
     describe('Synonym', () => {

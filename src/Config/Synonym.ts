@@ -1,7 +1,7 @@
 /**
  * Result class
  */
-export default class Synonym {
+export class Synonym {
 
     private words: string[];
 

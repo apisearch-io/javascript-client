@@ -1,11 +1,11 @@
 import {ReadTransformer} from "../../src/Transformer/ReadTransformer";
-import Product from "./Product";
-import Item from "../../src/Model/Item";
+import {Product} from "./Product";
+import {Item} from "../../src/Model/Item";
 
 /**
  * Product ReadTransformer
  */
-export default class ProductReadTransformer implements ReadTransformer {
+export class ProductReadTransformer implements ReadTransformer {
 
     /**
      * The item should be converted by this transformer.

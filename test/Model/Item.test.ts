@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import Item from "../../src/Model/Item";
-import ItemUUID from "../../src/Model/ItemUUID";
-import Coordinate from "../../src/Model/Coordinate";
+import {Item} from "../../src/Model/Item";
+import {ItemUUID} from "../../src/Model/ItemUUID";
+import {Coordinate} from "../../src/Model/Coordinate";
 
 describe('Model/', () => {
     describe('Item', () => {

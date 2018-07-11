@@ -1,8 +1,8 @@
-import Synonym from "./Synonym";
+import {Synonym} from "./Synonym";
 /**
  * Result class
  */
-export default class ImmutableConfig {
+export class ImmutableConfig {
 
     private language: string;
     private storeSearchableMetadata: boolean;

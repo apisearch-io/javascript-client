@@ -1,10 +1,10 @@
-import InvalidFormatError from "../Error/InvalidFormatError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
 
 /**
  * Coordinate Type cast
  * @param coordinate
  */
-export default class Coordinate {
+export class Coordinate {
 
     private lat: number;
     private lon: number;

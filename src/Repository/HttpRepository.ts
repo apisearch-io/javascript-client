@@ -1,23 +1,23 @@
-import Config from "../Config/Config";
-import ImmutableConfig from "../Config/ImmutableConfig";
-import ConnectionError from "../Error/ConnectionError";
-import InvalidFormatError from "../Error/InvalidFormatError";
-import InvalidTokenError from "../Error/InvalidTokenError";
-import ResourceExistsError from "../Error/ResourceExistsError";
-import ResourceNotAvailableError from "../Error/ResourceNotAvailableError";
-import HttpClient from "../Http/HttpClient";
-import Response from "../Http/Response";
-import Changes from "../Model/Changes";
-import Item from "../Model/Item";
-import ItemUUID from "../Model/ItemUUID";
-import Query from "../Query/Query";
-import Result from "../Result/Result";
-import Transformer from "../Transformer/Transformer";
-import Repository from "./Repository";
+import {Config} from "../Config/Config";
+import {ImmutableConfig} from "../Config/ImmutableConfig";
+import {ConnectionError} from "../Error/ConnectionError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
+import {InvalidTokenError} from "../Error/InvalidTokenError";
+import {ResourceExistsError} from "../Error/ResourceExistsError";
+import {ResourceNotAvailableError} from "../Error/ResourceNotAvailableError";
+import {HttpClient} from "../Http/HttpClient";
+import {Response} from "../Http/Response";
+import {Changes} from "../Model/Changes";
+import {Item} from "../Model/Item";
+import {ItemUUID} from "../Model/ItemUUID";
+import {Query} from "../Query/Query";
+import {Result} from "../Result/Result";
+import {Transformer} from "../Transformer/Transformer";
+import {Repository} from "./Repository";
 /**
  * Aggregation class
  */
-export default class HttpRepository extends Repository {
+export class HttpRepository extends Repository {
 
     private httpClient: HttpClient;
     private transformer: Transformer;

@@ -1,6 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
-export default class ForbiddenError extends ErrorWithMessage {
+/**
+ * Forbidden Error
+ */
+export class ForbiddenError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

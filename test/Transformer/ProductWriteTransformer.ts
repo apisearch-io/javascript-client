@@ -1,12 +1,12 @@
 import {WriteTransformer} from "../../src/Transformer/WriteTransformer";
-import Product from "./Product";
-import Item from "../../src/Model/Item";
-import ItemUUID from "../../src/Model/ItemUUID";
+import {Product} from "./Product";
+import {Item} from "../../src/Model/Item";
+import {ItemUUID} from "../../src/Model/ItemUUID";
 
 /**
  * Product ReadTransformer
  */
-export default class ProductWriteTransformer implements WriteTransformer {
+export class ProductWriteTransformer implements WriteTransformer {
 
     /**
      * Is an indexable object.

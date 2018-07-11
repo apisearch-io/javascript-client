@@ -1,12 +1,12 @@
-import Query from "../Query/Query";
-import Result from "../Result/Result";
-import HttpClient from "./HttpClient";
-import Response from "./Response";
+import {Query} from "../Query/Query";
+import {Result} from "../Result/Result";
+import {HttpClient} from "./HttpClient";
+import {Response} from "./Response";
 
 /**
  * AxiosClient
  */
-export default class TestClient implements HttpClient {
+export class TestClient implements HttpClient {
 
     public calls: any[] = [];
 

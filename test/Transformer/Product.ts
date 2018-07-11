@@ -1,4 +1,4 @@
-export default class Product {
+export class Product {
     public id;
     public sku;
     public name;

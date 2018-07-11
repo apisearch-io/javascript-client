@@ -55,13 +55,13 @@ export const SORT_BY_LOCATION_MI_ASC = {
     },
 };
 
-import Coordinate from "../../src/Model/Coordinate";
-import Filter from "../../src/Query/Filter";
+import {Coordinate} from "../../src/Model/Coordinate";
+import {Filter} from "../../src/Query/Filter";
 
 /**
  * ScoreStrategy
  */
-export default class SortBy {
+export class SortBy {
 
     private sortsBy: any[] = [];
 

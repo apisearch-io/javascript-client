@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import InvalidTokenError from "../../src/Error/InvalidTokenError";
+import {expect} from 'chai';
+import {InvalidTokenError} from "../../src/Error/InvalidTokenError";
 
 describe('InvalidTokenError()', () => {
     describe('', () => {

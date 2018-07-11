@@ -1,7 +1,7 @@
 /**
  * Result class
  */
-export default class Config {
+export class Config {
 
     /**
      * To array

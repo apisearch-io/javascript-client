@@ -1,6 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
-export default class UnsupportedContentTypeError extends ErrorWithMessage {
+/**
+ * Unsupported content type error
+ */
+export class UnsupportedContentTypeError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

@@ -1,15 +1,15 @@
-import Config from "../Config/Config";
-import ImmutableConfig from "../Config/ImmutableConfig";
-import Changes from "../Model/Changes";
-import Item from "../Model/Item";
-import ItemUUID from "../Model/ItemUUID";
-import Query from "../Query/Query";
-import Result from "../Result/Result";
+import {Config} from "../Config/Config";
+import {ImmutableConfig} from "../Config/ImmutableConfig";
+import {Changes} from "../Model/Changes";
+import {Item} from "../Model/Item";
+import {ItemUUID} from "../Model/ItemUUID";
+import {Query} from "../Query/Query";
+import {Result} from "../Result/Result";
 
 /**
  * Aggregation class
  */
-export default abstract class Repository {
+export abstract class Repository {
 
     protected itemsToUpdate: Item[] = [];
     protected itemsToDelete: ItemUUID[] = [];
