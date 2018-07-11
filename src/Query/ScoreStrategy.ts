@@ -8,7 +8,7 @@ export const SCORE_STRATEGY_BOOSTING_CUSTOM_FUNCTION = 2;
 /**
  * ScoreStrategy
  */
-export default class ScoreStrategy {
+export class ScoreStrategy {
 
     private type: number = SCORE_STRATEGY_DEFAULT;
     private innerFunction: string = null;

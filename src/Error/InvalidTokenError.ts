@@ -1,6 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
-export default class InvalidTokenError extends ErrorWithMessage {
+/**
+ * Invalid token error
+ */
+export class InvalidTokenError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

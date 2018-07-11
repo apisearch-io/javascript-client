@@ -1,7 +1,7 @@
 /**
  * ConnectError
  */
-export default abstract class ErrorWithMessage {
+export abstract class ErrorWithMessage {
 
     /**
      * Message

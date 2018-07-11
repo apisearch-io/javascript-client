@@ -1,7 +1,7 @@
 /**
  * User class
  */
-export default class Metadata {
+export class Metadata {
 
     /**
      * To metadata

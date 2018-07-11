@@ -3,7 +3,7 @@ import {KeyValueCache} from "./KeyValueCache";
 /**
  * Cache class
  */
-export default class InMemoryCache implements KeyValueCache {
+export class InMemoryCache implements KeyValueCache {
 
     private cache: any = {};
     private size: number = 0;

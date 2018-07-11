@@ -1,4 +1,4 @@
-import Item from "../Model/Item";
+import {Item} from "../Model/Item";
 /**
  * Read Transformer
  */

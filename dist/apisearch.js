@@ -2015,7 +2015,7 @@ var Query_2 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var Query_3 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var SortBy_1 = __webpack_require__(/*! ./Query/SortBy */ "./src/Query/SortBy.ts");
 var HttpRepository_1 = __webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts");
-var Aggregations_1 = __webpack_require__(/*! ./Result/Aggregations */ "./src/Result/Aggregations.ts");
+var ResultAggregations_1 = __webpack_require__(/*! ./Result/ResultAggregations */ "./src/Result/ResultAggregations.ts");
 var Result_1 = __webpack_require__(/*! ./Result/Result */ "./src/Result/Result.ts");
 var Transformer_1 = __webpack_require__(/*! ./Transformer/Transformer */ "./src/Transformer/Transformer.ts");
 /**
@@ -2032,12 +2032,12 @@ var Apisearch = /** @class */ (function () {
      * @returns {Repository}
      */
     Apisearch.createRepository = function (config) {
-        config.options = __assign({ api_version: "v1", cache: new NoCache_1["default"](), timeout: 10000, override_queries: true }, config.options);
+        config.options = __assign({ api_version: "v1", cache: new NoCache_1.NoCache(), timeout: 10000, override_queries: true }, config.options);
         /**
          * Client
          */
-        var httpClient = new AxiosClient_1["default"](config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1["default"](), config.options.override_queries, config.options.cache);
-        return new HttpRepository_1["default"](httpClient, config.app_id, config.index_id, config.token, new Transformer_1["default"]());
+        var httpClient = new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries, config.options.cache);
+        return new HttpRepository_1.HttpRepository(httpClient, config.app_id, config.index_id, config.token, new Transformer_1.Transformer());
     };
     /**
      * Created located
@@ -2052,7 +2052,7 @@ var Apisearch = /** @class */ (function () {
     Apisearch.createQueryLocated = function (coordinate, queryText, page, size) {
         if (page === void 0) { page = Query_2.QUERY_DEFAULT_PAGE; }
         if (size === void 0) { size = Query_3.QUERY_DEFAULT_SIZE; }
-        return Query_1["default"].createLocated(coordinate, queryText, page, size);
+        return Query_1.Query.createLocated(coordinate, queryText, page, size);
     };
     /**
      * Create
@@ -2066,7 +2066,7 @@ var Apisearch = /** @class */ (function () {
     Apisearch.createQuery = function (queryText, page, size) {
         if (page === void 0) { page = Query_2.QUERY_DEFAULT_PAGE; }
         if (size === void 0) { size = Query_3.QUERY_DEFAULT_SIZE; }
-        return Query_1["default"].create(queryText, page, size);
+        return Query_1.Query.create(queryText, page, size);
     };
     /**
      * Create match all
@@ -2074,7 +2074,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Query}
      */
     Apisearch.createQueryMatchAll = function () {
-        return Query_1["default"].createMatchAll();
+        return Query_1.Query.createMatchAll();
     };
     /**
      * Create by UUID
@@ -2084,7 +2084,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Query}
      */
     Apisearch.createQueryByUUID = function (uuid) {
-        return Query_1["default"].createByUUID(uuid);
+        return Query_1.Query.createByUUID(uuid);
     };
     /**
      * Create by UUIDs
@@ -2098,7 +2098,7 @@ var Apisearch = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             uuids[_i] = arguments[_i];
         }
-        return Query_1["default"].createByUUIDs.apply(Query_1["default"], uuids);
+        return Query_1.Query.createByUUIDs.apply(Query_1.Query, uuids);
     };
     /**
      * Create empty result
@@ -2106,7 +2106,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Result}
      */
     Apisearch.createEmptyResult = function () {
-        return Result_1["default"].create(Apisearch.createQueryMatchAll(), 0, 0, new Aggregations_1["default"](0), [], []);
+        return Result_1.Result.create(Apisearch.createQueryMatchAll(), 0, 0, new ResultAggregations_1.ResultAggregations(0), [], []);
     };
     /**
      * Create empty sortby
@@ -2114,11 +2114,87 @@ var Apisearch = /** @class */ (function () {
      * @return {SortBy}
      */
     Apisearch.createEmptySortBy = function () {
-        return SortBy_1["default"].create();
+        return SortBy_1.SortBy.create();
     };
     return Apisearch;
 }());
 exports["default"] = Apisearch;
+
+
+/***/ }),
+
+/***/ "./src/Cache/InMemoryCache.ts":
+/*!************************************!*\
+  !*** ./src/Cache/InMemoryCache.ts ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+exports.__esModule = true;
+/**
+ * Cache class
+ */
+var InMemoryCache = /** @class */ (function () {
+    /**
+     * Constructor
+     */
+    function InMemoryCache() {
+        this.cache = {};
+        this.size = 0;
+        this.cache = {};
+        this.size = 0;
+    }
+    /**
+     * Set cache element
+     *
+     * @param key
+     * @param value
+     *
+     * @returns {void}
+     */
+    InMemoryCache.prototype.set = function (key, value) {
+        var _a;
+        this.cache = __assign({}, this.cache, (_a = {}, _a[key] = value, _a));
+        this.size = this.size + 1;
+    };
+    /**
+     * Get element from cache
+     *
+     * @param key
+     *
+     * @returns {any}
+     */
+    InMemoryCache.prototype.get = function (key) {
+        return this.cache[key];
+    };
+    /**
+     * Deletes element from cache
+     *
+     * @param key
+     */
+    InMemoryCache.prototype.del = function (key) {
+        delete this.cache[key];
+    };
+    /**
+     * Clear cache
+     */
+    InMemoryCache.prototype.clear = function () {
+        this.cache = {};
+        this.size = 0;
+    };
+    return InMemoryCache;
+}());
+exports.InMemoryCache = InMemoryCache;
 
 
 /***/ }),
@@ -2176,7 +2252,205 @@ var NoCache = /** @class */ (function () {
     };
     return NoCache;
 }());
-exports["default"] = NoCache;
+exports.NoCache = NoCache;
+
+
+/***/ }),
+
+/***/ "./src/Config/Config.ts":
+/*!******************************!*\
+  !*** ./src/Config/Config.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+/**
+ * Result class
+ */
+var Config = /** @class */ (function () {
+    function Config() {
+    }
+    /**
+     * To array
+     *
+     * @returns {any}
+     */
+    Config.prototype.toArray = function () {
+        return {};
+    };
+    return Config;
+}());
+exports.Config = Config;
+
+
+/***/ }),
+
+/***/ "./src/Config/ImmutableConfig.ts":
+/*!***************************************!*\
+  !*** ./src/Config/ImmutableConfig.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var Synonym_1 = __webpack_require__(/*! ./Synonym */ "./src/Config/Synonym.ts");
+/**
+ * Result class
+ */
+var ImmutableConfig = /** @class */ (function () {
+    /**
+     * Constructor
+     *
+     * @param language
+     * @param storeSearchableMetadata
+     */
+    function ImmutableConfig(language, storeSearchableMetadata) {
+        if (language === void 0) { language = null; }
+        if (storeSearchableMetadata === void 0) { storeSearchableMetadata = true; }
+        this.synonyms = [];
+        this.language = language;
+        this.storeSearchableMetadata = storeSearchableMetadata;
+    }
+    /**
+     * Get language
+     *
+     * @return {string}
+     */
+    ImmutableConfig.prototype.getLanguage = function () {
+        return this.language;
+    };
+    /**
+     * Should searchable metadata be stored
+     *
+     * @return {boolean}
+     */
+    ImmutableConfig.prototype.shouldSearchableMetadataBeStored = function () {
+        return this.storeSearchableMetadata;
+    };
+    /**
+     * Add synonym
+     *
+     * @param synonym
+     */
+    ImmutableConfig.prototype.addSynonym = function (synonym) {
+        this.synonyms.push(synonym);
+    };
+    /**
+     * Get synonyms
+     *
+     * @return {Synonym[]}
+     */
+    ImmutableConfig.prototype.getSynonyms = function () {
+        return this.synonyms;
+    };
+    /**
+     * to array
+     */
+    ImmutableConfig.prototype.toArray = function () {
+        return {
+            language: this.language,
+            store_searchable_metadata: this.storeSearchableMetadata,
+            synonyms: this.synonyms.map(function (synonym) { return synonym.toArray(); })
+        };
+    };
+    /**
+     * Create from array
+     */
+    ImmutableConfig.createFromArray = function (array) {
+        var immutableConfig = new ImmutableConfig(array.language ? array.language : null, typeof array.store_searchable_metadata == "boolean"
+            ? array.store_searchable_metadata
+            : true);
+        if (array.synonyms instanceof Array &&
+            array.synonyms.length > 0) {
+            immutableConfig.synonyms = array.synonyms.map(function (synonym) { return Synonym_1.Synonym.createFromArray(synonym); });
+        }
+        return immutableConfig;
+    };
+    return ImmutableConfig;
+}());
+exports.ImmutableConfig = ImmutableConfig;
+
+
+/***/ }),
+
+/***/ "./src/Config/Synonym.ts":
+/*!*******************************!*\
+  !*** ./src/Config/Synonym.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+/**
+ * Result class
+ */
+var Synonym = /** @class */ (function () {
+    /**
+     * Constructor
+     *
+     * @param words
+     */
+    function Synonym(words) {
+        this.words = words;
+    }
+    /**
+     * get words
+     *
+     * @return {string[]}
+     */
+    Synonym.prototype.getWords = function () {
+        return this.words;
+    };
+    /**
+     * Create by words
+     *
+     * @param words
+     *
+     * @return {Synonym}
+     */
+    Synonym.createbyWords = function (words) {
+        return new Synonym(words);
+    };
+    /**
+     * To array
+     *
+     * @return {{words: string[]}}
+     */
+    Synonym.prototype.toArray = function () {
+        return {
+            words: this.words
+        };
+    };
+    /**
+     * create from array
+     *
+     * @param array
+     *
+     * @returns {Synonym}
+     */
+    Synonym.createFromArray = function (array) {
+        return new Synonym(array.words instanceof Object
+            ? array.words
+            : []);
+    };
+    /**
+     * Expand
+     *
+     * @returns {string}
+     */
+    Synonym.prototype.expand = function () {
+        return this.words.join(",");
+    };
+    return Synonym;
+}());
+exports.Synonym = Synonym;
 
 
 /***/ }),
@@ -2202,6 +2476,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Connection error
+ */
 var ConnectionError = /** @class */ (function (_super) {
     __extends(ConnectionError, _super);
     function ConnectionError() {
@@ -2216,8 +2493,8 @@ var ConnectionError = /** @class */ (function (_super) {
         return 500;
     };
     return ConnectionError;
-}(ErrorWithMessage_1["default"]));
-exports["default"] = ConnectionError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.ConnectionError = ConnectionError;
 
 
 /***/ }),
@@ -2246,7 +2523,119 @@ var ErrorWithMessage = /** @class */ (function () {
     }
     return ErrorWithMessage;
 }());
-exports["default"] = ErrorWithMessage;
+exports.ErrorWithMessage = ErrorWithMessage;
+
+
+/***/ }),
+
+/***/ "./src/Error/EventError.ts":
+/*!*********************************!*\
+  !*** ./src/Error/EventError.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * EventError
+ */
+var EventError = /** @class */ (function (_super) {
+    __extends(EventError, _super);
+    function EventError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Get transportable http error
+     *
+     * @return {number}
+     */
+    EventError.throwEndpointNotAvailable = function () {
+        return new EventError("Endpoint not available");
+    };
+    return EventError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.EventError = EventError;
+
+
+/***/ }),
+
+/***/ "./src/Error/ForbiddenError.ts":
+/*!*************************************!*\
+  !*** ./src/Error/ForbiddenError.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Forbidden Error
+ */
+var ForbiddenError = /** @class */ (function (_super) {
+    __extends(ForbiddenError, _super);
+    function ForbiddenError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Get transportable http error
+     *
+     * @return {number}
+     */
+    ForbiddenError.getTransportableHTTPError = function () {
+        return 403;
+    };
+    /**
+     * App id is required
+     *
+     * @return {ForbiddenError}
+     */
+    ForbiddenError.createAppIdIsRequiredException = function () {
+        return new ForbiddenError("AppId query parameter MUST be defined with a valid value");
+    };
+    /**
+     * Index id is required
+     *
+     * @return {ForbiddenError}
+     */
+    ForbiddenError.createIndexIsRequiredException = function () {
+        return new ForbiddenError("Index query parameter MUST be defined with a valid value");
+    };
+    /**
+     * Token is required
+     *
+     * @return {ForbiddenError}
+     */
+    ForbiddenError.createTokenIsRequiredException = function () {
+        return new ForbiddenError("Token query parameter MUST be defined with a valid value");
+    };
+    return ForbiddenError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.ForbiddenError = ForbiddenError;
 
 
 /***/ }),
@@ -2393,8 +2782,8 @@ var InvalidFormatError = /** @class */ (function (_super) {
         return new InvalidFormatError("User Format not valid. Expecting a User serialized but found malformed data");
     };
     return InvalidFormatError;
-}(ErrorWithMessage_1["default"]));
-exports["default"] = InvalidFormatError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.InvalidFormatError = InvalidFormatError;
 
 
 /***/ }),
@@ -2420,6 +2809,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Invalid token error
+ */
 var InvalidTokenError = /** @class */ (function (_super) {
     __extends(InvalidTokenError, _super);
     function InvalidTokenError() {
@@ -2455,8 +2847,8 @@ var InvalidTokenError = /** @class */ (function (_super) {
         return new InvalidTokenError("Token " + tokenReference + "not valid. Max " + maxHitsPerQuery + " hits allowed");
     };
     return InvalidTokenError;
-}(ErrorWithMessage_1["default"]));
-exports["default"] = InvalidTokenError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.InvalidTokenError = InvalidTokenError;
 
 
 /***/ }),
@@ -2482,6 +2874,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Resource exists error
+ */
 var ResourceExistsError = /** @class */ (function (_super) {
     __extends(ResourceExistsError, _super);
     function ResourceExistsError() {
@@ -2520,8 +2915,8 @@ var ResourceExistsError = /** @class */ (function (_super) {
         return new ResourceExistsError("Logs index exists and cannot be created again");
     };
     return ResourceExistsError;
-}(ErrorWithMessage_1["default"]));
-exports["default"] = ResourceExistsError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.ResourceExistsError = ResourceExistsError;
 
 
 /***/ }),
@@ -2547,6 +2942,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Resource not available error
+ */
 var ResourceNotAvailableError = /** @class */ (function (_super) {
     __extends(ResourceNotAvailableError, _super);
     function ResourceNotAvailableError() {
@@ -2601,8 +2999,284 @@ var ResourceNotAvailableError = /** @class */ (function (_super) {
         return new ResourceNotAvailableError("Engine not available - " + resourceId);
     };
     return ResourceNotAvailableError;
-}(ErrorWithMessage_1["default"]));
-exports["default"] = ResourceNotAvailableError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.ResourceNotAvailableError = ResourceNotAvailableError;
+
+
+/***/ }),
+
+/***/ "./src/Error/UnsupportedContentTypeError.ts":
+/*!**************************************************!*\
+  !*** ./src/Error/UnsupportedContentTypeError.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Unsupported content type error
+ */
+var UnsupportedContentTypeError = /** @class */ (function (_super) {
+    __extends(UnsupportedContentTypeError, _super);
+    function UnsupportedContentTypeError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Get transportable http error
+     *
+     * @return {number}
+     */
+    UnsupportedContentTypeError.getTransportableHTTPError = function () {
+        return 415;
+    };
+    /**
+     * Unsupported content type
+     *
+     * @return {InvalidFormatError}
+     */
+    UnsupportedContentTypeError.createUnsupportedContentTypeException = function () {
+        return new UnsupportedContentTypeError("This content type is not accepted. Please use application/json");
+    };
+    return UnsupportedContentTypeError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.UnsupportedContentTypeError = UnsupportedContentTypeError;
+
+
+/***/ }),
+
+/***/ "./src/Geo/LocationRange.ts":
+/*!**********************************!*\
+  !*** ./src/Geo/LocationRange.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
+/**
+ * Abstract Location Range class
+ */
+var LocationRange = /** @class */ (function () {
+    function LocationRange() {
+    }
+    /**
+     * From filter object
+     *
+     * @param object
+     *
+     * @return {LocationRange}
+     */
+    LocationRange.fromFilterObject = function (object) {
+        throw TypeError("Method not valid");
+    };
+    /**
+     * to array
+     */
+    LocationRange.prototype.toArray = function () {
+        return {
+            type: this.getName(),
+            data: this.toFilterObject()
+        };
+    };
+    /**
+     * Create from array
+     *
+     * @param array
+     */
+    LocationRange.createFromArray = function (array) {
+        if (array.type == "CoordinateAndDistance") {
+            return CoordinateAndDistance.fromFilterObject(array.data);
+        }
+        if (array.type == "Polygon") {
+            return Polygon.fromFilterObject(array.data);
+        }
+        if (array.type == "Square") {
+            return Square.fromFilterObject(array.data);
+        }
+    };
+    return LocationRange;
+}());
+exports.LocationRange = LocationRange;
+/**
+ * CoordinateAndDistance
+ */
+var CoordinateAndDistance = /** @class */ (function (_super) {
+    __extends(CoordinateAndDistance, _super);
+    /**
+     * Constructor
+     *
+     * @param coordinate
+     * @param distance
+     */
+    function CoordinateAndDistance(coordinate, distance) {
+        var _this = _super.call(this) || this;
+        _this.coordinate = coordinate;
+        _this.distance = distance;
+        return _this;
+    }
+    /**
+     * To filter object
+     *
+     * @return {{}}}
+     */
+    CoordinateAndDistance.prototype.toFilterObject = function () {
+        return {
+            coordinate: this.coordinate.toArray(),
+            distance: this.distance
+        };
+    };
+    /**
+     * Get name
+     *
+     * @return {string}
+     */
+    CoordinateAndDistance.prototype.getName = function () {
+        return "CoordinateAndDistance";
+    };
+    /**
+     * From filter object
+     *
+     * @param object
+     *
+     * @return {LocationRange}
+     */
+    CoordinateAndDistance.fromFilterObject = function (object) {
+        return new CoordinateAndDistance(Coordinate_1.Coordinate.createFromArray(object.coordinate), object.distance);
+    };
+    return CoordinateAndDistance;
+}(LocationRange));
+exports.CoordinateAndDistance = CoordinateAndDistance;
+/**
+ * Polygon
+ */
+var Polygon = /** @class */ (function (_super) {
+    __extends(Polygon, _super);
+    /**
+     * Constructor
+     *
+     * @param coordinates
+     */
+    function Polygon(coordinates) {
+        var _this = _super.call(this) || this;
+        if (coordinates.length < 3) {
+            throw new Error("A polygon needs more than two coordinates.");
+        }
+        _this.coordinates = coordinates;
+        return _this;
+    }
+    /**
+     * To filter object
+     *
+     * @return {{coordinates: {lat:number, lon:number}[]}}
+     */
+    Polygon.prototype.toFilterObject = function () {
+        var coordinates = [];
+        for (var i in this.coordinates) {
+            coordinates.push(this.coordinates[i].toArray());
+        }
+        return {
+            coordinates: coordinates
+        };
+    };
+    /**
+     * Get name
+     *
+     * @return {string}
+     */
+    Polygon.prototype.getName = function () {
+        return "Polygon";
+    };
+    /**
+     * From filter object
+     *
+     * @param object
+     *
+     * @return {Polygon}
+     */
+    Polygon.fromFilterObject = function (object) {
+        var coordinates = [];
+        for (var i in object.coordinates) {
+            coordinates.push(Coordinate_1.Coordinate.createFromArray(object.coordinates[i]));
+        }
+        return new Polygon(coordinates);
+    };
+    return Polygon;
+}(LocationRange));
+exports.Polygon = Polygon;
+/**
+ * Square
+ */
+var Square = /** @class */ (function (_super) {
+    __extends(Square, _super);
+    /**
+     * Constructor
+     *
+     * @param topLeftCoordinate
+     * @param bottomRightCoordinate
+     */
+    function Square(topLeftCoordinate, bottomRightCoordinate) {
+        var _this = _super.call(this) || this;
+        _this.topLeftCoordinate = topLeftCoordinate;
+        _this.bottomRightCoordinate = bottomRightCoordinate;
+        return _this;
+    }
+    /**
+     * To filter object
+     *
+     * @return {{}}}
+     */
+    Square.prototype.toFilterObject = function () {
+        return {
+            top_left: this.topLeftCoordinate.toArray(),
+            bottom_right: this.bottomRightCoordinate.toArray()
+        };
+    };
+    /**
+     * Get name
+     *
+     * @return {string}
+     */
+    Square.prototype.getName = function () {
+        return "Square";
+    };
+    /**
+     * From filter object
+     *
+     * @param object
+     *
+     * @return {LocationRange}
+     */
+    Square.fromFilterObject = function (object) {
+        return new Square(Coordinate_1.Coordinate.createFromArray(object.top_left), Coordinate_1.Coordinate.createFromArray(object.bottom_right));
+    };
+    return Square;
+}(LocationRange));
+exports.Square = Square;
 
 
 /***/ }),
@@ -2733,7 +3407,7 @@ var AxiosClient = /** @class */ (function (_super) {
                         //noinspection TypeScriptValidateTypes
                         axios_1["default"]
                             .request({
-                            url: url + "?" + Client_1["default"].objectToUrlParameters(__assign({}, credentials, parameters)),
+                            url: url + "?" + Client_1.Client.objectToUrlParameters(__assign({}, credentials, parameters)),
                             data: data,
                             headers: headers,
                             method: method,
@@ -2743,7 +3417,7 @@ var AxiosClient = /** @class */ (function (_super) {
                             transformRequest: [function (data) { return JSON.stringify(data); }]
                         })
                             .then(function (axiosResponse) {
-                            var response = new Response_1["default"](axiosResponse.status, axiosResponse.data);
+                            var response = new Response_1.Response(axiosResponse.status, axiosResponse.data);
                             return resolve(response);
                         })["catch"](function (thrown) { return reject(thrown); });
                     })];
@@ -2759,8 +3433,8 @@ var AxiosClient = /** @class */ (function (_super) {
         this.cancelToken = axios_1["default"].CancelToken.source();
     };
     return AxiosClient;
-}(Client_1["default"]));
-exports["default"] = AxiosClient;
+}(Client_1.Client));
+exports.AxiosClient = AxiosClient;
 
 
 /***/ }),
@@ -2805,7 +3479,30 @@ var Client = /** @class */ (function () {
     };
     return Client;
 }());
-exports["default"] = Client;
+exports.Client = Client;
+
+
+/***/ }),
+
+/***/ "./src/Http/HttpClient.ts":
+/*!********************************!*\
+  !*** ./src/Http/HttpClient.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+/**
+ * Http class
+ */
+var HttpClient = /** @class */ (function () {
+    function HttpClient() {
+    }
+    return HttpClient;
+}());
+exports.HttpClient = HttpClient;
 
 
 /***/ }),
@@ -2852,7 +3549,7 @@ var Response = /** @class */ (function () {
     };
     return Response;
 }());
-exports["default"] = Response;
+exports.Response = Response;
 
 
 /***/ }),
@@ -2932,7 +3629,7 @@ var Retry = /** @class */ (function () {
     };
     return Retry;
 }());
-exports["default"] = Retry;
+exports.Retry = Retry;
 
 
 /***/ }),
@@ -2968,7 +3665,7 @@ var RetryMap = /** @class */ (function () {
      */
     RetryMap.createFromArray = function (array) {
         var retryMap = new RetryMap();
-        retryMap.retries = array.map(function (retry) { return Retry_1["default"].createFromArray(retry); });
+        retryMap.retries = array.map(function (retry) { return Retry_1.Retry.createFromArray(retry); });
         return retryMap;
     };
     /**
@@ -2980,23 +3677,158 @@ var RetryMap = /** @class */ (function () {
      * @returns {Retry}
      */
     RetryMap.prototype.getRetry = function (url, method) {
-        if (this.retries[url + "~~" + method] instanceof Retry_1["default"]) {
+        if (this.retries[url + "~~" + method] instanceof Retry_1.Retry) {
             return this.retries[url + "~~" + method];
         }
-        if (this.retries["*~~" + method] instanceof Retry_1["default"]) {
+        if (this.retries["*~~" + method] instanceof Retry_1.Retry) {
             return this.retries["*~~" + method];
         }
-        if (this.retries[url + "~~*"] instanceof Retry_1["default"]) {
+        if (this.retries[url + "~~*"] instanceof Retry_1.Retry) {
             return this.retries[url + "~~*"];
         }
-        if (this.retries["*~~*"] instanceof Retry_1["default"]) {
+        if (this.retries["*~~*"] instanceof Retry_1.Retry) {
             return this.retries["*~~*"];
         }
         return null;
     };
     return RetryMap;
 }());
-exports["default"] = RetryMap;
+exports.RetryMap = RetryMap;
+
+
+/***/ }),
+
+/***/ "./src/Model/Changes.ts":
+/*!******************************!*\
+  !*** ./src/Model/Changes.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+/**
+ * filter constants
+ */
+exports.TYPE_VALUE = 1;
+exports.TYPE_LITERAL = 4;
+exports.TYPE_ARRAY_ELEMENT_UPDATE = 8;
+exports.TYPE_ARRAY_ELEMENT_ADD = 16;
+exports.TYPE_ARRAY_ELEMENT_DELETE = 32;
+exports.TYPE_ARRAY_EXPECTS_ELEMENT = 24;
+exports.TYPE_ARRAY = 56;
+/**
+ * Changes Type cast
+ * @param Changes
+ */
+var Changes = /** @class */ (function () {
+    function Changes() {
+        /**
+         * Changes
+         *
+         * @type {Array}
+         */
+        this.changes = [];
+    }
+    /**
+     * Add new change
+     *
+     * @param field
+     * @param value
+     * @param type
+     */
+    Changes.prototype.addChange = function (field, value, type) {
+        if (type === void 0) { type = exports.TYPE_VALUE; }
+        this.changes.push({
+            field: field,
+            type: type,
+            value: value
+        });
+    };
+    /**
+     * Update element from list
+     *
+     * @param field
+     * @param condition
+     * @param value
+     * @param type
+     */
+    Changes.prototype.updateElementFromList = function (field, condition, value, type) {
+        this.changes.push({
+            field: field,
+            type: type | exports.TYPE_ARRAY_ELEMENT_UPDATE,
+            condition: condition,
+            value: value
+        });
+    };
+    /**
+     * Add element in list
+     *
+     * @param field
+     * @param value
+     * @param type
+     */
+    Changes.prototype.addElementInList = function (field, value, type) {
+        this.changes.push({
+            field: field,
+            type: type | exports.TYPE_ARRAY_ELEMENT_ADD,
+            value: value
+        });
+    };
+    /**
+     * Delete element from list
+     *
+     * @param field
+     * @param condition
+     */
+    Changes.prototype.deleteElementFromList = function (field, condition) {
+        this.changes.push({
+            field: field,
+            type: exports.TYPE_ARRAY_ELEMENT_DELETE,
+            condition: condition
+        });
+    };
+    /**
+     * Get changes
+     *
+     * @returns {[]}
+     */
+    Changes.prototype.getChanges = function () {
+        return this.changes;
+    };
+    /**
+     * Create
+     *
+     * @returns {Changes}
+     */
+    Changes.create = function () {
+        return new Changes();
+    };
+    /**
+     * To array
+     *
+     * @returns {[]}
+     */
+    Changes.prototype.toArray = function () {
+        return JSON.parse(JSON.stringify(this.changes));
+    };
+    /**
+     * Create from array
+     *
+     * @param array
+     *
+     * @returns {Changes}
+     */
+    Changes.createFromArray = function (array) {
+        array = JSON.parse(JSON.stringify(array));
+        var changes = Changes.create();
+        changes.changes = array;
+        return changes;
+    };
+    return Changes;
+}());
+exports.Changes = Changes;
 
 
 /***/ }),
@@ -3066,13 +3898,13 @@ var Coordinate = /** @class */ (function () {
     Coordinate.createFromArray = function (array) {
         if (typeof array.lat == "undefined" ||
             typeof array.lon == "undefined") {
-            throw InvalidFormatError_1["default"].coordinateFormatNotValid();
+            throw InvalidFormatError_1.InvalidFormatError.coordinateFormatNotValid();
         }
         return new Coordinate(array.lat, array.lon);
     };
     return Coordinate;
 }());
-exports["default"] = Coordinate;
+exports.Coordinate = Coordinate;
 
 
 /***/ }),
@@ -3371,7 +4203,7 @@ var Item = /** @class */ (function () {
         var itemAsArray = {
             uuid: this.uuid.toArray()
         };
-        if (this.coordinate instanceof Coordinate_1["default"]) {
+        if (this.coordinate instanceof Coordinate_1.Coordinate) {
             itemAsArray.coordinate = this.coordinate.toArray();
         }
         if (Object.keys(this.metadata).length > 0) {
@@ -3408,16 +4240,16 @@ var Item = /** @class */ (function () {
     Item.createFromArray = function (array) {
         array = JSON.parse(JSON.stringify(array));
         if (typeof array.uuid != "object") {
-            throw InvalidFormatError_1["default"].itemUUIDRepresentationNotValid();
+            throw InvalidFormatError_1.InvalidFormatError.itemUUIDRepresentationNotValid();
         }
         if (typeof array.coordinate != "undefined" &&
             typeof array.coordinate != "object") {
-            throw InvalidFormatError_1["default"].coordinateFormatNotValid();
+            throw InvalidFormatError_1.InvalidFormatError.coordinateFormatNotValid();
         }
         var item = (typeof array.coordinate == "object" &&
             array.coordinate != null)
-            ? Item.createLocated(ItemUUID_1["default"].createFromArray(array.uuid), Coordinate_1["default"].createFromArray(array.coordinate), ((typeof array.metadata == "undefined") ? {} : array.metadata), ((typeof array.indexed_metadata == "undefined") ? {} : array.indexed_metadata), ((typeof array.searchable_metadata == "undefined") ? {} : array.searchable_metadata), ((typeof array.exact_matching_metadata == "undefined") ? [] : array.exact_matching_metadata), ((typeof array.suggest == "undefined") ? [] : array.suggest))
-            : Item.create(ItemUUID_1["default"].createFromArray(array.uuid), ((typeof array.metadata == "undefined") ? {} : array.metadata), ((typeof array.indexed_metadata == "undefined") ? {} : array.indexed_metadata), ((typeof array.searchable_metadata == "undefined") ? {} : array.searchable_metadata), ((typeof array.exact_matching_metadata == "undefined") ? [] : array.exact_matching_metadata), ((typeof array.suggest == "undefined") ? [] : array.suggest));
+            ? Item.createLocated(ItemUUID_1.ItemUUID.createFromArray(array.uuid), Coordinate_1.Coordinate.createFromArray(array.coordinate), ((typeof array.metadata == "undefined") ? {} : array.metadata), ((typeof array.indexed_metadata == "undefined") ? {} : array.indexed_metadata), ((typeof array.searchable_metadata == "undefined") ? {} : array.searchable_metadata), ((typeof array.exact_matching_metadata == "undefined") ? [] : array.exact_matching_metadata), ((typeof array.suggest == "undefined") ? [] : array.suggest))
+            : Item.create(ItemUUID_1.ItemUUID.createFromArray(array.uuid), ((typeof array.metadata == "undefined") ? {} : array.metadata), ((typeof array.indexed_metadata == "undefined") ? {} : array.indexed_metadata), ((typeof array.searchable_metadata == "undefined") ? {} : array.searchable_metadata), ((typeof array.exact_matching_metadata == "undefined") ? [] : array.exact_matching_metadata), ((typeof array.suggest == "undefined") ? [] : array.suggest));
         if (typeof array.distance != "undefined" &&
             array.distance != null) {
             item.distance = array.distance;
@@ -3441,7 +4273,7 @@ var Item = /** @class */ (function () {
     };
     return Item;
 }());
-exports["default"] = Item;
+exports.Item = Item;
 
 
 /***/ }),
@@ -3456,7 +4288,7 @@ exports["default"] = Item;
 "use strict";
 
 exports.__esModule = true;
-var InvalidFormatError_1 = __webpack_require__(/*! ../../src/Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
+var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * ItemUUID class
  */
@@ -3481,7 +4313,7 @@ var ItemUUID = /** @class */ (function () {
     ItemUUID.createByComposedUUID = function (composedUUID) {
         var parts = composedUUID.split("~");
         if (2 != parts.length) {
-            throw InvalidFormatError_1["default"].composedItemUUIDNotValid();
+            throw InvalidFormatError_1.InvalidFormatError.composedItemUUIDNotValid();
         }
         return new ItemUUID(parts[0], parts[1]);
     };
@@ -3533,7 +4365,7 @@ var ItemUUID = /** @class */ (function () {
     };
     return ItemUUID;
 }());
-exports["default"] = ItemUUID;
+exports.ItemUUID = ItemUUID;
 
 
 /***/ }),
@@ -3608,7 +4440,7 @@ var Metadata = /** @class */ (function () {
     };
     return Metadata;
 }());
-exports["default"] = Metadata;
+exports.Metadata = Metadata;
 
 
 /***/ }),
@@ -3680,7 +4512,7 @@ var User = /** @class */ (function () {
         if (array == null ||
             typeof array.id == "undefined" ||
             array.id == null) {
-            throw InvalidFormatError_1["default"].userFormatNotValid();
+            throw InvalidFormatError_1.InvalidFormatError.userFormatNotValid();
         }
         var attributes = typeof array.attributes === typeof {}
             ? array.attributes
@@ -3689,7 +4521,7 @@ var User = /** @class */ (function () {
     };
     return User;
 }());
-exports["default"] = User;
+exports.User = User;
 
 
 /***/ }),
@@ -3873,7 +4705,7 @@ var Aggregation = /** @class */ (function () {
     };
     return Aggregation;
 }());
-exports["default"] = Aggregation;
+exports.Aggregation = Aggregation;
 
 
 /***/ }),
@@ -4051,7 +4883,7 @@ var Filter = /** @class */ (function () {
     };
     return Filter;
 }());
-exports["default"] = Filter;
+exports.Filter = Filter;
 
 
 /***/ }),
@@ -4107,8 +4939,8 @@ var Query = /** @class */ (function () {
         this.itemsPromoted = [];
         this.aggregations = {};
         this.filterFields = [];
-        this.sortByInstance = SortBy_1["default"].create();
-        this.filters._query = Filter_1["default"].create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
+        this.sortByInstance = SortBy_1.SortBy.create();
+        this.filters._query = Filter_1.Filter.create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
     }
     /**
      * Created located
@@ -4183,7 +5015,7 @@ var Query = /** @class */ (function () {
         var query = Query.create("", exports.QUERY_DEFAULT_PAGE, ids.length)
             .disableAggregations()
             .disableSuggestions();
-        query.filters._id = Filter_1["default"].create("_id", ids, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD);
+        query.filters._id = Filter_1.Filter.create("_id", ids, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD);
         return query;
     };
     /**
@@ -4195,9 +5027,9 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByTypes = function (values) {
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField("type");
+        var fieldPath = Filter_1.Filter.getFilterPathByField("type");
         if (values.length > 0) {
-            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["type"] = Filter_1["default"].create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters.type;
@@ -4217,15 +5049,15 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a, _b;
-        var fieldPath = Filter_1["default"].getFilterPathByField("type");
+        var fieldPath = Filter_1.Filter.getFilterPathByField("type");
         if (values.length > 0) {
-            this.filters = __assign({}, this.filters, (_a = {}, _a["type"] = Filter_1["default"].create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = __assign({}, this.filters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters.type;
         }
         if (aggregate) {
-            this.aggregations = __assign({}, this.aggregations, (_b = {}, _b["type"] = Aggregation_1["default"].create("type", fieldPath, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort), _b));
+            this.aggregations = __assign({}, this.aggregations, (_b = {}, _b["type"] = Aggregation_1.Aggregation.create("type", fieldPath, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort), _b));
         }
         return this;
     };
@@ -4238,9 +5070,9 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByIds = function (values) {
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField("id");
+        var fieldPath = Filter_1.Filter.getFilterPathByField("id");
         if (values.length > 0) {
-            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["id"] = Filter_1["default"].create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters.id;
@@ -4256,9 +5088,9 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterByIds = function (values) {
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField("id");
+        var fieldPath = Filter_1.Filter.getFilterPathByField("id");
         if (values.length > 0) {
-            this.filters = __assign({}, this.filters, (_a = {}, _a["id"] = Filter_1["default"].create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = __assign({}, this.filters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters.id;
@@ -4277,9 +5109,9 @@ var Query = /** @class */ (function () {
     Query.prototype.filterUniverseBy = function (field, values, applicationType) {
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField(field);
+        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
         if (values.length > 0) {
-            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1["default"].create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters[field];
@@ -4303,9 +5135,9 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField(field);
+        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
         if (values.length > 0) {
-            this.filters = __assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1["default"].create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = __assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters[filterName];
@@ -4329,9 +5161,9 @@ var Query = /** @class */ (function () {
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField(field);
+        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
         if (values.length > 0) {
-            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1["default"].create(fieldPath, values, applicationType, rangeType), _a));
+            this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
         else {
             delete this.universeFilters[field];
@@ -4371,9 +5203,9 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a;
-        var fieldPath = Filter_1["default"].getFilterPathByField(field);
+        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
         if (values.length !== 0) {
-            this.filters = __assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1["default"].create(fieldPath, values, applicationType, rangeType), _a));
+            this.filters = __assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
         else {
             delete this.filters[filterName];
@@ -4411,7 +5243,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByLocation = function (locationRange) {
         var _a;
-        this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["coordinate"] = Filter_1["default"].create("coordinate", locationRange.toArray(), Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_GEO), _a));
+        this.universeFilters = __assign({}, this.universeFilters, (_a = {}, _a["coordinate"] = Filter_1.Filter.create("coordinate", locationRange.toArray(), Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_GEO), _a));
         return this;
     };
     /**
@@ -4442,8 +5274,8 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.sortBy = function (sortBy) {
         if (sortBy.isSortedByGeoDistance()) {
-            if (!(this.coordinate instanceof Coordinate_1["default"])) {
-                throw InvalidFormatError_1["default"].querySortedByDistanceWithoutCoordinate();
+            if (!(this.coordinate instanceof Coordinate_1.Coordinate)) {
+                throw InvalidFormatError_1.InvalidFormatError.querySortedByDistanceWithoutCoordinate();
             }
             sortBy.setCoordinate(this.coordinate);
         }
@@ -4465,7 +5297,7 @@ var Query = /** @class */ (function () {
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = Aggregation_2.AGGREGATION_NO_LIMIT; }
         var _a;
-        this.aggregations = __assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1["default"].create(filterName, Filter_1["default"].getFilterPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
+        this.aggregations = __assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Filter_1.Filter.getFilterPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -4489,7 +5321,7 @@ var Query = /** @class */ (function () {
         if (options.length === 0) {
             return this;
         }
-        this.aggregations = __assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1["default"].create(filterName, Filter_1["default"].getFilterPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
+        this.aggregations = __assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Filter_1.Filter.getFilterPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -4525,7 +5357,7 @@ var Query = /** @class */ (function () {
      * @return {Aggregation|null}
      */
     Query.prototype.getAggregation = function (aggregationName) {
-        return this.aggregations[aggregationName] instanceof Aggregation_1["default"]
+        return this.aggregations[aggregationName] instanceof Aggregation_1.Aggregation
             ? this.aggregations[aggregationName]
             : null;
     };
@@ -4536,7 +5368,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.getQueryText = function () {
         var filter = this.filters._query;
-        return filter instanceof Filter_1["default"]
+        return filter instanceof Filter_1.Filter
             ? filter.getValues()[0]
             : "";
     };
@@ -4556,7 +5388,7 @@ var Query = /** @class */ (function () {
      * @return {Filter|null}
      */
     Query.prototype.getUniverseFilter = function (filterName) {
-        return this.universeFilters[filterName] instanceof Filter_1["default"]
+        return this.universeFilters[filterName] instanceof Filter_1.Filter
             ? this.universeFilters[filterName]
             : null;
     };
@@ -4576,7 +5408,7 @@ var Query = /** @class */ (function () {
      * @return {Filter|null}
      */
     Query.prototype.getFilter = function (filterName) {
-        return this.filters[filterName] instanceof Filter_1["default"]
+        return this.filters[filterName] instanceof Filter_1.Filter
             ? this.filters[filterName]
             : null;
     };
@@ -4588,7 +5420,7 @@ var Query = /** @class */ (function () {
      * @return {Filter|null}
      */
     Query.prototype.getFilterByField = function (fieldName) {
-        var fieldPath = Filter_1["default"].getFilterPathByField(fieldName);
+        var fieldPath = Filter_1.Filter.getFilterPathByField(fieldName);
         for (var i in this.filters) {
             if (this.filters[i].getField() == fieldPath) {
                 return this.filters[i];
@@ -4792,7 +5624,7 @@ var Query = /** @class */ (function () {
             uuids[_i] = arguments[_i];
         }
         var _a;
-        this.filters = __assign({}, this.filters, (_a = {}, _a["excluded_ids"] = Filter_1["default"].create("_id", uuids.map(function (uuid) { return uuid.composedUUID(); }), Filter_2.FILTER_EXCLUDE, Filter_2.FILTER_TYPE_FIELD), _a));
+        this.filters = __assign({}, this.filters, (_a = {}, _a["excluded_ids"] = Filter_1.Filter.create("_id", uuids.map(function (uuid) { return uuid.composedUUID(); }), Filter_2.FILTER_EXCLUDE, Filter_2.FILTER_TYPE_FIELD), _a));
         return this;
     };
     /**
@@ -4850,7 +5682,7 @@ var Query = /** @class */ (function () {
         if (this.getQueryText() !== "") {
             array.q = this.getQueryText();
         }
-        if (this.coordinate instanceof Coordinate_1["default"]) {
+        if (this.coordinate instanceof Coordinate_1.Coordinate) {
             array.coordinate = this.coordinate.toArray();
         }
         /**
@@ -4933,7 +5765,7 @@ var Query = /** @class */ (function () {
         /**
          * Score strategy
          */
-        if (this.scoreStrategy instanceof ScoreStrategy_1["default"]) {
+        if (this.scoreStrategy instanceof ScoreStrategy_1.ScoreStrategy) {
             var scoreStrategyAsArray = this.scoreStrategy.toArray();
             if (Object.keys(scoreStrategyAsArray).length > 0) {
                 array.score_strategy = scoreStrategyAsArray;
@@ -4942,7 +5774,7 @@ var Query = /** @class */ (function () {
         /**
          * User
          */
-        if (this.user instanceof User_1["default"]) {
+        if (this.user instanceof User_1.User) {
             var userAsArray = this.user.toArray();
             if (Object.keys(userAsArray).length > 0) {
                 array.user = userAsArray;
@@ -4970,7 +5802,7 @@ var Query = /** @class */ (function () {
      */
     Query.createFromArray = function (array) {
         var query = array.coordinate instanceof Object
-            ? Query.createLocated(Coordinate_1["default"].createFromArray(array.coordinate), array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE)
+            ? Query.createLocated(Coordinate_1.Coordinate.createFromArray(array.coordinate), array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE)
             : Query.create(array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE);
         /**
          * Aggregations
@@ -4979,7 +5811,7 @@ var Query = /** @class */ (function () {
             ? array.aggregations
             : {};
         for (var i in aggregationsAsArray) {
-            query.aggregations[i] = Aggregation_1["default"].createFromArray(aggregationsAsArray[i]);
+            query.aggregations[i] = Aggregation_1.Aggregation.createFromArray(aggregationsAsArray[i]);
         }
         /**
          * Sort
@@ -4988,7 +5820,7 @@ var Query = /** @class */ (function () {
             ? array.sort
             : {};
         if (Object.keys(sortAsArray).length > 0) {
-            query.sortByInstance = SortBy_1["default"].createFromArray(sortAsArray);
+            query.sortByInstance = SortBy_1.SortBy.createFromArray(sortAsArray);
         }
         /**
          * Filters
@@ -4997,7 +5829,7 @@ var Query = /** @class */ (function () {
             ? array.filters
             : {};
         for (var i in filtersAsArray) {
-            query.filters[i] = Filter_1["default"].createFromArray(filtersAsArray[i]);
+            query.filters[i] = Filter_1.Filter.createFromArray(filtersAsArray[i]);
         }
         /**
          * Universe Filters
@@ -5006,7 +5838,7 @@ var Query = /** @class */ (function () {
             ? array.universe_filters
             : {};
         for (var i in universeFiltersAsArray) {
-            query.universeFilters[i] = Filter_1["default"].createFromArray(universeFiltersAsArray[i]);
+            query.universeFilters[i] = Filter_1.Filter.createFromArray(universeFiltersAsArray[i]);
         }
         /**
          * Booleans
@@ -5032,7 +5864,7 @@ var Query = /** @class */ (function () {
         for (var i in itemsPromotedAsArray) {
             query
                 .itemsPromoted
-                .push(ItemUUID_1["default"].createFromArray(itemsPromotedAsArray[i]));
+                .push(ItemUUID_1.ItemUUID.createFromArray(itemsPromotedAsArray[i]));
         }
         /**
          * Filter fields
@@ -5041,16 +5873,100 @@ var Query = /** @class */ (function () {
             ? array.filter_fields
             : [];
         query.scoreStrategy = array.score_strategy instanceof Object
-            ? ScoreStrategy_1["default"].createFromArray(array.score_stategy)
+            ? ScoreStrategy_1.ScoreStrategy.createFromArray(array.score_stategy)
             : null;
         query.user = array.user instanceof Object
-            ? User_1["default"].createFromArray(array.user)
+            ? User_1.User.createFromArray(array.user)
             : null;
         return query;
     };
     return Query;
 }());
-exports["default"] = Query;
+exports.Query = Query;
+
+
+/***/ }),
+
+/***/ "./src/Query/Range.ts":
+/*!****************************!*\
+  !*** ./src/Query/Range.ts ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+/**
+ * Aggregation constants
+ */
+exports.RANGE_ZERO = 0;
+exports.RANGE_INFINITE = -1;
+exports.RANGE_SEPARATOR = "..";
+/**
+ * Filter class
+ */
+var Range = /** @class */ (function () {
+    function Range() {
+    }
+    /**
+     * Strong to array
+     *
+     * @param string
+     *
+     * @returns {[number, number]}
+     */
+    Range.stringToArray = function (string) {
+        var parts = string.split(exports.RANGE_SEPARATOR);
+        var from = parts[0];
+        var to = parts[1];
+        var finalFrom = exports.RANGE_ZERO;
+        var finalTo = exports.RANGE_INFINITE;
+        if (from != "") {
+            finalFrom = parseInt(from);
+        }
+        if (to != "") {
+            finalTo = parseInt(to);
+        }
+        return [finalFrom, finalTo];
+    };
+    /**
+     * Array to string
+     *
+     * @param values
+     *
+     * @return {string}
+     */
+    Range.arrayToString = function (values) {
+        var finalValues = ["", ""];
+        if (values[0] != exports.RANGE_ZERO) {
+            finalValues[0] = String(values[0]);
+        }
+        if (values[1] != exports.RANGE_INFINITE) {
+            finalValues[1] = String(values[1]);
+        }
+        return finalValues.join(exports.RANGE_SEPARATOR);
+    };
+    /**
+     * Create ranges
+     *
+     * @param from
+     * @param to
+     * @param incremental
+     */
+    Range.createRanges = function (from, to, incremental) {
+        var ranges = [];
+        var nextTo;
+        while (from < to) {
+            nextTo = from + incremental;
+            ranges.push(from + exports.RANGE_SEPARATOR + nextTo);
+            from = nextTo;
+        }
+        return ranges;
+    };
+    return Range;
+}());
+exports.Range = Range;
 
 
 /***/ }),
@@ -5158,7 +6074,7 @@ var ScoreStrategy = /** @class */ (function () {
     };
     return ScoreStrategy;
 }());
-exports["default"] = ScoreStrategy;
+exports.ScoreStrategy = ScoreStrategy;
 
 
 /***/ }),
@@ -5339,10 +6255,10 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.byNestedFieldAndFilter = function (field, order, filter, mode) {
         if (mode === void 0) { mode = exports.SORT_BY_MODE_AVG; }
-        var fieldPath = Filter_1["default"].getFilterPathByField(filter.getField());
+        var fieldPath = Filter_1.Filter.getFilterPathByField(filter.getField());
         var filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
-        filter = Filter_1["default"].createFromArray(filterAsArray);
+        filter = Filter_1.Filter.createFromArray(filterAsArray);
         var object = {
             type: exports.SORT_BY_TYPE_NESTED,
             mode: mode,
@@ -5413,7 +6329,7 @@ var SortBy = /** @class */ (function () {
             }
             if (typeof sortsByAsArray[i]._geo_distance === typeof {} &&
                 sortsByAsArray[i]._geo_distance !== null &&
-                sortsByAsArray[i]._geo_distance.coordinate instanceof Coordinate_1["default"]) {
+                sortsByAsArray[i]._geo_distance.coordinate instanceof Coordinate_1.Coordinate) {
                 sortsByAsArray[i]._geo_distance.coordinate = sortsByAsArray[i]._geo_distance.coordinate.toArray();
             }
         }
@@ -5439,12 +6355,12 @@ var SortBy = /** @class */ (function () {
             }
             if (typeof element.filter === typeof {} &&
                 element.filter != null) {
-                element.filter = Filter_1["default"].createFromArray(element.filter);
+                element.filter = Filter_1.Filter.createFromArray(element.filter);
             }
             if (typeof element._geo_distance === typeof {} &&
                 element._geo_distance != null &&
                 typeof element._geo_distance.coordinate === typeof {}) {
-                element._geo_distance.coordinate = Coordinate_1["default"].createFromArray(element._geo_distance.coordinate);
+                element._geo_distance.coordinate = Coordinate_1.Coordinate.createFromArray(element._geo_distance.coordinate);
             }
             sortBy.sortsBy.push(element);
         }
@@ -5462,12 +6378,12 @@ var SortBy = /** @class */ (function () {
             var sortByAsArray = JSON.parse(JSON.stringify(sortBy));
             if (typeof sortBy.filter === typeof {} &&
                 sortBy.filter != null) {
-                sortByAsArray.filter = Filter_1["default"].createFromArray(sortBy.filter.toArray());
+                sortByAsArray.filter = Filter_1.Filter.createFromArray(sortBy.filter.toArray());
             }
             if (typeof sortBy._geo_distance === typeof {} &&
                 sortBy._geo_distance != null &&
                 typeof sortBy._geo_distance.coordinate == typeof {}) {
-                sortByAsArray._geo_distance.coordinate = Coordinate_1["default"].createFromArray(sortBy._geo_distance.coordinate.toArray());
+                sortByAsArray._geo_distance.coordinate = Coordinate_1.Coordinate.createFromArray(sortBy._geo_distance.coordinate.toArray());
             }
             newSortBy.sortsBy.push(sortByAsArray);
         }
@@ -5475,7 +6391,7 @@ var SortBy = /** @class */ (function () {
     };
     return SortBy;
 }());
-exports["default"] = SortBy;
+exports.SortBy = SortBy;
 
 
 /***/ }),
@@ -5581,7 +6497,7 @@ var HttpRepository = /** @class */ (function (_super) {
         var item = this
             .transformer
             .toItem(object);
-        if (item instanceof Item_1["default"]) {
+        if (item instanceof Item_1.Item) {
             this.addItem(item);
         }
     };
@@ -5594,7 +6510,7 @@ var HttpRepository = /** @class */ (function (_super) {
         var itemUUID = this
             .transformer
             .toItemUUID(object);
-        if (itemUUID instanceof ItemUUID_1["default"]) {
+        if (itemUUID instanceof ItemUUID_1.ItemUUID) {
             this.deleteItem(itemUUID);
         }
     };
@@ -5708,8 +6624,8 @@ var HttpRepository = /** @class */ (function (_super) {
                             }, {})
                                 .then(function (response) {
                                 HttpRepository.throwTransportableExceptionIfNeeded(response);
-                                var result = Result_1["default"].createFromArray(response.getBody());
-                                return Result_1["default"].create(result.getQuery(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), that
+                                var result = Result_1.Result.createFromArray(response.getBody());
+                                return Result_1.Result.create(result.getQuery(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), that
                                     .transformer
                                     .fromItems(result.getItems()));
                             })];
@@ -5880,21 +6796,21 @@ var HttpRepository = /** @class */ (function (_super) {
             return;
         }
         switch (response.getCode()) {
-            case ResourceNotAvailableError_1["default"].getTransportableHTTPError():
-                throw new ResourceNotAvailableError_1["default"](response.getBody().message);
-            case InvalidTokenError_1["default"].getTransportableHTTPError():
-                throw new InvalidTokenError_1["default"](response.getBody().message);
-            case InvalidFormatError_1["default"].getTransportableHTTPError():
-                throw new InvalidFormatError_1["default"](response.getBody().message);
-            case ResourceExistsError_1["default"].getTransportableHTTPError():
-                throw new ResourceExistsError_1["default"](response.getBody().message);
-            case ConnectionError_1["default"].getTransportableHTTPError():
-                throw new ConnectionError_1["default"](response.getBody().message);
+            case ResourceNotAvailableError_1.ResourceNotAvailableError.getTransportableHTTPError():
+                throw new ResourceNotAvailableError_1.ResourceNotAvailableError(response.getBody().message);
+            case InvalidTokenError_1.InvalidTokenError.getTransportableHTTPError():
+                throw new InvalidTokenError_1.InvalidTokenError(response.getBody().message);
+            case InvalidFormatError_1.InvalidFormatError.getTransportableHTTPError():
+                throw new InvalidFormatError_1.InvalidFormatError(response.getBody().message);
+            case ResourceExistsError_1.ResourceExistsError.getTransportableHTTPError():
+                throw new ResourceExistsError_1.ResourceExistsError(response.getBody().message);
+            case ConnectionError_1.ConnectionError.getTransportableHTTPError():
+                throw new ConnectionError_1.ConnectionError(response.getBody().message);
         }
     };
     return HttpRepository;
-}(Repository_1["default"]));
-exports["default"] = HttpRepository;
+}(Repository_1.Repository));
+exports.HttpRepository = HttpRepository;
 
 
 /***/ }),
@@ -6065,376 +6981,7 @@ var Repository = /** @class */ (function () {
     };
     return Repository;
 }());
-exports["default"] = Repository;
-
-
-/***/ }),
-
-/***/ "./src/Result/Aggregation.ts":
-/*!***********************************!*\
-  !*** ./src/Result/Aggregation.ts ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-exports.__esModule = true;
-var Filter_1 = __webpack_require__(/*! ./../Query/Filter */ "./src/Query/Filter.ts");
-var Counter_1 = __webpack_require__(/*! ./Counter */ "./src/Result/Counter.ts");
-/**
- * Aggregation class
- */
-var Aggregation = /** @class */ (function () {
-    /**
-     * Constructor
-     *
-     * @param name
-     * @param applicationType
-     * @param totalElements
-     * @param activeElements
-     */
-    function Aggregation(name, applicationType, totalElements, activeElements) {
-        this.counters = {};
-        this.highestActiveElement = 0;
-        this.name = name;
-        this.applicationType = applicationType;
-        this.totalElements = totalElements;
-        this.activeElements = {};
-        for (var i in activeElements) {
-            var activeElement = activeElements[i];
-            this.activeElements[activeElement] = activeElement;
-        }
-    }
-    /**
-     * Add counter
-     *
-     * @param name
-     * @param counter
-     */
-    Aggregation.prototype.addCounter = function (name, counter) {
-        if (counter == 0) {
-            return;
-        }
-        var counterInstance = Counter_1["default"].createByActiveElements(name, counter, Object.keys(this.activeElements));
-        if (!(counterInstance instanceof Counter_1["default"])) {
-            return;
-        }
-        if ((this.applicationType & Filter_1.FILTER_MUST_ALL_WITH_LEVELS) &&
-            (this.applicationType & ~Filter_1.FILTER_MUST_ALL) &&
-            counterInstance.isUsed()) {
-            this.activeElements[counterInstance.getId()] = counterInstance;
-            this.highestActiveElement = Math.max(counterInstance.getLevel(), this.highestActiveElement);
-            return;
-        }
-        this.counters[counterInstance.getId()] = counterInstance;
-    };
-    /**
-     * Get name
-     *
-     * @return {string}
-     */
-    Aggregation.prototype.getName = function () {
-        return this.name;
-    };
-    /**
-     * Get counter
-     *
-     * @return {any}
-     */
-    Aggregation.prototype.getCounters = function () {
-        return this.counters;
-    };
-    /**
-     * Return if the aggregation belongs to a filter.
-     *
-     * @return {boolean}
-     */
-    Aggregation.prototype.isFilter = function () {
-        return (this.applicationType & Filter_1.FILTER_MUST_ALL) > 0;
-    };
-    /**
-     * Aggregation has levels.
-     *
-     * @return {boolean}
-     */
-    Aggregation.prototype.hasLevels = function () {
-        return (this.applicationType & Filter_1.FILTER_MUST_ALL_WITH_LEVELS) > 0;
-    };
-    /**
-     * Get counter by name
-     *
-     * @param name
-     *
-     * @return {null}
-     */
-    Aggregation.prototype.getCounter = function (name) {
-        return this.counters[name] instanceof Counter_1["default"]
-            ? this.counters[name]
-            : null;
-    };
-    /**
-     * Get all elements
-     *
-     * @return {{}}
-     */
-    Aggregation.prototype.getAllElements = function () {
-        return __assign({}, this.activeElements, this.counters);
-    };
-    /**
-     * Get total elements
-     *
-     * @return {number}
-     */
-    Aggregation.prototype.getTotalElements = function () {
-        return this.totalElements;
-    };
-    /**
-     * Get active elements
-     *
-     * @return {any}
-     */
-    Aggregation.prototype.getActiveElements = function () {
-        if (Object.keys(this.activeElements).length === 0) {
-            return {};
-        }
-        if (this.applicationType === Filter_1.FILTER_MUST_ALL_WITH_LEVELS) {
-            var value = null;
-            for (var i in this.activeElements) {
-                var activeElement = this.activeElements[i];
-                if (!(activeElement instanceof Counter_1["default"])) {
-                    continue;
-                }
-                if (value == null) {
-                    value = activeElement;
-                }
-                value = value.getLevel() > activeElement.getLevel()
-                    ? value
-                    : activeElement;
-            }
-            return value instanceof Counter_1["default"]
-                ? { 0: value }
-                : null;
-        }
-        return this.activeElements;
-    };
-    /**
-     * Clean results by level and remove all levels higher than the lowest.
-     */
-    Aggregation.prototype.cleanCountersByLevel = function () {
-        for (var i in this.counters) {
-            var counter = this.counters[i];
-            if (counter.getLevel() !== this.highestActiveElement + 1) {
-                delete this.counters[i];
-            }
-        }
-    };
-    /**
-     * Is empty
-     *
-     * @returns {boolean}
-     */
-    Aggregation.prototype.isEmpty = function () {
-        return Object.keys(this.activeElements).length == 0 &&
-            Object.keys(this.counters).length == 0;
-    };
-    /**
-     * To array
-     *
-     * @return {any}
-     */
-    Aggregation.prototype.toArray = function () {
-        var array = {
-            name: this.name,
-            counters: [],
-            active_elements: []
-        };
-        for (var i in this.counters) {
-            array.counters.push(this.counters[i].toArray());
-        }
-        if (this.applicationType !== Filter_1.FILTER_AT_LEAST_ONE) {
-            array.application_type = this.applicationType;
-        }
-        if (this.totalElements > 0) {
-            array.total_elements = this.totalElements;
-        }
-        for (var i in this.activeElements) {
-            var activeElement = this.activeElements[i];
-            array.active_elements.push(activeElement instanceof Counter_1["default"]
-                ? activeElement.toArray()
-                : activeElement);
-        }
-        if (this.highestActiveElement > 0) {
-            array.highest_active_level = this.highestActiveElement;
-        }
-        if (array.counters.length === 0) {
-            delete array.counters;
-        }
-        if (array.active_elements.length === 0) {
-            delete array.active_elements;
-        }
-        return array;
-    };
-    /**
-     * Create from array
-     *
-     * @param array
-     */
-    Aggregation.createFromArray = function (array) {
-        var activeElements = [];
-        var activeElementsAsArray = array.active_elements;
-        activeElementsAsArray = typeof activeElementsAsArray === typeof []
-            ? activeElementsAsArray
-            : [];
-        for (var i in activeElementsAsArray) {
-            var activeElementAsArray = activeElementsAsArray[i];
-            activeElements.push(typeof activeElementAsArray === typeof {}
-                ? Counter_1["default"].createFromArray(activeElementAsArray)
-                : activeElementAsArray);
-        }
-        var aggregation = new Aggregation(array.name, parseInt(array.application_type ? array.application_type : Filter_1.FILTER_AT_LEAST_ONE), parseInt(array.total_elements ? array.total_elements : 0), []);
-        aggregation.activeElements = activeElements;
-        var countersAsArray = typeof array.counters === typeof []
-            ? array.counters
-            : [];
-        for (var i in countersAsArray) {
-            var counterAsArray = countersAsArray[i];
-            var counter = Counter_1["default"].createFromArray(counterAsArray);
-            aggregation.counters[counter.getId()] = counter;
-        }
-        aggregation.highestActiveElement = typeof array.highest_active_level === "number"
-            ? array.highest_active_level
-            : 0;
-        return aggregation;
-    };
-    return Aggregation;
-}());
-exports["default"] = Aggregation;
-
-
-/***/ }),
-
-/***/ "./src/Result/Aggregations.ts":
-/*!************************************!*\
-  !*** ./src/Result/Aggregations.ts ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-exports.__esModule = true;
-var Aggregation_1 = __webpack_require__(/*! ./Aggregation */ "./src/Result/Aggregation.ts");
-/**
- * Aggregation class
- */
-var Aggregations = /** @class */ (function () {
-    /**
-     * Constructor
-     *
-     * @param totalElements
-     */
-    function Aggregations(totalElements) {
-        this.aggregations = {};
-        this.totalElements = totalElements;
-    }
-    /**
-     * Add aggregation
-     *
-     * @param name
-     * @param aggregation
-     */
-    Aggregations.prototype.addAggregation = function (name, aggregation) {
-        this.aggregations[name] = aggregation;
-    };
-    /**
-     * Get aggregations
-     *
-     * @returns {{}}
-     */
-    Aggregations.prototype.getAggregations = function () {
-        return this.aggregations;
-    };
-    /**
-     * Get aggregation
-     *
-     * @param name
-     *
-     * @returns {Aggregation|null}
-     */
-    Aggregations.prototype.getAggregation = function (name) {
-        return this.aggregations[name] instanceof Aggregation_1["default"]
-            ? this.aggregations[name]
-            : null;
-    };
-    /**
-     * Has not empty aggregation
-     *
-     * @param name
-     *
-     * @returns {boolean}
-     */
-    Aggregations.prototype.hasNotEmptyAggregation = function (name) {
-        var aggregation = this.getAggregation(name);
-        return (aggregation instanceof Aggregation_1["default"]) &&
-            (!aggregation.isEmpty());
-    };
-    /**
-     * Get total elements
-     *
-     * @return {number}
-     */
-    Aggregations.prototype.getTotalElements = function () {
-        return this.totalElements;
-    };
-    /**
-     * To array
-     *
-     * @return {{total_elements?: number, aggregations?: {}}}
-     */
-    Aggregations.prototype.toArray = function () {
-        var aggregationCollection = {};
-        for (var i in this.aggregations) {
-            aggregationCollection[i] = this.aggregations[i].toArray();
-        }
-        var array = {};
-        if (this.totalElements > 0) {
-            array.total_elements = this.totalElements;
-        }
-        if (Object.keys(aggregationCollection).length > 0) {
-            array.aggregations = aggregationCollection;
-        }
-        return array;
-    };
-    /**
-     * Create from array
-     *
-     * @param array
-     *
-     * @return {Aggregations}
-     */
-    Aggregations.createFromArray = function (array) {
-        var aggregations = new Aggregations(typeof array.total_elements === "number"
-            ? array.total_elements
-            : 0);
-        if (typeof array.aggregations === typeof {}) {
-            for (var i in array.aggregations) {
-                aggregations.addAggregation(i, Aggregation_1["default"].createFromArray(array.aggregations[i]));
-            }
-        }
-        return aggregations;
-    };
-    return Aggregations;
-}());
-exports["default"] = Aggregations;
+exports.Repository = Repository;
 
 
 /***/ }),
@@ -6449,7 +6996,7 @@ exports["default"] = Aggregations;
 "use strict";
 
 exports.__esModule = true;
-var Metadata_1 = __webpack_require__(/*! ../../src/Model/Metadata */ "./src/Model/Metadata.ts");
+var Metadata_1 = __webpack_require__(/*! ../Model/Metadata */ "./src/Model/Metadata.ts");
 /**
  * Aggregation class
  */
@@ -6538,7 +7085,7 @@ var Counter = /** @class */ (function () {
      * @param activeElements
      */
     Counter.createByActiveElements = function (name, n, activeElements) {
-        var values = Metadata_1["default"].fromMetadata(name);
+        var values = Metadata_1.Metadata.fromMetadata(name);
         if (values == null) {
             return null;
         }
@@ -6581,7 +7128,7 @@ var Counter = /** @class */ (function () {
     };
     return Counter;
 }());
-exports["default"] = Counter;
+exports.Counter = Counter;
 
 
 /***/ }),
@@ -6598,7 +7145,7 @@ exports["default"] = Counter;
 exports.__esModule = true;
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var Query_1 = __webpack_require__(/*! ../Query/Query */ "./src/Query/Query.ts");
-var Aggregations_1 = __webpack_require__(/*! ./Aggregations */ "./src/Result/Aggregations.ts");
+var ResultAggregations_1 = __webpack_require__(/*! ./ResultAggregations */ "./src/Result/ResultAggregations.ts");
 /**
  * Result class
  */
@@ -6715,10 +7262,10 @@ var Result = /** @class */ (function () {
     /**
      * Get aggregations
      *
-     * @return {Aggregations}
+     * @return {ResultAggregations}
      */
     Result.prototype.getAggregations = function () {
-        return this.aggregations instanceof Aggregations_1["default"]
+        return this.aggregations instanceof ResultAggregations_1.ResultAggregations
             ? this.aggregations
             : null;
     };
@@ -6811,21 +7358,390 @@ var Result = /** @class */ (function () {
      * @return {Result}
      */
     Result.createFromArray = function (array) {
-        return Result.create(Query_1["default"].createFromArray(array.query), array.total_items
+        return Result.create(Query_1.Query.createFromArray(array.query), array.total_items
             ? array.total_items
             : 0, array.total_hits
             ? array.total_hits
             : 0, array.aggregations instanceof Object
-            ? Aggregations_1["default"].createFromArray(array.aggregations)
+            ? ResultAggregations_1.ResultAggregations.createFromArray(array.aggregations)
             : null, array.suggests
             ? array.suggests
             : null, array.items instanceof Array
-            ? array.items.map(function (itemAsArray) { return Item_1["default"].createFromArray(itemAsArray); })
+            ? array.items.map(function (itemAsArray) { return Item_1.Item.createFromArray(itemAsArray); })
             : []);
     };
     return Result;
 }());
-exports["default"] = Result;
+exports.Result = Result;
+
+
+/***/ }),
+
+/***/ "./src/Result/ResultAggregation.ts":
+/*!*****************************************!*\
+  !*** ./src/Result/ResultAggregation.ts ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+exports.__esModule = true;
+var Filter_1 = __webpack_require__(/*! ../Query/Filter */ "./src/Query/Filter.ts");
+var Counter_1 = __webpack_require__(/*! ./Counter */ "./src/Result/Counter.ts");
+/**
+ * ResultAggregation class
+ */
+var ResultAggregation = /** @class */ (function () {
+    /**
+     * Constructor
+     *
+     * @param name
+     * @param applicationType
+     * @param totalElements
+     * @param activeElements
+     */
+    function ResultAggregation(name, applicationType, totalElements, activeElements) {
+        this.counters = {};
+        this.highestActiveElement = 0;
+        this.name = name;
+        this.applicationType = applicationType;
+        this.totalElements = totalElements;
+        this.activeElements = {};
+        for (var i in activeElements) {
+            var activeElement = activeElements[i];
+            this.activeElements[activeElement] = activeElement;
+        }
+    }
+    /**
+     * Add counter
+     *
+     * @param name
+     * @param counter
+     */
+    ResultAggregation.prototype.addCounter = function (name, counter) {
+        if (counter == 0) {
+            return;
+        }
+        var counterInstance = Counter_1.Counter.createByActiveElements(name, counter, Object.keys(this.activeElements));
+        if (!(counterInstance instanceof Counter_1.Counter)) {
+            return;
+        }
+        if ((this.applicationType & Filter_1.FILTER_MUST_ALL_WITH_LEVELS) &&
+            (this.applicationType & ~Filter_1.FILTER_MUST_ALL) &&
+            counterInstance.isUsed()) {
+            this.activeElements[counterInstance.getId()] = counterInstance;
+            this.highestActiveElement = Math.max(counterInstance.getLevel(), this.highestActiveElement);
+            return;
+        }
+        this.counters[counterInstance.getId()] = counterInstance;
+    };
+    /**
+     * Get name
+     *
+     * @return {string}
+     */
+    ResultAggregation.prototype.getName = function () {
+        return this.name;
+    };
+    /**
+     * Get counter
+     *
+     * @return {any}
+     */
+    ResultAggregation.prototype.getCounters = function () {
+        return this.counters;
+    };
+    /**
+     * Return if the aggregation belongs to a filter.
+     *
+     * @return {boolean}
+     */
+    ResultAggregation.prototype.isFilter = function () {
+        return (this.applicationType & Filter_1.FILTER_MUST_ALL) > 0;
+    };
+    /**
+     * Aggregation has levels.
+     *
+     * @return {boolean}
+     */
+    ResultAggregation.prototype.hasLevels = function () {
+        return (this.applicationType & Filter_1.FILTER_MUST_ALL_WITH_LEVELS) > 0;
+    };
+    /**
+     * Get counter by name
+     *
+     * @param name
+     *
+     * @return {null}
+     */
+    ResultAggregation.prototype.getCounter = function (name) {
+        return this.counters[name] instanceof Counter_1.Counter
+            ? this.counters[name]
+            : null;
+    };
+    /**
+     * Get all elements
+     *
+     * @return {{}}
+     */
+    ResultAggregation.prototype.getAllElements = function () {
+        return __assign({}, this.activeElements, this.counters);
+    };
+    /**
+     * Get total elements
+     *
+     * @return {number}
+     */
+    ResultAggregation.prototype.getTotalElements = function () {
+        return this.totalElements;
+    };
+    /**
+     * Get active elements
+     *
+     * @return {any}
+     */
+    ResultAggregation.prototype.getActiveElements = function () {
+        if (Object.keys(this.activeElements).length === 0) {
+            return {};
+        }
+        if (this.applicationType === Filter_1.FILTER_MUST_ALL_WITH_LEVELS) {
+            var value = null;
+            for (var i in this.activeElements) {
+                var activeElement = this.activeElements[i];
+                if (!(activeElement instanceof Counter_1.Counter)) {
+                    continue;
+                }
+                if (value == null) {
+                    value = activeElement;
+                }
+                value = value.getLevel() > activeElement.getLevel()
+                    ? value
+                    : activeElement;
+            }
+            return value instanceof Counter_1.Counter
+                ? { 0: value }
+                : null;
+        }
+        return this.activeElements;
+    };
+    /**
+     * Clean results by level and remove all levels higher than the lowest.
+     */
+    ResultAggregation.prototype.cleanCountersByLevel = function () {
+        for (var i in this.counters) {
+            var counter = this.counters[i];
+            if (counter.getLevel() !== this.highestActiveElement + 1) {
+                delete this.counters[i];
+            }
+        }
+    };
+    /**
+     * Is empty
+     *
+     * @returns {boolean}
+     */
+    ResultAggregation.prototype.isEmpty = function () {
+        return Object.keys(this.activeElements).length == 0 &&
+            Object.keys(this.counters).length == 0;
+    };
+    /**
+     * To array
+     *
+     * @return {any}
+     */
+    ResultAggregation.prototype.toArray = function () {
+        var array = {
+            name: this.name,
+            counters: [],
+            active_elements: []
+        };
+        for (var i in this.counters) {
+            array.counters.push(this.counters[i].toArray());
+        }
+        if (this.applicationType !== Filter_1.FILTER_AT_LEAST_ONE) {
+            array.application_type = this.applicationType;
+        }
+        if (this.totalElements > 0) {
+            array.total_elements = this.totalElements;
+        }
+        for (var i in this.activeElements) {
+            var activeElement = this.activeElements[i];
+            array.active_elements.push(activeElement instanceof Counter_1.Counter
+                ? activeElement.toArray()
+                : activeElement);
+        }
+        if (this.highestActiveElement > 0) {
+            array.highest_active_level = this.highestActiveElement;
+        }
+        if (array.counters.length === 0) {
+            delete array.counters;
+        }
+        if (array.active_elements.length === 0) {
+            delete array.active_elements;
+        }
+        return array;
+    };
+    /**
+     * Create from array
+     *
+     * @param array
+     */
+    ResultAggregation.createFromArray = function (array) {
+        var activeElements = [];
+        var activeElementsAsArray = array.active_elements;
+        activeElementsAsArray = typeof activeElementsAsArray === typeof []
+            ? activeElementsAsArray
+            : [];
+        for (var i in activeElementsAsArray) {
+            var activeElementAsArray = activeElementsAsArray[i];
+            activeElements.push(typeof activeElementAsArray === typeof {}
+                ? Counter_1.Counter.createFromArray(activeElementAsArray)
+                : activeElementAsArray);
+        }
+        var aggregation = new ResultAggregation(array.name, parseInt(array.application_type ? array.application_type : Filter_1.FILTER_AT_LEAST_ONE), parseInt(array.total_elements ? array.total_elements : 0), []);
+        aggregation.activeElements = activeElements;
+        var countersAsArray = typeof array.counters === typeof []
+            ? array.counters
+            : [];
+        for (var i in countersAsArray) {
+            var counterAsArray = countersAsArray[i];
+            var counter = Counter_1.Counter.createFromArray(counterAsArray);
+            aggregation.counters[counter.getId()] = counter;
+        }
+        aggregation.highestActiveElement = typeof array.highest_active_level === "number"
+            ? array.highest_active_level
+            : 0;
+        return aggregation;
+    };
+    return ResultAggregation;
+}());
+exports.ResultAggregation = ResultAggregation;
+
+
+/***/ }),
+
+/***/ "./src/Result/ResultAggregations.ts":
+/*!******************************************!*\
+  !*** ./src/Result/ResultAggregations.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var ResultAggregation_1 = __webpack_require__(/*! ./ResultAggregation */ "./src/Result/ResultAggregation.ts");
+/**
+ * ResultAggregation class
+ */
+var ResultAggregations = /** @class */ (function () {
+    /**
+     * Constructor
+     *
+     * @param totalElements
+     */
+    function ResultAggregations(totalElements) {
+        this.aggregations = {};
+        this.totalElements = totalElements;
+    }
+    /**
+     * Add aggregation
+     *
+     * @param name
+     * @param aggregation
+     */
+    ResultAggregations.prototype.addAggregation = function (name, aggregation) {
+        this.aggregations[name] = aggregation;
+    };
+    /**
+     * Get aggregations
+     *
+     * @returns {{}}
+     */
+    ResultAggregations.prototype.getAggregations = function () {
+        return this.aggregations;
+    };
+    /**
+     * Get aggregation
+     *
+     * @param name
+     *
+     * @returns {Aggregation|null}
+     */
+    ResultAggregations.prototype.getAggregation = function (name) {
+        return this.aggregations[name] instanceof ResultAggregation_1.ResultAggregation
+            ? this.aggregations[name]
+            : null;
+    };
+    /**
+     * Has not empty aggregation
+     *
+     * @param name
+     *
+     * @returns {boolean}
+     */
+    ResultAggregations.prototype.hasNotEmptyAggregation = function (name) {
+        var aggregation = this.getAggregation(name);
+        return (aggregation instanceof ResultAggregation_1.ResultAggregation) &&
+            (!aggregation.isEmpty());
+    };
+    /**
+     * Get total elements
+     *
+     * @return {number}
+     */
+    ResultAggregations.prototype.getTotalElements = function () {
+        return this.totalElements;
+    };
+    /**
+     * To array
+     *
+     * @return {{total_elements?: number, aggregations?: {}}}
+     */
+    ResultAggregations.prototype.toArray = function () {
+        var aggregationCollection = {};
+        for (var i in this.aggregations) {
+            aggregationCollection[i] = this.aggregations[i].toArray();
+        }
+        var array = {};
+        if (this.totalElements > 0) {
+            array.total_elements = this.totalElements;
+        }
+        if (Object.keys(aggregationCollection).length > 0) {
+            array.aggregations = aggregationCollection;
+        }
+        return array;
+    };
+    /**
+     * Create from array
+     *
+     * @param array
+     *
+     * @return {ResultAggregations}
+     */
+    ResultAggregations.createFromArray = function (array) {
+        var aggregations = new ResultAggregations(typeof array.total_elements === "number"
+            ? array.total_elements
+            : 0);
+        if (typeof array.aggregations === typeof {}) {
+            for (var i in array.aggregations) {
+                aggregations.addAggregation(i, ResultAggregation_1.ResultAggregation.createFromArray(array.aggregations[i]));
+            }
+        }
+        return aggregations;
+    };
+    return ResultAggregations;
+}());
+exports.ResultAggregations = ResultAggregations;
 
 
 /***/ }),
@@ -6911,7 +7827,7 @@ var Transformer = /** @class */ (function () {
         var items = [];
         for (var i in objects) {
             var item = this.toItem(objects[i]);
-            if (item instanceof Item_1["default"]) {
+            if (item instanceof Item_1.Item) {
                 items.push(item);
             }
         }
@@ -6944,7 +7860,7 @@ var Transformer = /** @class */ (function () {
         var itemUUIDs = [];
         for (var i in objects) {
             var itemUUID = this.toItemUUID(objects[i]);
-            if (itemUUID instanceof ItemUUID_1["default"]) {
+            if (itemUUID instanceof ItemUUID_1.ItemUUID) {
                 itemUUIDs.push(itemUUID);
             }
         }
@@ -6968,7 +7884,7 @@ var Transformer = /** @class */ (function () {
     };
     return Transformer;
 }());
-exports["default"] = Transformer;
+exports.Transformer = Transformer;
 
 
 /***/ }),
@@ -6982,9 +7898,51 @@ exports["default"] = Transformer;
 
 "use strict";
 
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 exports.__esModule = true;
 var Apisearch_1 = __webpack_require__(/*! ./Apisearch */ "./src/Apisearch.ts");
 exports["default"] = Apisearch_1["default"];
+__export(__webpack_require__(/*! ./Cache/InMemoryCache */ "./src/Cache/InMemoryCache.ts"));
+__export(__webpack_require__(/*! ./Config/Config */ "./src/Config/Config.ts"));
+__export(__webpack_require__(/*! ./Config/ImmutableConfig */ "./src/Config/ImmutableConfig.ts"));
+__export(__webpack_require__(/*! ./Config/Synonym */ "./src/Config/Synonym.ts"));
+__export(__webpack_require__(/*! ./Error/ConnectionError */ "./src/Error/ConnectionError.ts"));
+__export(__webpack_require__(/*! ./Error/ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts"));
+__export(__webpack_require__(/*! ./Error/EventError */ "./src/Error/EventError.ts"));
+__export(__webpack_require__(/*! ./Error/ForbiddenError */ "./src/Error/ForbiddenError.ts"));
+__export(__webpack_require__(/*! ./Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts"));
+__export(__webpack_require__(/*! ./Error/InvalidTokenError */ "./src/Error/InvalidTokenError.ts"));
+__export(__webpack_require__(/*! ./Error/ResourceExistsError */ "./src/Error/ResourceExistsError.ts"));
+__export(__webpack_require__(/*! ./Error/ResourceNotAvailableError */ "./src/Error/ResourceNotAvailableError.ts"));
+__export(__webpack_require__(/*! ./Error/UnsupportedContentTypeError */ "./src/Error/UnsupportedContentTypeError.ts"));
+__export(__webpack_require__(/*! ./Geo/LocationRange */ "./src/Geo/LocationRange.ts"));
+__export(__webpack_require__(/*! ./Http/AxiosClient */ "./src/Http/AxiosClient.ts"));
+__export(__webpack_require__(/*! ./Http/Client */ "./src/Http/Client.ts"));
+__export(__webpack_require__(/*! ./Http/HttpClient */ "./src/Http/HttpClient.ts"));
+__export(__webpack_require__(/*! ./Http/Response */ "./src/Http/Response.ts"));
+__export(__webpack_require__(/*! ./Http/Retry */ "./src/Http/Retry.ts"));
+__export(__webpack_require__(/*! ./Http/RetryMap */ "./src/Http/RetryMap.ts"));
+__export(__webpack_require__(/*! ./Model/Changes */ "./src/Model/Changes.ts"));
+__export(__webpack_require__(/*! ./Model/Coordinate */ "./src/Model/Coordinate.ts"));
+__export(__webpack_require__(/*! ./Model/Item */ "./src/Model/Item.ts"));
+__export(__webpack_require__(/*! ./Model/ItemUUID */ "./src/Model/ItemUUID.ts"));
+__export(__webpack_require__(/*! ./Model/Metadata */ "./src/Model/Metadata.ts"));
+__export(__webpack_require__(/*! ./Model/User */ "./src/Model/User.ts"));
+__export(__webpack_require__(/*! ./Query/Aggregation */ "./src/Query/Aggregation.ts"));
+__export(__webpack_require__(/*! ./Query/Filter */ "./src/Query/Filter.ts"));
+__export(__webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts"));
+__export(__webpack_require__(/*! ./Query/Range */ "./src/Query/Range.ts"));
+__export(__webpack_require__(/*! ./Query/ScoreStrategy */ "./src/Query/ScoreStrategy.ts"));
+__export(__webpack_require__(/*! ./Query/SortBy */ "./src/Query/SortBy.ts"));
+__export(__webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts"));
+__export(__webpack_require__(/*! ./Repository/Repository */ "./src/Repository/Repository.ts"));
+__export(__webpack_require__(/*! ./Result/ResultAggregation */ "./src/Result/ResultAggregation.ts"));
+__export(__webpack_require__(/*! ./Result/ResultAggregations */ "./src/Result/ResultAggregations.ts"));
+__export(__webpack_require__(/*! ./Result/Counter */ "./src/Result/Counter.ts"));
+__export(__webpack_require__(/*! ./Result/Result */ "./src/Result/Result.ts"));
+__export(__webpack_require__(/*! ./Transformer/Transformer */ "./src/Transformer/Transformer.ts"));
 
 
 /***/ })

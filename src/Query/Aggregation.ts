@@ -15,7 +15,7 @@ export const AGGREGATION_NO_LIMIT = 0;
 /**
  * Aggregation class
  */
-export default class Aggregation {
+export class Aggregation {
 
     private name: string;
     private field: string;

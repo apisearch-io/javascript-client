@@ -1,9 +1,9 @@
-import InvalidFormatError from "../Error/InvalidFormatError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
 
 /**
  * User class
  */
-export default class User {
+export class User {
 
     private id: string;
     private attributes: {};

@@ -1,9 +1,9 @@
-import InvalidFormatError from "../../src/Error/InvalidFormatError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
 
 /**
  * ItemUUID class
  */
-export default class ItemUUID {
+export class ItemUUID {
 
     private id: string;
     private type: string;

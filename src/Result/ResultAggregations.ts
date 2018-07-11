@@ -1,9 +1,9 @@
-import Aggregation from "./Aggregation";
+import {ResultAggregation} from "./ResultAggregation";
 
 /**
- * Aggregation class
+ * ResultAggregation class
  */
-export default class Aggregations {
+export class ResultAggregations {
 
     private aggregations: any = {};
     private totalElements: number;
@@ -25,7 +25,7 @@ export default class Aggregations {
      */
     public addAggregation(
         name: string,
-        aggregation: Aggregation,
+        aggregation: ResultAggregation,
     ) {
         this.aggregations[name] = aggregation;
     }
@@ -47,7 +47,7 @@ export default class Aggregations {
      * @returns {Aggregation|null}
      */
     public getAggregation(name: string) {
-        return this.aggregations[name] instanceof Aggregation
+        return this.aggregations[name] instanceof ResultAggregation
             ? this.aggregations[name]
             : null;
     }
@@ -61,7 +61,7 @@ export default class Aggregations {
      */
     public hasNotEmptyAggregation(name: string): boolean {
         const aggregation = this.getAggregation(name);
-        return (aggregation instanceof Aggregation) &&
+        return (aggregation instanceof ResultAggregation) &&
             (!aggregation.isEmpty());
     }
 
@@ -103,10 +103,10 @@ export default class Aggregations {
      *
      * @param array
      *
-     * @return {Aggregations}
+     * @return {ResultAggregations}
      */
     public static createFromArray(array: any) {
-        const aggregations = new Aggregations(
+        const aggregations = new ResultAggregations(
             typeof array.total_elements === "number"
                 ? array.total_elements
                 : 0,
@@ -116,7 +116,7 @@ export default class Aggregations {
             for (const i in array.aggregations) {
                 aggregations.addAggregation(
                     i,
-                    Aggregation.createFromArray(array.aggregations[i]),
+                    ResultAggregation.createFromArray(array.aggregations[i]),
                 );
             }
         }

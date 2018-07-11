@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import Aggregation from "../../src/Result/Aggregation";
-import Counter from "../../src/Result/Counter";
+import {ResultAggregation} from "../../src/Result/ResultAggregation";
+import {Counter} from "../../src/Result/Counter";
 import {
     FILTER_MUST_ALL_WITH_LEVELS,
     FILTER_MUST_ALL, FILTER_AT_LEAST_ONE
 } from "../../src/Query/Filter";
 
 describe('Result/', () => {
-    describe('Aggregation', () => {
+    describe('ResultAggregation', () => {
         describe('() with errors', () => {
-            let aggregation = new Aggregation(
+            let aggregation = new ResultAggregation(
                 'name',
                 0,
                 10,
@@ -32,7 +32,7 @@ describe('Result/', () => {
         });
 
         describe('.addCounter() with good result', () => {
-            let aggregation = new Aggregation(
+            let aggregation = new ResultAggregation(
                 'name',
                 0,
                 10,
@@ -60,7 +60,7 @@ describe('Result/', () => {
         });
 
         describe('() with levels', () => {
-            let aggregation = new Aggregation(
+            let aggregation = new ResultAggregation(
                 'name',
                 FILTER_MUST_ALL_WITH_LEVELS,
                 10,
@@ -75,7 +75,7 @@ describe('Result/', () => {
 
         describe('isEmpty() with empty values', () => {
             it('Should be empty with LEVELS', () => {
-                let aggregation = new Aggregation(
+                let aggregation = new ResultAggregation(
                     'name',
                     FILTER_MUST_ALL_WITH_LEVELS,
                     10,
@@ -85,7 +85,7 @@ describe('Result/', () => {
             });
 
             it('Should be empty without LEVELS', () => {
-                let aggregation = new Aggregation(
+                let aggregation = new ResultAggregation(
                     'name',
                     0,
                     10,
@@ -96,7 +96,7 @@ describe('Result/', () => {
         });
 
         describe('.getActiveElements()', () => {
-            let aggregation = new Aggregation(
+            let aggregation = new ResultAggregation(
                 'name',
                 FILTER_AT_LEAST_ONE,
                 10,
@@ -114,7 +114,7 @@ describe('Result/', () => {
         });
 
         describe('.cleanCountersByLevel()', () => {
-            let aggregation = new Aggregation(
+            let aggregation = new ResultAggregation(
                 'name',
                 FILTER_MUST_ALL_WITH_LEVELS,
                 10,
@@ -138,7 +138,7 @@ describe('Result/', () => {
         });
 
         describe('.toArray() default values', () => {
-            let aggregation = new Aggregation('name', FILTER_AT_LEAST_ONE, 0, []);
+            let aggregation = new ResultAggregation('name', FILTER_AT_LEAST_ONE, 0, []);
 
             it('Should work properly', () => {
                 expect(aggregation.toArray()).to.be.deep.equal({
@@ -148,7 +148,7 @@ describe('Result/', () => {
         });
 
         describe('.toArray() all values', () => {
-            let aggregation = new Aggregation('name', FILTER_MUST_ALL, 100, ['1']);
+            let aggregation = new ResultAggregation('name', FILTER_MUST_ALL, 100, ['1']);
             aggregation.addCounter('1', 10);
             aggregation.addCounter('2', 10);
 
@@ -167,7 +167,7 @@ describe('Result/', () => {
         });
 
         describe('.createFromArray() default values', () => {
-            let aggregation = Aggregation.createFromArray({
+            let aggregation = ResultAggregation.createFromArray({
                 'name': 'agg1',
             });
 
@@ -180,7 +180,7 @@ describe('Result/', () => {
         });
 
         describe('.createFromArray() all values', () => {
-            let aggregation = Aggregation.createFromArray({
+            let aggregation = ResultAggregation.createFromArray({
                 'name': 'agg1',
                 'counters': [
                     Counter.createByActiveElements('1', 10, ['1']).toArray(),
@@ -200,7 +200,7 @@ describe('Result/', () => {
         });
 
         describe('createFromArray() should compute all the needed values', () => {
-            let aggregation = Aggregation.createFromArray({
+            let aggregation = ResultAggregation.createFromArray({
                 'name': 'agg1',
                 'counters': [
                     Counter.createByActiveElements('1', 10, ['1']).toArray(),

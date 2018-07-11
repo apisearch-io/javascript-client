@@ -13,7 +13,7 @@ export const TYPE_ARRAY = 56;
  * Changes Type cast
  * @param Changes
  */
-export default class Changes {
+export class Changes {
 
     /**
      * Changes

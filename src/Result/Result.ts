@@ -1,16 +1,16 @@
-import Item from "../Model/Item";
-import Aggregation from "../Result/Aggregation";
-import Query from "../Query/Query";
-import Aggregations from "./Aggregations";
+import {Item} from "../Model/Item";
+import {ResultAggregation} from "../Result/ResultAggregation";
+import {Query} from "../Query/Query";
+import {ResultAggregations} from "./ResultAggregations";
 /**
  * Result class
  */
-export default class Result {
+export class Result {
 
     private query: Query;
     private items: Item[] = [];
     private suggests: string[] = [];
-    private aggregations: Aggregations;
+    private aggregations: ResultAggregations;
     private totalItems: number;
     private totalHits: number;
     private itemsGroupedByTypeCache: any;
@@ -48,7 +48,7 @@ export default class Result {
         query: Query,
         totalItems: number,
         totalHits: number,
-        aggregations: Aggregations,
+        aggregations: ResultAggregations,
         suggests: string[],
         items: Item[],
     ): Result {
@@ -150,17 +150,17 @@ export default class Result {
      *
      * @param aggregations
      */
-    public setAggregations(aggregations: Aggregations) {
+    public setAggregations(aggregations: ResultAggregations) {
         this.aggregations = aggregations;
     }
 
     /**
      * Get aggregations
      *
-     * @return {Aggregations}
+     * @return {ResultAggregations}
      */
-    public getAggregations(): Aggregations {
-        return this.aggregations instanceof Aggregations
+    public getAggregations(): ResultAggregations {
+        return this.aggregations instanceof ResultAggregations
             ? this.aggregations
             : null;
     }
@@ -172,7 +172,7 @@ export default class Result {
      *
      * @return {null}
      */
-    public getAggregation(name: string): Aggregation {
+    public getAggregation(name: string): ResultAggregation {
 
         return this.aggregations == null
             ? null
@@ -273,7 +273,7 @@ export default class Result {
                 ? array.total_hits
                 : 0,
             array.aggregations instanceof Object
-                ? Aggregations.createFromArray(array.aggregations)
+                ? ResultAggregations.createFromArray(array.aggregations)
                 : null,
             array.suggests
                 ? array.suggests

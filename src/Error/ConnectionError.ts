@@ -1,6 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
-export default class ConnectionError extends ErrorWithMessage {
+/**
+ * Connection error
+ */
+export class ConnectionError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

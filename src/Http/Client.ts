@@ -1,9 +1,9 @@
-import RetryMap from "./RetryMap";
+import {RetryMap} from "./RetryMap";
 
 /**
  * Client
  */
-export default abstract class Client {
+export abstract class Client {
     protected version: string;
     protected retryMap: RetryMap;
 

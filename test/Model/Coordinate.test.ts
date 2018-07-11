@@ -1,4 +1,4 @@
-import Coordinate from "../../src/Model/Coordinate";
+import {Coordinate} from "../../src/Model/Coordinate";
 import { expect } from 'chai';
 
 describe('Model/', () => {

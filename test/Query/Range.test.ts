@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Range from "../../src/Query/Range";
+import {Range} from "../../src/Query/Range";
 import {
     RANGE_ZERO,
     RANGE_INFINITE

@@ -1,11 +1,11 @@
-import InvalidFormatError from "../../src/Error/InvalidFormatError";
-import Coordinate from "./Coordinate";
-import ItemUUID from "./ItemUUID";
+import {InvalidFormatError} from "../../src/Error/InvalidFormatError";
+import {Coordinate} from "./Coordinate";
+import {ItemUUID} from "./ItemUUID";
 
 /**
  * Item class
  */
-export default class Item {
+export class Item {
 
     private uuid: ItemUUID;
     private coordinate: Coordinate;

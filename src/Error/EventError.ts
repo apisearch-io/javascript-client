@@ -1,9 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
 /**
  * EventError
  */
-export default class EventError extends ErrorWithMessage {
+export class EventError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

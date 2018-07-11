@@ -1,8 +1,9 @@
 {
   "name": "apisearch",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Javascript client for Apisearch.",
-  "main": "./dist/apisearch.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "dev": "webpack --config ./webpack.dev.js --progress --colors --watch",
     "build:dev": "webpack --config ./webpack.dev.js --display-error-details",

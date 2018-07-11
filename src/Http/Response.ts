@@ -1,7 +1,7 @@
 /**
  * Response
  */
-export default class Response {
+export class Response {
 
     private code: number;
     private body: any;

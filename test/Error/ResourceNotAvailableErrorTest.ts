@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ResourceNotAvailableError from "../../src/Error/ResourceNotAvailableError";
+import {ResourceNotAvailableError} from "../../src/Error/ResourceNotAvailableError";
 
 describe('ResourceNotAvailableError()', () => {
     describe('', () => {

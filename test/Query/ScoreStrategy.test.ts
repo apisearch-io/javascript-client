@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ScoreStrategy from "../../src/Query/ScoreStrategy";
+import {ScoreStrategy} from "../../src/Query/ScoreStrategy";
 import {
     SCORE_STRATEGY_DEFAULT,
     SCORE_STRATEGY_BOOSTING_RELEVANCE_FIELD,

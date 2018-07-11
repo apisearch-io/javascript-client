@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "lib": [ "es2015" ],
-        "outDir": "./dist/",
-        "allowJs": true
+        "lib": [ "es2015" ]
     },
-    "include": ["src"]
+    "include": [
+        "src"
+    ]
 }

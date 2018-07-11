@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import Synonym from "../../src/Config/Synonym";
-import ImmutableConfig from "../../src/Config/ImmutableConfig";
+import {Synonym} from "../../src/Config/Synonym";
+import {ImmutableConfig} from "../../src/Config/ImmutableConfig";
 
 describe('Config/', () => {
     describe('ImmutableConfig', () => {

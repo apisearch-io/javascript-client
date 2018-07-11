@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Changes from "../../src/Model/Changes";
+import {Changes} from "../../src/Model/Changes";
 import {
     TYPE_VALUE,
     TYPE_LITERAL,

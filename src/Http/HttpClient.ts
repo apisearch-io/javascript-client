@@ -1,8 +1,8 @@
-import Response from "./Response";
+import {Response} from "./Response";
 /**
  * Http class
  */
-export default abstract class HttpClient {
+export abstract class HttpClient {
 
     /**
      * Get

@@ -1,13 +1,13 @@
 import {
     FILTER_AT_LEAST_ONE,
     FILTER_MUST_ALL, FILTER_MUST_ALL_WITH_LEVELS,
-} from "./../Query/Filter";
-import Counter from "./Counter";
+} from "../Query/Filter";
+import {Counter} from "./Counter";
 
 /**
- * Aggregation class
+ * ResultAggregation class
  */
-export default class Aggregation {
+export class ResultAggregation {
 
     private name: string;
     private counters: any = {};
@@ -259,7 +259,7 @@ export default class Aggregation {
      *
      * @param array
      */
-    public static createFromArray(array: any): Aggregation {
+    public static createFromArray(array: any): ResultAggregation {
         const activeElements = [];
         let activeElementsAsArray = array.active_elements;
         activeElementsAsArray = typeof activeElementsAsArray === typeof []
@@ -275,7 +275,7 @@ export default class Aggregation {
             );
         }
 
-        const aggregation = new Aggregation(
+        const aggregation = new ResultAggregation(
             array.name,
             parseInt(array.application_type ? array.application_type : FILTER_AT_LEAST_ONE),
             parseInt(array.total_elements ? array.total_elements : 0),

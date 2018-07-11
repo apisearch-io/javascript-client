@@ -1,9 +1,9 @@
-import ErrorWithMessage from "./ErrorWithMessage";
+import {ErrorWithMessage} from "./ErrorWithMessage";
 
 /**
  * Class InvalidFormatError
  */
-export default class InvalidFormatError extends ErrorWithMessage {
+export class InvalidFormatError extends ErrorWithMessage {
 
     /**
      * Get transportable http error

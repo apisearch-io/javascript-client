@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import Counter from "../../src/Result/Counter";
-import Query from "../../src/Query/Query";
-import Result from "../../src/Result/Result";
-import ItemUUID from "../../src/Model/ItemUUID";
-import Item from "../../src/Model/Item";
-import Aggregation from "../../src/Result/Aggregation";
-import Aggregations from "../../src/Result/Aggregations";
+import {Counter} from "../../src/Result/Counter";
+import {Query} from "../../src/Query/Query";
+import {Result} from "../../src/Result/Result";
+import {ItemUUID} from "../../src/Model/ItemUUID";
+import {Item} from "../../src/Model/Item";
+import {ResultAggregation} from "../../src/Result/ResultAggregation";
+import {ResultAggregations} from "../../src/Result/ResultAggregations";
 
 describe('Result/', () => {
     describe('Counter', () => {
@@ -52,9 +52,9 @@ describe('Result/', () => {
                 Query.createMatchAll(),
                 2, 1
             );
-            let aggregations = new Aggregations(2);
-            aggregations.addAggregation('blabla', new Aggregation('hola', 0, 10, ['hola']));
-            aggregations.addAggregation('empty', new Aggregation('empty', 0, 10, []));
+            let aggregations = new ResultAggregations(2);
+            aggregations.addAggregation('blabla', new ResultAggregation('hola', 0, 10, ['hola']));
+            aggregations.addAggregation('empty', new ResultAggregation('empty', 0, 10, []));
             result.setAggregations(aggregations);
             let resultAsArray = result.toArray();
 

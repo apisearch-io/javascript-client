@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Counter from "../../src/Result/Counter";
+import {Counter} from "../../src/Result/Counter";
 
 describe('Result/', () => {
     describe('Counter', () => {

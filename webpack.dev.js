@@ -19,19 +19,4 @@ const browserConfig = merge(baseConfig, {
     }
 });
 
-const nodeConfig = merge(baseConfig, {
-    devtool: 'source-map',
-    mode: 'development',
-    node: {
-        fs: 'empty'
-    },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'apisearch.node.js',
-        libraryTarget: 'umd',
-        library: 'apisearch',
-        libraryExport: 'default'
-    }
-});
-
-module.exports = [browserConfig, nodeConfig];
+module.exports = [browserConfig];

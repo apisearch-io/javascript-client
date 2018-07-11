@@ -3,7 +3,7 @@ export const DEFAULT_MICROSECONDS_BETWEEN_RETRIES = 1000;
 /**
  * Http class
  */
-export default class Retry {
+export class Retry {
 
     private url: string;
     private method: string;

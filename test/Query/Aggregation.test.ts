@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Aggregation from "../../src/Query/Aggregation";
+import {Aggregation} from "../../src/Query/Aggregation";
 import {
     FILTER_MUST_ALL,
     FILTER_AT_LEAST_ONE,

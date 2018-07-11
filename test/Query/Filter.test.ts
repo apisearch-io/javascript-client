@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Filter from "../../src/Query/Filter";
+import {Filter} from "../../src/Query/Filter";
 import {
     FILTER_MUST_ALL,
     FILTER_AT_LEAST_ONE,

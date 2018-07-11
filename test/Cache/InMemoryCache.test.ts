@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import InMemoryCache from "../../src/Cache/InMemoryCache";
+import {InMemoryCache} from "../../src/Cache/InMemoryCache";
 
 describe('Cache/', () => {
     describe('InMemoryCache', () => {

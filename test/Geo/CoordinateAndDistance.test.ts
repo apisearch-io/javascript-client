@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import Coordinate from "../../src/Model/Coordinate";
-import LocationRange from "../../src/Geo/LocationRange";
+import {Coordinate} from "../../src/Model/Coordinate";
+import {LocationRange} from "../../src/Geo/LocationRange";
 import {CoordinateAndDistance} from "../../src/Geo/LocationRange";
 
 describe('Geo/', () => {

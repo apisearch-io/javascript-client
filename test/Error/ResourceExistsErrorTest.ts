@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import ResourceExistsError from "../../src/Error/ResourceExistsError";
+import {expect} from 'chai';
+import {ResourceExistsError} from "../../src/Error/ResourceExistsError";
 
 describe('ResourceExistsError()', () => {
     describe('', () => {

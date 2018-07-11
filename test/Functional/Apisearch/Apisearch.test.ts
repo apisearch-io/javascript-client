@@ -1,9 +1,9 @@
 import Apisearch from "../../../src/Apisearch";
 import { expect } from 'chai';
-import Query from "../../../src/Query/Query";
-import ImmutableConfig from "../../../src/Config/ImmutableConfig";
-import Item from "../../../src/Model/Item";
-import ItemUUID from "../../../src/Model/ItemUUID";
+import {Query} from "../../../src/Query/Query";
+import {ImmutableConfig} from "../../../src/Config/ImmutableConfig";
+import {Item} from "../../../src/Model/Item";
+import {ItemUUID} from "../../../src/Model/ItemUUID";
 import {FILTER_MUST_ALL} from "../../../src/Query/Filter";
 
 /**

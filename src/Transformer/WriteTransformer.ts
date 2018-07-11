@@ -1,5 +1,5 @@
-import Item from "../Model/Item";
-import ItemUUID from "../Model/ItemUUID";
+import {Item} from "../Model/Item";
+import {ItemUUID} from "../Model/ItemUUID";
 /**
  * Write Transformer
  */

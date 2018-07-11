@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import Transformer from "../../src/Transformer/Transformer";
-import ProductReadTransformer from "./ProductReadTransformer";
-import ProductWriteTransformer from "./ProductWriteTransformer";
-import Product from "./Product";
+import {Transformer} from "../../src/Transformer/Transformer";
+import {ProductReadTransformer} from "./ProductReadTransformer";
+import {ProductWriteTransformer} from "./ProductWriteTransformer";
+import {Product} from "./Product";
 
 describe('Transformer/', () => {
     describe('Transformer', () => {

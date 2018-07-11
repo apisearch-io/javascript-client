@@ -1,9 +1,9 @@
-import Metadata from "../../src/Model/Metadata";
+import {Metadata} from "../Model/Metadata";
 
 /**
  * Aggregation class
  */
-export default class Counter {
+export class Counter {
 
     public values: any;
     public used: boolean;

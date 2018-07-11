@@ -2,12 +2,11 @@
  * Created by mmoreram on 3/07/18.
  */
 import { expect } from 'chai';
-import ItemUUID from "../../src/Model/ItemUUID";
-import User from "../../src/Model/User";
-import Query from '../../src/Query/Query';
+import {ItemUUID} from "../../src/Model/ItemUUID";
+import {User} from "../../src/Model/User";
+import {Query} from '../../src/Query/Query';
 import {Polygon, Square, CoordinateAndDistance} from "../../src/Geo/LocationRange";
-import LocationRange from "../../src/Geo/LocationRange";
-import Coordinate from "../../src/Model/Coordinate";
+import {Coordinate} from "../../src/Model/Coordinate";
 
 import {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../../src/Query/Query';
 import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL} from "../../src/Query/Filter";

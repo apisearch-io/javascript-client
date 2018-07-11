@@ -1,9 +1,9 @@
-import LocationRange from "../Geo/LocationRange";
-import Coordinate from "../Model/Coordinate";
-import ItemUUID from "../Model/ItemUUID";
-import User from "../Model/User";
-import Aggregation from "./Aggregation";
-import Filter from "./Filter";
+import {LocationRange} from "../Geo/LocationRange";
+import {Coordinate} from "../Model/Coordinate";
+import {ItemUUID} from "../Model/ItemUUID";
+import {User} from "../Model/User";
+import {Aggregation} from "./Aggregation";
+import {Filter} from "./Filter";
 
 import {
     FILTER_AT_LEAST_ONE,
@@ -19,10 +19,10 @@ import {
     AGGREGATION_SORT_BY_COUNT_DESC,
 } from "./Aggregation";
 
-import InvalidFormatError from "../Error/InvalidFormatError";
+import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {FILTER_TYPE_QUERY} from "./Filter";
-import ScoreStrategy from "./ScoreStrategy";
-import SortBy from "./SortBy";
+import {ScoreStrategy} from "./ScoreStrategy";
+import {SortBy} from "./SortBy";
 
 /**
  * Query constants
@@ -35,7 +35,7 @@ export const QUERY_INFINITE_SIZE = 1000;
 /**
  * Query class
  */
-export default class Query {
+export class Query {
 
     private coordinate: Coordinate;
     private universeFilters: any = {};
