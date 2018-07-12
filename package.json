@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Javascript client for Apisearch.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "build:dev": "webpack --config ./webpack.dev.js --display-error-details",
     "build:min": "webpack --config ./webpack.min.js --display-error-details",
     "dist": "npm t; rm -rf ./dist/*; npm run build:dev && npm run build:min",
-    "test": "mocha --recursive --require ts-node/register test/*/*.ts",
+    "test": "mocha --recursive --require ts-node/register test/**/*.ts test/*.ts",
     "fix": "tslint -c tslint.json --fix 'src/**/*.ts'",
     "test:functional": "mocha --recursive --require ts-node/register test/Functional/*/*.ts"
   },

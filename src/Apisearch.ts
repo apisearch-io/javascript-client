@@ -1,17 +1,17 @@
 import {KeyValueCache} from "./Cache/KeyValueCache";
 import {NoCache} from "./Cache/NoCache";
 import {AxiosClient} from "./Http/AxiosClient";
+import {HttpClient} from "./Http/HttpClient";
 import {RetryMap} from "./Http/RetryMap";
 import {Coordinate} from "./Model/Coordinate";
 import {ItemUUID} from "./Model/ItemUUID";
-import {Query} from "./Query/Query";
 import {QUERY_DEFAULT_PAGE} from "./Query/Query";
 import {QUERY_DEFAULT_SIZE} from "./Query/Query";
+import {Query} from "./Query/Query";
 import {SortBy} from "./Query/SortBy";
 import {HttpRepository} from "./Repository/HttpRepository";
-import {Repository} from "./Repository/Repository";
-import {ResultAggregations} from "./Result/ResultAggregations";
 import {Result} from "./Result/Result";
+import {ResultAggregations} from "./Result/ResultAggregations";
 import {Transformer} from "./Transformer/Transformer";
 
 /**
@@ -24,26 +24,31 @@ export default class Apisearch {
      *
      * @param config
      *
-     * @returns {Repository}
+     * @return {HttpRepository}
      */
-    public static createRepository(
-        config: {
-            app_id: string,
-            index_id: string,
-            token: string,
-            options: {
-                endpoint?: string,
-                api_version?: string,
-                timeout?: number,
-                override_queries?: boolean,
-                cache?: KeyValueCache,
-            },
-        }
-    ): Repository {
+    public static createRepository(config: {
+        app_id: string,
+        index_id: string,
+        token: string,
+        options: {
+            endpoint: string,
+            api_version?: string,
+            timeout?: number,
+            override_queries?: boolean,
+            cache?: KeyValueCache,
+            http_client?: HttpClient,
+        },
+    }): HttpRepository {
+
+        Apisearch.ensureIsDefined(config.app_id, "app_id");
+        Apisearch.ensureIsDefined(config.index_id, "index_id");
+        Apisearch.ensureIsDefined(config.token, "token");
+        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
+
         config.options = {
             api_version: "v1",
             cache: new NoCache(),
-            timeout: 10000,
+            timeout: 5000,
             override_queries: true,
             ...config.options,
         };
@@ -51,14 +56,16 @@ export default class Apisearch {
         /**
          * Client
          */
-        const httpClient = new AxiosClient(
-            config.options.endpoint,
-            config.options.api_version,
-            config.options.timeout,
-            new RetryMap(),
-            config.options.override_queries,
-            config.options.cache,
-        );
+        const httpClient = typeof config.options.http_client !== "undefined"
+            ? config.options.http_client
+            : new AxiosClient(
+                config.options.endpoint,
+                config.options.api_version,
+                config.options.timeout,
+                new RetryMap(),
+                config.options.override_queries,
+                config.options.cache,
+            );
 
         return new HttpRepository(
             httpClient,
@@ -67,6 +74,18 @@ export default class Apisearch {
             config.token,
             new Transformer(),
         );
+    }
+
+    /**
+     * Ensure the value is not undefined
+     *
+     * @param param
+     * @param name
+     */
+    public static ensureIsDefined(param, name) {
+        if (typeof param === "undefined") {
+            throw new TypeError(`${name} parameter must be defined.`);
+        }
     }
 
     /**

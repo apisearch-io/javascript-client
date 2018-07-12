@@ -2015,8 +2015,8 @@ var Query_2 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var Query_3 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
 var SortBy_1 = __webpack_require__(/*! ./Query/SortBy */ "./src/Query/SortBy.ts");
 var HttpRepository_1 = __webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts");
-var ResultAggregations_1 = __webpack_require__(/*! ./Result/ResultAggregations */ "./src/Result/ResultAggregations.ts");
 var Result_1 = __webpack_require__(/*! ./Result/Result */ "./src/Result/Result.ts");
+var ResultAggregations_1 = __webpack_require__(/*! ./Result/ResultAggregations */ "./src/Result/ResultAggregations.ts");
 var Transformer_1 = __webpack_require__(/*! ./Transformer/Transformer */ "./src/Transformer/Transformer.ts");
 /**
  * Apisearch class
@@ -2029,15 +2029,32 @@ var Apisearch = /** @class */ (function () {
      *
      * @param config
      *
-     * @returns {Repository}
+     * @return {HttpRepository}
      */
     Apisearch.createRepository = function (config) {
-        config.options = __assign({ api_version: "v1", cache: new NoCache_1.NoCache(), timeout: 10000, override_queries: true }, config.options);
+        Apisearch.ensureIsDefined(config.app_id, "app_id");
+        Apisearch.ensureIsDefined(config.index_id, "index_id");
+        Apisearch.ensureIsDefined(config.token, "token");
+        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
+        config.options = __assign({ api_version: "v1", cache: new NoCache_1.NoCache(), timeout: 5000, override_queries: true }, config.options);
         /**
          * Client
          */
-        var httpClient = new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries, config.options.cache);
+        var httpClient = typeof config.options.http_client !== "undefined"
+            ? config.options.http_client
+            : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries, config.options.cache);
         return new HttpRepository_1.HttpRepository(httpClient, config.app_id, config.index_id, config.token, new Transformer_1.Transformer());
+    };
+    /**
+     * Ensure the value is not undefined
+     *
+     * @param param
+     * @param name
+     */
+    Apisearch.ensureIsDefined = function (param, name) {
+        if (typeof param === "undefined") {
+            throw new TypeError(name + " parameter must be defined.");
+        }
     };
     /**
      * Created located
@@ -2050,9 +2067,9 @@ var Apisearch = /** @class */ (function () {
      * @returns {Query}
      */
     Apisearch.createQueryLocated = function (coordinate, queryText, page, size) {
-        if (page === void 0) { page = Query_2.QUERY_DEFAULT_PAGE; }
-        if (size === void 0) { size = Query_3.QUERY_DEFAULT_SIZE; }
-        return Query_1.Query.createLocated(coordinate, queryText, page, size);
+        if (page === void 0) { page = Query_1.QUERY_DEFAULT_PAGE; }
+        if (size === void 0) { size = Query_2.QUERY_DEFAULT_SIZE; }
+        return Query_3.Query.createLocated(coordinate, queryText, page, size);
     };
     /**
      * Create
@@ -2064,9 +2081,9 @@ var Apisearch = /** @class */ (function () {
      * @returns {Query}
      */
     Apisearch.createQuery = function (queryText, page, size) {
-        if (page === void 0) { page = Query_2.QUERY_DEFAULT_PAGE; }
-        if (size === void 0) { size = Query_3.QUERY_DEFAULT_SIZE; }
-        return Query_1.Query.create(queryText, page, size);
+        if (page === void 0) { page = Query_1.QUERY_DEFAULT_PAGE; }
+        if (size === void 0) { size = Query_2.QUERY_DEFAULT_SIZE; }
+        return Query_3.Query.create(queryText, page, size);
     };
     /**
      * Create match all
@@ -2074,7 +2091,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Query}
      */
     Apisearch.createQueryMatchAll = function () {
-        return Query_1.Query.createMatchAll();
+        return Query_3.Query.createMatchAll();
     };
     /**
      * Create by UUID
@@ -2084,7 +2101,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Query}
      */
     Apisearch.createQueryByUUID = function (uuid) {
-        return Query_1.Query.createByUUID(uuid);
+        return Query_3.Query.createByUUID(uuid);
     };
     /**
      * Create by UUIDs
@@ -2098,7 +2115,7 @@ var Apisearch = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             uuids[_i] = arguments[_i];
         }
-        return Query_1.Query.createByUUIDs.apply(Query_1.Query, uuids);
+        return Query_3.Query.createByUUIDs.apply(Query_3.Query, uuids);
     };
     /**
      * Create empty result
@@ -3927,7 +3944,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 exports.__esModule = true;
-var InvalidFormatError_1 = __webpack_require__(/*! ../../src/Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
+var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 var Coordinate_1 = __webpack_require__(/*! ./Coordinate */ "./src/Model/Coordinate.ts");
 var ItemUUID_1 = __webpack_require__(/*! ./ItemUUID */ "./src/Model/ItemUUID.ts");
 /**
@@ -6144,8 +6161,8 @@ exports.SORT_BY_LOCATION_MI_ASC = {
         unit: "mi"
     }
 };
-var Coordinate_1 = __webpack_require__(/*! ../../src/Model/Coordinate */ "./src/Model/Coordinate.ts");
-var Filter_1 = __webpack_require__(/*! ../../src/Query/Filter */ "./src/Query/Filter.ts");
+var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
+var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
  * ScoreStrategy
  */

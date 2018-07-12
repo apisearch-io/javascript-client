@@ -1,6 +1,6 @@
 import {Item} from "../Model/Item";
-import {ResultAggregation} from "../Result/ResultAggregation";
 import {Query} from "../Query/Query";
+import {ResultAggregation} from "../Result/ResultAggregation";
 import {ResultAggregations} from "./ResultAggregations";
 /**
  * Result class
