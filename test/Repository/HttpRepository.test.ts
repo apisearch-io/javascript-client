@@ -93,6 +93,12 @@ describe('Repository/', () => {
             ]);
 
             await repository
+                .flush(20, true)
+                .then(_ => {
+                     expect(client.calls.length).to.be.equal(0);
+                });
+
+            await repository
                 .flush(2)
                 .then(_ => {
                      expect(client.calls.length).to.be.equal(3);
