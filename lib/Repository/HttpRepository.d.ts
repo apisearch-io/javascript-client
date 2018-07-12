@@ -124,7 +124,7 @@ export declare class HttpRepository extends Repository {
      *
      * @returns any
      */
-    private getCredentials();
+    private getCredentials;
     /**
      * throw error if needed
      *

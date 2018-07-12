@@ -1,9 +1,10 @@
 import { KeyValueCache } from "./Cache/KeyValueCache";
+import { HttpClient } from "./Http/HttpClient";
 import { Coordinate } from "./Model/Coordinate";
 import { ItemUUID } from "./Model/ItemUUID";
 import { Query } from "./Query/Query";
 import { SortBy } from "./Query/SortBy";
-import { Repository } from "./Repository/Repository";
+import { HttpRepository } from "./Repository/HttpRepository";
 import { Result } from "./Result/Result";
 /**
  * Apisearch class
@@ -14,20 +15,34 @@ export default class Apisearch {
      *
      * @param config
      *
-     * @returns {Repository}
+     * @return {HttpRepository}
      */
     static createRepository(config: {
         app_id: string;
         index_id: string;
         token: string;
         options: {
-            endpoint?: string;
+            endpoint: string;
             api_version?: string;
             timeout?: number;
             override_queries?: boolean;
             cache?: KeyValueCache;
+            http_client?: HttpClient;
         };
-    }): Repository;
+    }): HttpRepository;
+    /**
+     * Ensure the Repository configuration is valid
+     *
+     * @param config
+     */
+    static ensureRepositoryConfigIsValid(config: any): void;
+    /**
+     * Ensure the value is not undefined
+     *
+     * @param param
+     * @param name
+     */
+    static ensureIsDefined(param: any, name: string): void;
     /**
      * Created located
      *

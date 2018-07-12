@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import Apisearch from "../src/Apisearch";
 import {Product} from "./Transformer/Product";
 import {Item} from "../src/Model/Item";
 import {ItemUUID} from "../src/Model/ItemUUID";
@@ -9,6 +8,7 @@ import {ImmutableConfig} from "../src/Config/ImmutableConfig";
 import {Config} from "../src/Config/Config";
 import {TestClient} from "../src/Http/TestClient";
 import {ProductReadTransformer} from "./Transformer/ProductReadTransformer";
+import Apisearch from "../src/Apisearch";
 
 describe('Apisearch', () => {
 
@@ -60,6 +60,77 @@ describe('Apisearch', () => {
             ]).then(() => {
                 expect(client.calls.length).to.be.equal(9);
             })
+        });
+    });
+
+    describe('Check type value', () => {
+
+
+        it('Should check config properties', () => {
+            expect(() => {
+                Apisearch.ensureRepositoryConfigIsValid({
+                    'app_id': 'a',
+                    'index_id': 'b',
+                    'token': 'c',
+                    'options': {
+                        'endpoint': 'd'
+                    }
+                });
+            }).to.not.throw();
+
+            expect(() => {
+                Apisearch.ensureRepositoryConfigIsValid({
+                    'app_id': 'a',
+                    'index_id': 'b',
+                    'token': 'c',
+                    'options': {
+                        'no_endpoint': 'd'
+                    }
+                });
+            }).to.throw();
+
+            expect(() => {
+                Apisearch.ensureRepositoryConfigIsValid({
+                    'app_id': 'a',
+                    'index_id': 'b',
+                    'no_token': 'c',
+                    'options': {
+                        'endpoint': 'd'
+                    }
+                });
+            }).to.throw();
+
+            expect(() => {
+                Apisearch.ensureRepositoryConfigIsValid({
+                    'app_id': 'a',
+                    'no_index_id': 'b',
+                    'token': 'c',
+                    'options': {
+                        'endpoint': 'd'
+                    }
+                });
+            }).to.throw();
+
+            expect(() => {
+                Apisearch.ensureRepositoryConfigIsValid({
+                    'no_app_id': 'a',
+                    'index_id': 'b',
+                    'token': 'c',
+                    'options': {
+                        'endpoint': 'd'
+                    }
+                });
+            }).to.throw();
+        });
+
+        it('Should check type value properly', () => {
+            expect(() => {
+                Apisearch.ensureIsDefined('hhh', 'field');
+            }).to.not.throw();
+
+            expect(() => {
+                Apisearch.ensureIsDefined({'a': 'b'}['c'], 'field');
+            }).to.throw();
         });
     });
 });

@@ -2032,10 +2032,7 @@ var Apisearch = /** @class */ (function () {
      * @return {HttpRepository}
      */
     Apisearch.createRepository = function (config) {
-        Apisearch.ensureIsDefined(config.app_id, "app_id");
-        Apisearch.ensureIsDefined(config.index_id, "index_id");
-        Apisearch.ensureIsDefined(config.token, "token");
-        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
+        Apisearch.ensureRepositoryConfigIsValid(config);
         config.options = __assign({ api_version: "v1", cache: new NoCache_1.NoCache(), timeout: 5000, override_queries: true }, config.options);
         /**
          * Client
@@ -2044,6 +2041,17 @@ var Apisearch = /** @class */ (function () {
             ? config.options.http_client
             : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries, config.options.cache);
         return new HttpRepository_1.HttpRepository(httpClient, config.app_id, config.index_id, config.token, new Transformer_1.Transformer());
+    };
+    /**
+     * Ensure the Repository configuration is valid
+     *
+     * @param config
+     */
+    Apisearch.ensureRepositoryConfigIsValid = function (config) {
+        Apisearch.ensureIsDefined(config.app_id, "app_id");
+        Apisearch.ensureIsDefined(config.index_id, "index_id");
+        Apisearch.ensureIsDefined(config.token, "token");
+        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
     };
     /**
      * Ensure the value is not undefined
