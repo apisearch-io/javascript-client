@@ -40,10 +40,7 @@ export default class Apisearch {
         },
     }): HttpRepository {
 
-        Apisearch.ensureIsDefined(config.app_id, "app_id");
-        Apisearch.ensureIsDefined(config.index_id, "index_id");
-        Apisearch.ensureIsDefined(config.token, "token");
-        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
+        Apisearch.ensureRepositoryConfigIsValid(config);
 
         config.options = {
             api_version: "v1",
@@ -77,12 +74,27 @@ export default class Apisearch {
     }
 
     /**
+     * Ensure the Repository configuration is valid
+     *
+     * @param config
+     */
+    public static ensureRepositoryConfigIsValid(config:any) {
+        Apisearch.ensureIsDefined(config.app_id, "app_id");
+        Apisearch.ensureIsDefined(config.index_id, "index_id");
+        Apisearch.ensureIsDefined(config.token, "token");
+        Apisearch.ensureIsDefined(config.options.endpoint, "options.endpoint");
+    }
+
+    /**
      * Ensure the value is not undefined
      *
      * @param param
      * @param name
      */
-    public static ensureIsDefined(param, name) {
+    public static ensureIsDefined(
+        param: any,
+        name: string,
+    ) {
         if (typeof param === "undefined") {
             throw new TypeError(`${name} parameter must be defined.`);
         }

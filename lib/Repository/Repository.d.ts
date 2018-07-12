@@ -25,7 +25,7 @@ export declare abstract class Repository {
     /**
      * Reset cached elements
      */
-    private resetCachedElements();
+    private resetCachedElements;
     /**
      * Add element
      *
