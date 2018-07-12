@@ -14,15 +14,15 @@
     "test:functional": "mocha --recursive --require ts-node/register test/Functional/*/*.ts"
   },
   "license": "MIT",
-  "author": "alexhoma <alexcm.14@gmail.com>",
+  "author": "Marc Morera <yuhu@mmoreram.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apisearch/javascript-search-client.git"
+    "url": "https://github.com/apisearch-io/javascript-client.git"
   },
   "bugs": {
-    "url": "https://github.com/apisearch/javascript-search-client/issues"
+    "url": "https://github.com/apisearch-io/javascript-client/issues"
   },
-  "homepage": "https://github.com/apisearch/javascript-search-client",
+  "homepage": "https://github.com/apisearch-io/javascript-client",
   "keywords": [
     "es6",
     "search-engine",
