@@ -330,6 +330,23 @@ describe('Query()', () => {
                 type: 'marvel'
             });
         });
+
+        it('should work properly when doing toArray', () => {
+            // Promote thi two uuids into an existing array from the last test
+            query.promoteUUIDs(
+                new ItemUUID('ironman', 'marvel'),
+                new ItemUUID('thor', 'marvel')
+            );
+            expect(query.toArray().items_promoted.length).to.equal(2);
+            expect(query.toArray().items_promoted[0]).to.deep.equal({
+                id: 'ironman',
+                type: 'marvel'
+            });
+            expect(query.toArray().items_promoted[1]).to.deep.equal({
+                id: 'thor',
+                type: 'marvel'
+            });
+        });
     });
 
     describe('-> When excluding uuids', () => {

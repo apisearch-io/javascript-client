@@ -1182,7 +1182,7 @@ export class Query {
             for (const i in this.itemsPromoted) {
                 array
                     .items_promoted
-                    .push(this.itemsPromoted[i].toArray);
+                    .push(this.itemsPromoted[i].toArray());
             }
         }
 
