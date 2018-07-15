@@ -5813,7 +5813,7 @@ var Query = /** @class */ (function () {
             for (var i in this.itemsPromoted) {
                 array
                     .items_promoted
-                    .push(this.itemsPromoted[i].toArray);
+                    .push(this.itemsPromoted[i].toArray());
             }
         }
         return array;
