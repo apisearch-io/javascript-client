@@ -73,6 +73,31 @@ describe('Repository/', () => {
                 });
         });
 
+        it('Should delete items and objects even with blocks', async () => {
+            let client = new TestClient();
+            let repository = new HttpRepository(
+                client,
+                'aaa',
+                'bbb',
+                'xxx',
+                transformer
+            );
+
+            repository.deleteItem(ItemUUID.createByComposedUUID('1~product'));
+            repository.deleteItems([
+                ItemUUID.createByComposedUUID('2~product'),
+                ItemUUID.createByComposedUUID('3~product')
+            ]);
+            repository.deleteObject(new Product('4', 'lalala', 'prod4'));
+            repository.deleteObject(new Product('5', 'lalala', 'prod5'));
+            repository.deleteObject(new Product('6', 'lalala', 'prod6'));
+            await repository
+                .flush(20, false)
+                .then(_ => {
+                    expect(client.calls.length).to.be.equal(1);
+                });
+        });
+
         it('Should flush with blocks', async () => {
             let client = new TestClient();
             let repository = new HttpRepository(
@@ -103,6 +128,42 @@ describe('Repository/', () => {
                 .then(_ => {
                      expect(client.calls.length).to.be.equal(3);
                 });
+
+            client.calls = [];
+
+            await repository
+                .flush()
+                .then(_ => {
+                     expect(client.calls.length).to.be.equal(0);
+                });
+        });
+
+
+
+        it('Should flush with blocks', async () => {
+            let client = new TestClient();
+            let repository = new HttpRepository(
+                client,
+                'aaa',
+                'bbb',
+                'error',
+                transformer
+            );
+
+            repository.addItems([
+                Item.create(ItemUUID.createByComposedUUID('1~product')),
+            ]);
+
+            expect(client.calls.length).to.be.equal(0);
+
+            await repository
+                .flush()
+                .then(_ => {
+                    expect(true).to.be.equal(false);
+                })
+                .catch(_ => {
+                    expect(true).to.be.equal(true);
+                })
         });
 
         it('Should flush with non pair blocks', async () => {
@@ -128,6 +189,14 @@ describe('Repository/', () => {
                 .then(_ => {
                      expect(client.calls.length).to.be.equal(3);
                 });
+
+            client.calls = [];
+
+            await repository
+                .flush()
+                .then(_ => {
+                     expect(client.calls.length).to.be.equal(0);
+                });
         });
 
         it('All other calls', async () => {
@@ -140,15 +209,17 @@ describe('Repository/', () => {
                 transformer
             );
 
-            await repository.query(Query.createMatchAll());
-            await repository.updateItems(Query.createMatchAll(), Changes.create());
-            await repository.createIndex(new ImmutableConfig());
-            await repository.deleteIndex();
-            await repository.resetIndex();
-            await repository.checkIndex();
-            await repository.configureIndex(new Config());
+            let counter = 0;
+            await repository.query(Query.createMatchAll()).then(_ => counter++);
+            await repository.updateItems(Query.createMatchAll(), Changes.create()).then(_ => counter++);
+            await repository.createIndex(new ImmutableConfig()).then(_ => counter++);
+            await repository.deleteIndex().then(_ => counter++);
+            await repository.resetIndex().then(_ => counter++);
+            await repository.checkIndex().then(_ => counter++);
+            await repository.configureIndex(new Config()).then(_ => counter++);
 
             expect(client.calls.length).to.be.equal(7);
+            expect(counter).to.be.equal(7);
         });
     });
 });

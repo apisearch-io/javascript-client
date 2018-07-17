@@ -107,42 +107,70 @@ export abstract class Repository {
             skipIfLess &&
             this.itemsToUpdate.length < bulkNumber
         ) {
-            return new Promise<void> (
-                (resolve) => resolve(),
-            );
+            return;
         }
 
-        let offset = 0;
-        let items = [];
-        try {
-            while (true) {
-                items = this
-                    .itemsToUpdate
-                    .slice(
-                        offset,
-                        offset + bulkNumber,
-                    );
-
-                if (items.length === 0) {
-                    break;
-                }
-
-                await this.flushItems(items, []);
-                offset += bulkNumber;
-            }
-
-            await this.flushItems([], this.itemsToDelete);
-        } catch (error) {
+        return Promise.all(Repository
+            .chunkArray(
+                this.itemsToUpdate,
+                bulkNumber,
+            )
+            .map((arrayOfItems) => {
+                return this.flushUpdateItems(arrayOfItems);
+            })
+            .concat(Repository
+                .chunkArray(
+                    this.itemsToDelete,
+                    bulkNumber,
+                )
+                .map((arrayOfItemsUUID) => {
+                    return this.flushDeleteItems(arrayOfItemsUUID);
+                }),
+            ),
+        ).then((_) => {
             this.resetCachedElements();
-            throw error;
+        }).catch((_) => {
+            this.resetCachedElements();
+        });
+    }
+
+    /**
+     * Make chunks of n elements
+     *
+     * @param array
+     * @param chunk
+     *
+     * @return any[]
+     */
+    public static chunkArray(
+        array: any[],
+        chunk: number,
+    ) {
+        const arrayChunked: any[] = [];
+        for (let i: number = 0, j: number = array.length; i < j; i += chunk) {
+            arrayChunked.push(array.slice(i, i + chunk));
         }
 
-        this.resetCachedElements();
-
-        return new Promise<void> (
-            (resolve) => resolve(),
-        );
+        return arrayChunked;
     }
+
+    /**
+     * Flush update items
+     *
+     * @param itemsToUpdate
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async flushUpdateItems(itemsToUpdate: Item[]): Promise<void>;
+
+    /**
+     * Flush delete items
+     *
+     * @param itemsToDelete
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
 
     /**
      * flush items

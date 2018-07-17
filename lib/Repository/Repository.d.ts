@@ -60,6 +60,31 @@ export declare abstract class Repository {
      */
     flush(bulkNumber?: number, skipIfLess?: boolean): Promise<void>;
     /**
+     * Make chunks of n elements
+     *
+     * @param array
+     * @param chunk
+     *
+     * @return any[]
+     */
+    static chunkArray(array: any[], chunk: number): any[];
+    /**
+     * Flush update items
+     *
+     * @param itemsToUpdate
+     *
+     * @return {Promise<void>}
+     */
+    abstract flushUpdateItems(itemsToUpdate: Item[]): Promise<void>;
+    /**
+     * Flush delete items
+     *
+     * @param itemsToDelete
+     *
+     * @return {Promise<void>}
+     */
+    abstract flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
+    /**
      * flush items
      *
      * @param itemsToUpdate
