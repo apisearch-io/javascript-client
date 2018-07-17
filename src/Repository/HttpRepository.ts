@@ -83,27 +83,6 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * flush items
-     *
-     * @param itemsToUpdate
-     * @param itemsToDelete
-     *
-     * @Returns {Promise<void>}
-     */
-    public async flushItems(
-        itemsToUpdate: Item[],
-        itemsToDelete: ItemUUID[],
-    ): Promise<void> {
-
-        await Promise.all([
-            await this.flushUpdateItems(itemsToUpdate),
-            await this.flushDeleteItems(itemsToDelete),
-        ]).then((_) => {
-            return;
-        });
-    }
-
-    /**
      * Flush update items
      *
      * @param itemsToUpdate
@@ -112,24 +91,26 @@ export class HttpRepository extends Repository {
      */
     public async flushUpdateItems(itemsToUpdate: Item[]): Promise<void> {
 
-        return await (itemsToUpdate.length > 0)
-            ? this
-                .httpClient
-                .get(
-                    "/items",
-                    "post",
-                    this.getCredentials(),
-                    {},
-                    {
-                        items: itemsToUpdate.map((item) => {
-                            return item.toArray();
-                        }),
-                    },
-                )
-                .then((response) => {
-                    HttpRepository.throwTransportableExceptionIfNeeded(response);
-                })
-            : null;
+        if (itemsToUpdate.length === 0) {
+            return;
+        }
+
+        return this
+            .httpClient
+            .get(
+                "/items",
+                "post",
+                this.getCredentials(),
+                {},
+                {
+                    items: itemsToUpdate.map((item) => {
+                        return item.toArray();
+                    }),
+                },
+            )
+            .then((response) => {
+                HttpRepository.throwTransportableExceptionIfNeeded(response);
+            });
     }
 
     /**
@@ -141,24 +122,26 @@ export class HttpRepository extends Repository {
      */
     public async flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void> {
 
-        return await (itemsToDelete.length > 0)
-            ? this
-                .httpClient
-                .get(
-                    "/items",
-                    "delete",
-                    this.getCredentials(),
-                    {},
-                    {
-                        items: itemsToDelete.map((itemUUID) => {
-                            return itemUUID.toArray();
-                        }),
-                    },
-                )
-                .then((response) => {
-                    HttpRepository.throwTransportableExceptionIfNeeded(response);
-                })
-            : null;
+        if (itemsToDelete.length === 0) {
+            return;
+        }
+
+        return this
+            .httpClient
+            .get(
+                "/items",
+                "delete",
+                this.getCredentials(),
+                {},
+                {
+                    items: itemsToDelete.map((itemUUID) => {
+                        return itemUUID.toArray();
+                    }),
+                },
+            )
+            .then((response) => {
+                HttpRepository.throwTransportableExceptionIfNeeded(response);
+            });
     }
 
     /**
