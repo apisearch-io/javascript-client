@@ -37,6 +37,10 @@ export class TestClient implements HttpClient {
             data,
         });
 
+        if (credentials.token === "error") {
+            throw new Error("Error found");
+        }
+
         return new Promise<Response>(
             (resolve) => resolve(new Response(
                 200,

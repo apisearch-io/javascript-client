@@ -101,10 +101,6 @@ export class HttpRepository extends Repository {
         ]).then((_) => {
             return;
         });
-
-        return new Promise<void>(
-            (resolve) => resolve(),
-        );
     }
 
     /**
@@ -133,9 +129,7 @@ export class HttpRepository extends Repository {
                 .then((response) => {
                     HttpRepository.throwTransportableExceptionIfNeeded(response);
                 })
-            : new Promise<void>(
-                (resolve) => resolve(),
-            );
+            : null;
     }
 
     /**
@@ -164,9 +158,7 @@ export class HttpRepository extends Repository {
                 .then((response) => {
                     HttpRepository.throwTransportableExceptionIfNeeded(response);
                 })
-            : new Promise<void>(
-                (resolve) => resolve(),
-            );
+            : null;
     }
 
     /**

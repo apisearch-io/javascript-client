@@ -15,7 +15,7 @@ export abstract class HttpClient {
      *
      * @return {Promise<Response>}
      */
-    public async abstract get(
+    public abstract async get(
         url: string,
         method: string,
         credentials: any,

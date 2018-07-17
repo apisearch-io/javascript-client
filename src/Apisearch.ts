@@ -78,7 +78,7 @@ export default class Apisearch {
      *
      * @param config
      */
-    public static ensureRepositoryConfigIsValid(config:any) {
+    public static ensureRepositoryConfigIsValid(config: any) {
         Apisearch.ensureIsDefined(config.app_id, "app_id");
         Apisearch.ensureIsDefined(config.index_id, "index_id");
         Apisearch.ensureIsDefined(config.token, "token");
