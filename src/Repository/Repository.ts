@@ -173,17 +173,6 @@ export abstract class Repository {
     public abstract async flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
 
     /**
-     * flush items
-     *
-     * @param itemsToUpdate
-     * @param itemsToDelete
-     */
-    public abstract async flushItems(
-        itemsToUpdate: Item[],
-        itemsToDelete: ItemUUID[],
-    ): Promise<void>;
-
-    /**
      * Query
      *
      * @param query

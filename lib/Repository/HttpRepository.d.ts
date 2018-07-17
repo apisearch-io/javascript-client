@@ -44,15 +44,6 @@ export declare class HttpRepository extends Repository {
      */
     deleteObject(object: any): void;
     /**
-     * flush items
-     *
-     * @param itemsToUpdate
-     * @param itemsToDelete
-     *
-     * @Returns {Promise<void>}
-     */
-    flushItems(itemsToUpdate: Item[], itemsToDelete: ItemUUID[]): Promise<void>;
-    /**
      * Flush update items
      *
      * @param itemsToUpdate

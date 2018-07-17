@@ -85,13 +85,6 @@ export declare abstract class Repository {
      */
     abstract flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
     /**
-     * flush items
-     *
-     * @param itemsToUpdate
-     * @param itemsToDelete
-     */
-    abstract flushItems(itemsToUpdate: Item[], itemsToDelete: ItemUUID[]): Promise<void>;
-    /**
      * Query
      *
      * @param query
