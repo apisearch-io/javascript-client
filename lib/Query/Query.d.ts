@@ -32,6 +32,7 @@ export declare class Query {
     private highlightsEnabled;
     private filterFields;
     private scoreStrategy;
+    private fuzziness;
     private user;
     /**
      * Constructor
@@ -460,6 +461,26 @@ export declare class Query {
      * @param scoreStrategy
      */
     setScoreStrategy(scoreStrategy: ScoreStrategy): Query;
+    /**
+     * Get fuzziness
+     *
+     * @return any
+     */
+    getFuzziness(): any;
+    /**
+     * Set fuzziness
+     *
+     * @param fuzziness
+     *
+     * @return {Query}
+     */
+    setFuzziness(fuzziness: any): Query;
+    /**
+     * Set auto fuzziness
+     *
+     * @return {Query}
+     */
+    setAutoFuzziness(): Query;
     /**
      * By user
      *

@@ -52,6 +52,7 @@ export class Query {
     private highlightsEnabled: boolean;
     private filterFields: string[] = [];
     private scoreStrategy: ScoreStrategy;
+    private fuzziness: any;
     private user: User;
 
     /**
@@ -1012,6 +1013,39 @@ export class Query {
     }
 
     /**
+     * Get fuzziness
+     *
+     * @return any
+     */
+    public getFuzziness():any {
+        return this.fuzziness;
+    }
+
+    /**
+     * Set fuzziness
+     *
+     * @param fuzziness
+     *
+     * @return {Query}
+     */
+    public setFuzziness(fuzziness) : Query {
+        this.fuzziness = fuzziness;
+
+        return this;
+    }
+
+    /**
+     * Set auto fuzziness
+     *
+     * @return {Query}
+     */
+    public setAutoFuzziness() : Query {
+        this.fuzziness = 'AUTO';
+
+        return this;
+    }
+
+    /**
      * By user
      *
      * @param user
@@ -1164,6 +1198,10 @@ export class Query {
             }
         }
 
+        if (this.fuzziness !== null) {
+            array.fuzziness = this.fuzziness;
+        }
+
         /**
          * User
          */
@@ -1272,6 +1310,8 @@ export class Query {
         query.highlightsEnabled = typeof array.highlights_enabled === "boolean"
             ? array.highlights_enabled
             : false;
+
+        query.fuzziness = array.fuzziness;
 
         /**
          * Items promoted
