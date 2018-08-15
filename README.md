@@ -2,6 +2,7 @@
 
 This library is part of the Apisearch project.
 
+[![npm version](https://badge.fury.io/js/apisearch.svg)](https://badge.fury.io/js/apisearch)
 [![CircleCI](https://circleci.com/gh/apisearch-io/javascript-client.svg?style=svg)](https://circleci.com/gh/apisearch-io/javascript-client)
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apisearch_io/general)
 
