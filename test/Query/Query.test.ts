@@ -440,4 +440,20 @@ describe('Query()', () => {
             expect(query.getUser()).to.be.equal(null);
         });
     });
+
+    describe('-> Test fuzziness', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll();
+            expect(query.getFuzziness()).to.be.undefined;
+            expect(query.toArray().fuzziness).to.be.undefined;
+            query.setFuzziness(1.0);
+            expect(query.getFuzziness()).to.be.equals(1.0);
+            expect(query.toArray().fuzziness).to.be.equals(1.0);
+            expect(Query.createFromArray({fuzziness: 1.0}).getFuzziness()).to.be.equals(1.0);
+            expect(Query.createFromArray({}).getFuzziness()).to.be.undefined;
+            expect(query.setFuzziness('1..3')).to.be.instanceOf(Query);
+            expect(Query.createMatchAll().setAutoFuzziness().getFuzziness()).to.be.equals('AUTO');
+            expect(query.setAutoFuzziness()).to.be.instanceOf(Query);
+        });
+    })
 });

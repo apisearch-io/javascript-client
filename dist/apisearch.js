@@ -5727,6 +5727,34 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
+     * Get fuzziness
+     *
+     * @return any
+     */
+    Query.prototype.getFuzziness = function () {
+        return this.fuzziness;
+    };
+    /**
+     * Set fuzziness
+     *
+     * @param fuzziness
+     *
+     * @return {Query}
+     */
+    Query.prototype.setFuzziness = function (fuzziness) {
+        this.fuzziness = fuzziness;
+        return this;
+    };
+    /**
+     * Set auto fuzziness
+     *
+     * @return {Query}
+     */
+    Query.prototype.setAutoFuzziness = function () {
+        this.fuzziness = 'AUTO';
+        return this;
+    };
+    /**
      * By user
      *
      * @param user
@@ -5853,6 +5881,9 @@ var Query = /** @class */ (function () {
                 array.score_strategy = scoreStrategyAsArray;
             }
         }
+        if (this.fuzziness !== null) {
+            array.fuzziness = this.fuzziness;
+        }
         /**
          * User
          */
@@ -5937,6 +5968,7 @@ var Query = /** @class */ (function () {
         query.highlightsEnabled = typeof array.highlights_enabled === "boolean"
             ? array.highlights_enabled
             : false;
+        query.fuzziness = array.fuzziness;
         /**
          * Items promoted
          */
