@@ -58,6 +58,24 @@ export declare class InvalidFormatError extends ErrorWithMessage {
      */
     static tokenFormatNotValid(): InvalidFormatError;
     /**
+     * Index format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    static indexFormatNotValid(): InvalidFormatError;
+    /**
+     * IndexUUI format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    static indexUUIDFormatNotValid(): InvalidFormatError;
+    /**
+     * App format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    static appUUIDFormatNotValid(): InvalidFormatError;
+    /**
      * Campaign representation not valid
      *
      * @return {InvalidFormatError}

@@ -18,8 +18,16 @@ export declare class TestClient implements HttpClient {
      */
     get(url: string, method: string, credentials: any, parameters?: any, data?: any): Promise<Response>;
     /**
+     * Generate a new cancellation token for a query
+     *
+     * @param url
+     */
+    generateCancelToken(url: string): void;
+    /**
      * Abort current request
      * And regenerate the cancellation token
+     *
+     * @param url
      */
-    abort(): void;
+    abort(url: string): void;
 }

@@ -9,8 +9,8 @@ import {ItemUUID} from "../../src/Model/ItemUUID";
 import {Item} from "../../src/Model/Item";
 import {Query} from "../../src/Query/Query";
 import {Changes} from "../../src/Model/Changes";
-import {ImmutableConfig} from "../../src/Config/ImmutableConfig";
 import {Config} from "../../src/Config/Config";
+import {IndexUUID} from "../../src/Model/IndexUUID";
 
 describe('Repository/', () => {
     describe('HttpRepository', () => {
@@ -212,11 +212,11 @@ describe('Repository/', () => {
             let counter = 0;
             await repository.query(Query.createMatchAll()).then(_ => counter++);
             await repository.updateItems(Query.createMatchAll(), Changes.create()).then(_ => counter++);
-            await repository.createIndex(new ImmutableConfig()).then(_ => counter++);
-            await repository.deleteIndex().then(_ => counter++);
-            await repository.resetIndex().then(_ => counter++);
-            await repository.checkIndex().then(_ => counter++);
-            await repository.configureIndex(new Config()).then(_ => counter++);
+            await repository.createIndex(IndexUUID.createById('x'), new Config()).then(_ => counter++);
+            await repository.deleteIndex(IndexUUID.createById('x')).then(_ => counter++);
+            await repository.resetIndex(IndexUUID.createById('x')).then(_ => counter++);
+            await repository.checkIndex(IndexUUID.createById('x')).then(_ => counter++);
+            await repository.configureIndex(IndexUUID.createById('x'), new Config()).then(_ => counter++);
 
             expect(client.calls.length).to.be.equal(7);
             expect(counter).to.be.equal(7);

@@ -1,10 +1,11 @@
 import { Config } from "../Config/Config";
-import { ImmutableConfig } from "../Config/ImmutableConfig";
 import { Changes } from "../Model/Changes";
 import { Item } from "../Model/Item";
 import { ItemUUID } from "../Model/ItemUUID";
 import { Query } from "../Query/Query";
 import { Result } from "../Result/Result";
+import { IndexUUID } from "../Model/IndexUUID";
+import { Index } from "../Model/Index";
 /**
  * Aggregation class
  */
@@ -104,35 +105,49 @@ export declare abstract class Repository {
     /**
      * Create index
      *
-     * @param immutableConfig
-     *
-     * @return {Promise<void>}
-     */
-    abstract createIndex(immutableConfig: ImmutableConfig): Promise<void>;
-    /**
-     * Delete index
-     *
-     * @return {Promise<void>}
-     */
-    abstract deleteIndex(): Promise<void>;
-    /**
-     * Reset index
-     *
-     * @return {Promise<void>}
-     */
-    abstract resetIndex(): Promise<void>;
-    /**
-     * Check index
-     *
-     * @return {Promise<boolean>}
-     */
-    abstract checkIndex(): Promise<boolean>;
-    /**
-     * Configure index
-     *
+     * @param indexUUID
      * @param config
      *
      * @return {Promise<void>}
      */
-    abstract configureIndex(config: Config): Promise<void>;
+    abstract createIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
+    /**
+     * Delete index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    abstract deleteIndex(indexUUID: IndexUUID): Promise<void>;
+    /**
+     * Reset index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    abstract resetIndex(indexUUID: IndexUUID): Promise<void>;
+    /**
+     * Check index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<boolean>}
+     */
+    abstract checkIndex(indexUUID: IndexUUID): Promise<boolean>;
+    /**
+     * Check index
+     *
+     * @return {Promise<Index[]>}
+     */
+    abstract getIndices(): Promise<Index[]>;
+    /**
+     * Configure index
+     *
+     * @param indexUUID
+     * @param config
+     *
+     * @return {Promise<void>}
+     */
+    abstract configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
 }

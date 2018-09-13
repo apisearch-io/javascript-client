@@ -1,10 +1,11 @@
 import {Config} from "../Config/Config";
-import {ImmutableConfig} from "../Config/ImmutableConfig";
 import {Changes} from "../Model/Changes";
 import {Item} from "../Model/Item";
 import {ItemUUID} from "../Model/ItemUUID";
 import {Query} from "../Query/Query";
 import {Result} from "../Result/Result";
+import {IndexUUID} from "../Model/IndexUUID";
+import {Index} from "../Model/Index";
 
 /**
  * Aggregation class
@@ -197,39 +198,60 @@ export abstract class Repository {
     /**
      * Create index
      *
-     * @param immutableConfig
-     *
-     * @return {Promise<void>}
-     */
-    public abstract async createIndex(immutableConfig: ImmutableConfig): Promise<void>;
-
-    /**
-     * Delete index
-     *
-     * @return {Promise<void>}
-     */
-    public abstract async deleteIndex(): Promise<void>;
-
-    /**
-     * Reset index
-     *
-     * @return {Promise<void>}
-     */
-    public abstract async resetIndex(): Promise<void>;
-
-    /**
-     * Check index
-     *
-     * @return {Promise<boolean>}
-     */
-    public abstract async checkIndex(): Promise<boolean>;
-
-    /**
-     * Configure index
-     *
+     * @param indexUUID
      * @param config
      *
      * @return {Promise<void>}
      */
-    public abstract async configureIndex(config: Config): Promise<void>;
+    public abstract async createIndex(
+        indexUUID: IndexUUID,
+        config: Config
+    ): Promise<void>;
+
+    /**
+     * Delete index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async deleteIndex(indexUUID: IndexUUID): Promise<void>;
+
+    /**
+     * Reset index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async resetIndex(indexUUID: IndexUUID): Promise<void>;
+
+    /**
+     * Check index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<boolean>}
+     */
+    public abstract async checkIndex(indexUUID: IndexUUID): Promise<boolean>;
+
+    /**
+     * Check index
+     *
+     * @return {Promise<Index[]>}
+     */
+    public abstract async getIndices(): Promise<Index[]>;
+
+    /**
+     * Configure index
+     *
+     * @param indexUUID
+     * @param config
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async configureIndex(
+        indexUUID: IndexUUID,
+        config: Config
+    ): Promise<void>;
 }

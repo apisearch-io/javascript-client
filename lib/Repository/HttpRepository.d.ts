@@ -1,5 +1,4 @@
 import { Config } from "../Config/Config";
-import { ImmutableConfig } from "../Config/ImmutableConfig";
 import { HttpClient } from "../Http/HttpClient";
 import { Response } from "../Http/Response";
 import { Changes } from "../Model/Changes";
@@ -9,6 +8,8 @@ import { Query } from "../Query/Query";
 import { Result } from "../Result/Result";
 import { Transformer } from "../Transformer/Transformer";
 import { Repository } from "./Repository";
+import { IndexUUID } from "../Model/IndexUUID";
+import { Index } from "../Model/Index";
 /**
  * Aggregation class
  */
@@ -79,43 +80,65 @@ export declare class HttpRepository extends Repository {
     /**
      * Create index
      *
-     * @param immutableConfig
-     *
-     * @return {Promise<void>}
-     */
-    createIndex(immutableConfig: ImmutableConfig): Promise<void>;
-    /**
-     * Delete index
-     *
-     * @return {Promise<void>}
-     */
-    deleteIndex(): Promise<void>;
-    /**
-     * Reset index
-     *
-     * @return {Promise<void>}
-     */
-    resetIndex(): Promise<void>;
-    /**
-     * Check index
-     *
-     * @return {Promise<boolean>}
-     */
-    checkIndex(): Promise<boolean>;
-    /**
-     * Configure index
-     *
+     * @param indexUUID
      * @param config
      *
      * @return {Promise<void>}
      */
-    configureIndex(config: Config): Promise<void>;
+    createIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
+    /**
+     * Delete index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    deleteIndex(indexUUID: IndexUUID): Promise<void>;
+    /**
+     * Reset index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<void>}
+     */
+    resetIndex(indexUUID: IndexUUID): Promise<void>;
+    /**
+     * Check index
+     *
+     * @param indexUUID
+     *
+     * @return {Promise<boolean>}
+     */
+    checkIndex(indexUUID: IndexUUID): Promise<boolean>;
+    /**
+     * Check index
+     *
+     * @return {Promise<Index[]>}
+     */
+    getIndices(): Promise<Index[]>;
+    /**
+     * Configure index
+     *
+     * @param indexUUID
+     * @param config
+     *
+     * @return {Promise<void>}
+     */
+    configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
     /**
      * Get query values
      *
      * @returns any
      */
     private getCredentials;
+    /**
+     * Get query values
+     *
+     * @param indexComposedUUID
+     *
+     * @returns any
+     */
+    private getCredentialsWithIndex;
     /**
      * throw error if needed
      *

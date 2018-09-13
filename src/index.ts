@@ -5,7 +5,6 @@ export * from "./Cache/InMemoryCache";
 export * from "./Cache/KeyValueCache";
 
 export * from "./Config/Config";
-export * from "./Config/ImmutableConfig";
 export * from "./Config/Synonym";
 
 export * from "./Error/ConnectionError";

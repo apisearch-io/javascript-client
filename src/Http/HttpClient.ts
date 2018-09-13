@@ -24,8 +24,17 @@ export abstract class HttpClient {
     ): Promise<Response>;
 
     /**
+     * Generate a new cancellation token for a query
+     *
+     * @param url
+     */
+    public abstract generateCancelToken(url: string);
+
+    /**
      * Abort current request
      * And regenerate the cancellation token
+     *
+     * @param url
      */
-    public abstract abort();
+    public abstract abort(url: string);
 }

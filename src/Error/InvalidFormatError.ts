@@ -87,6 +87,33 @@ export class InvalidFormatError extends ErrorWithMessage {
     }
 
     /**
+     * Index format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    public static indexFormatNotValid() {
+        return new InvalidFormatError('Index Format not valid. Expecting an Index serialized but found malformed data');
+    }
+
+    /**
+     * IndexUUI format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    public static indexUUIDFormatNotValid() {
+        return new InvalidFormatError('IndexUUID Format not valid. Expecting an IndexUUID serialized but found malformed data');
+    }
+
+    /**
+     * App format not valid.
+     *
+     * @return {InvalidFormatError}
+     */
+    public static appUUIDFormatNotValid() {
+        return new InvalidFormatError('AppUUID Format not valid. Expecting an AppUUID serialized but found malformed data');
+    }
+
+    /**
      * Campaign representation not valid
      *
      * @return {InvalidFormatError}
