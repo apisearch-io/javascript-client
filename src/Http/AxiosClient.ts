@@ -14,7 +14,7 @@ export class AxiosClient extends Client implements HttpClient {
     private cache: KeyValueCache;
     private timeout: number;
     private overrideQueries: boolean;
-    private cancelToken;
+    private cancelToken: any;
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ export class AxiosClient extends Client implements HttpClient {
         this.timeout = timeout;
         this.cache = cache;
         this.overrideQueries = overrideQueries;
-        this.cancelToken = Axios.CancelToken.source();
+        this.cancelToken = {};
     }
 
     /**
@@ -70,7 +70,7 @@ export class AxiosClient extends Client implements HttpClient {
             "get" === method &&
             this.overrideQueries
         ) {
-            this.abort();
+            this.abort(url);
         }
 
         return new Promise<Response> ((resolve, reject) => {
@@ -82,21 +82,25 @@ export class AxiosClient extends Client implements HttpClient {
                     "Content-Type": "application/json",
                 };
 
-            //noinspection TypeScriptValidateTypes
+            let axiosRequestConfig:any = {
+                url: url + "?" + Client.objectToUrlParameters({
+                    ...credentials,
+                    ...parameters,
+                }),
+                data,
+                headers,
+                method,
+                baseURL: that.host.replace(/\/*$/g, ""),
+                timeout: that.timeout,
+                transformRequest: [(data) => JSON.stringify(data)],
+            };
+
+            if (typeof this.cancelToken[url] != 'undefined') {
+                axiosRequestConfig.cancelToken = this.cancelToken[url].token;
+            }
+
             Axios
-                .request({
-                    url: url + "?" + Client.objectToUrlParameters({
-                        ...credentials,
-                        ...parameters,
-                    }),
-                    data,
-                    headers,
-                    method,
-                    baseURL: that.host.replace(/\/*$/g, ""),
-                    timeout: that.timeout,
-                    cancelToken: this.cancelToken.token,
-                    transformRequest: [(data) => JSON.stringify(data)],
-                })
+                .request(axiosRequestConfig)
                 .then((axiosResponse) => {
 
                     const response = new Response(
@@ -106,18 +110,37 @@ export class AxiosClient extends Client implements HttpClient {
 
                     return resolve(response);
                 })
-                .catch(
-                    (thrown) => reject(thrown),
-                );
+                .catch((error) => {
+                    const response = new Response(
+                        error.response.status,
+                        error.response.data,
+                    );
+
+                    return reject(response);
+                });
         });
     }
 
     /**
      * Abort current request
      * And regenerate the cancellation token
+     *
+     * @param url
      */
-    public abort() {
-        this.cancelToken.cancel();
-        this.cancelToken = Axios.CancelToken.source();
+    public abort(url: string) {
+        if (typeof this.cancelToken[url] != 'undefined') {
+            this.cancelToken[url].cancel();
+        }
+
+        this.generateCancelToken(url);
+    }
+
+    /**
+     * Generate a new cancellation token for a query
+     *
+     * @param url
+     */
+    public generateCancelToken(url: string) {
+        this.cancelToken[url] = Axios.CancelToken.source();
     }
 }

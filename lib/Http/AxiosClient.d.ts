@@ -38,6 +38,14 @@ export declare class AxiosClient extends Client implements HttpClient {
     /**
      * Abort current request
      * And regenerate the cancellation token
+     *
+     * @param url
      */
-    abort(): void;
+    abort(url: string): void;
+    /**
+     * Generate a new cancellation token for a query
+     *
+     * @param url
+     */
+    generateCancelToken(url: string): void;
 }

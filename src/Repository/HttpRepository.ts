@@ -1,5 +1,4 @@
 import {Config} from "../Config/Config";
-import {ImmutableConfig} from "../Config/ImmutableConfig";
 import {ConnectionError} from "../Error/ConnectionError";
 import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {InvalidTokenError} from "../Error/InvalidTokenError";
@@ -14,6 +13,8 @@ import {Query} from "../Query/Query";
 import {Result} from "../Result/Result";
 import {Transformer} from "../Transformer/Transformer";
 import {Repository} from "./Repository";
+import {IndexUUID} from "../Model/IndexUUID";
+import {Index} from "../Model/Index";
 /**
  * Aggregation class
  */
@@ -100,7 +101,7 @@ export class HttpRepository extends Repository {
             .get(
                 "/items",
                 "post",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {
                     items: itemsToUpdate.map((item) => {
@@ -131,7 +132,7 @@ export class HttpRepository extends Repository {
             .get(
                 "/items",
                 "delete",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {
                     items: itemsToDelete.map((itemUUID) => {
@@ -160,7 +161,7 @@ export class HttpRepository extends Repository {
             .get(
                 "/",
                 "get",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {
                     query: JSON.stringify(query.toArray()),
                 },
@@ -201,7 +202,7 @@ export class HttpRepository extends Repository {
             .get(
                 "/items",
                 "put",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {
                     query: query.toArray(),
@@ -218,21 +219,26 @@ export class HttpRepository extends Repository {
     /**
      * Create index
      *
-     * @param immutableConfig
+     * @param indexUUID
+     * @param config
      *
      * @return {Promise<void>}
      */
-    public async createIndex(immutableConfig: ImmutableConfig): Promise<void> {
+    public async createIndex(
+        indexUUID: IndexUUID,
+        config: Config
+    ): Promise<void> {
 
         return await this
             .httpClient
             .get(
                 "/index",
-                "post",
+                "put",
                 this.getCredentials(),
                 {},
                 {
-                    config: immutableConfig.toArray(),
+                    index: indexUUID.toArray(),
+                    config: config.toArray(),
                 },
             )
             .then((response) => {
@@ -245,16 +251,18 @@ export class HttpRepository extends Repository {
     /**
      * Delete index
      *
+     * @param indexUUID
+     *
      * @return {Promise<void>}
      */
-    public async deleteIndex(): Promise<void> {
+    public async deleteIndex(indexUUID: IndexUUID): Promise<void> {
 
         return await this
             .httpClient
             .get(
                 "/index",
                 "delete",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {},
             )
@@ -268,16 +276,18 @@ export class HttpRepository extends Repository {
     /**
      * Reset index
      *
+     * @param indexUUID
+     *
      * @return {Promise<void>}
      */
-    public async resetIndex(): Promise<void> {
+    public async resetIndex(indexUUID: IndexUUID): Promise<void> {
 
         return await this
             .httpClient
             .get(
                 "/index/reset",
                 "post",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {},
             )
@@ -291,16 +301,18 @@ export class HttpRepository extends Repository {
     /**
      * Check index
      *
+     * @param indexUUID
+     *
      * @return {Promise<boolean>}
      */
-    public async checkIndex(): Promise<boolean> {
+    public async checkIndex(indexUUID: IndexUUID): Promise<boolean> {
 
         return await this
             .httpClient
             .get(
                 "/index",
                 "head",
-                this.getCredentials(),
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {},
             )
@@ -312,20 +324,52 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * Configure index
+     * Check index
      *
-     * @param config
-     *
-     * @return {Promise<void>}
+     * @return {Promise<Index[]>}
      */
-    public async configureIndex(config: Config): Promise<void> {
+    public async getIndices(): Promise<Index[]> {
 
         return await this
             .httpClient
             .get(
-                "/index/config",
-                "post",
+                "/indices",
+                "get",
                 this.getCredentials(),
+                {},
+                {},
+            )
+            .then((response) => {
+                HttpRepository.throwTransportableExceptionIfNeeded(response);
+
+                let result = [];
+                for (var indexAsArray of response.getBody()) {
+                    result.push(Index.createFromArray(indexAsArray));
+                }
+
+                return result;
+            });
+    }
+
+    /**
+     * Configure index
+     *
+     * @param indexUUID
+     * @param config
+     *
+     * @return {Promise<void>}
+     */
+    public async configureIndex(
+        indexUUID: IndexUUID,
+        config: Config
+    ): Promise<void> {
+
+        return await this
+            .httpClient
+            .get(
+                "/index",
+                "post",
+                this.getCredentialsWithIndex(this.indexId),
                 {},
                 {
                     config: config.toArray(),
@@ -346,7 +390,21 @@ export class HttpRepository extends Repository {
     private getCredentials(): any {
         return {
             app_id: this.appId,
-            index: this.indexId,
+            token: this.token,
+        };
+    }
+
+    /**
+     * Get query values
+     *
+     * @param indexComposedUUID
+     *
+     * @returns any
+     */
+    private getCredentialsWithIndex(indexComposedUUID: string): any {
+        return {
+            app_id: this.appId,
+            index: indexComposedUUID,
             token: this.token,
         };
     }

@@ -4,11 +4,11 @@ import {Item} from "../src/Model/Item";
 import {ItemUUID} from "../src/Model/ItemUUID";
 import {Changes} from "../src/Model/Changes";
 import {Query} from "../src/Query/Query";
-import {ImmutableConfig} from "../src/Config/ImmutableConfig";
 import {Config} from "../src/Config/Config";
 import {TestClient} from "../src/Http/TestClient";
 import {ProductReadTransformer} from "./Transformer/ProductReadTransformer";
 import Apisearch from "../src/Apisearch";
+import {IndexUUID} from "../src/Model/IndexUUID";
 
 describe('Apisearch', () => {
 
@@ -52,11 +52,11 @@ describe('Apisearch', () => {
                 repository.flush(3),
                 repository.query(Query.createMatchAll()),
                 repository.updateItems(Query.createMatchAll(), Changes.create()),
-                repository.createIndex(new ImmutableConfig()),
-                repository.deleteIndex(),
-                repository.resetIndex(),
-                repository.checkIndex(),
-                repository.configureIndex(new Config())
+                repository.createIndex(IndexUUID.createById('x'), new Config()),
+                repository.deleteIndex(IndexUUID.createById('x')),
+                repository.resetIndex(IndexUUID.createById('x')),
+                repository.checkIndex(IndexUUID.createById('x')),
+                repository.configureIndex(IndexUUID.createById('x'), new Config())
             ]).then(() => {
                 expect(client.calls.length).to.be.equal(9);
             })
@@ -64,7 +64,6 @@ describe('Apisearch', () => {
     });
 
     describe('Check type value', () => {
-
 
         it('Should check config properties', () => {
             expect(() => {

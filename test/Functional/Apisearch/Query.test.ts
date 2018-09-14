@@ -1,10 +1,11 @@
 import Apisearch from "../../../src/Apisearch";
 import { expect } from 'chai';
 import {Query} from "../../../src/Query/Query";
-import {ImmutableConfig} from "../../../src/Config/ImmutableConfig";
 import {Item} from "../../../src/Model/Item";
 import {ItemUUID} from "../../../src/Model/ItemUUID";
 import {FILTER_MUST_ALL} from "../../../src/Query/Filter";
+import {IndexUUID} from "../../../src/Model/IndexUUID";
+import {Config} from "../../../src/Config/Config";
 
 /**
  *
@@ -12,8 +13,8 @@ import {FILTER_MUST_ALL} from "../../../src/Query/Filter";
 describe('Apisearch', () => {
     let repository = Apisearch.createRepository(
             {
-                'app_id': 'test_ts_app_id',
-                'index_id': 'test_ts_index_id',
+                'app_id': 'test-ts-app-id',
+                'index_id': 'test-ts-index-id',
                 'token': '0e4d75ba-c640-44c1-a745-06ee51db4e93',
                 'options': {
                     'endpoint': 'http://127.0.0.1:8999',
@@ -21,16 +22,18 @@ describe('Apisearch', () => {
             }
         );
 
-    try { repository.deleteIndex(); } catch (error) {}
-    repository.createIndex(ImmutableConfig.createFromArray({}));
+    const indexUUID = IndexUUID.createById('test-ts-index-id');
 
     it('should properly make a query', async () => {
+        await repository.deleteIndex(indexUUID);
+        await repository.createIndex(indexUUID, Config.createFromArray({}));
         await repository
             .query(Query.createMatchAll())
             .then(result => {
                 expect(result.getTotalItems()).to.be.equal(0);
             })
-            .catch(_ => {
+            .catch(error => {
+                console.log(error);
                 expect.fail();
             });
     });
