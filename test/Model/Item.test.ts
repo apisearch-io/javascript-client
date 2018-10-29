@@ -24,6 +24,7 @@ describe('Model/', () => {
                 expect(item.getExactMatchingMetadata()).to.be.deep.equal([]);
                 expect(item.getSuggest()).to.be.deep.equal([]);
                 expect(item.getDistance()).to.be.equal(undefined);
+                expect(item.getScore()).to.be.equal(undefined);
             });
         });
 
@@ -201,6 +202,31 @@ describe('Model/', () => {
             };
 
             expect(Item.createFromArray(itemAsArray).toArray()).to.be.deep.equal(itemAsArray);
+        });
+
+        describe('-> Test score', () => {
+            it('should work properly', () => {
+                let item = Item.createFromArray({
+                    'uuid': {
+                        'id': '1',
+                        'type': 'product'
+                    }
+                });
+                expect(item.getScore()).to.be.equals(undefined);
+                expect(item.toArray().score).to.be.equals(undefined);
+
+                item = Item.createFromArray({
+                    'uuid': {
+                        'id': '1',
+                        'type': 'product'
+                    },
+                    'score': 2.4
+                });
+                expect(item.getScore()).to.be.equals(2.4);
+                expect(item.toArray().score).to.be.equals(2.4);
+                expect(item.setScore(3.3).getScore()).to.be.equals(3.3);
+
+            });
         });
 
         describe('.composedUUID() should work', () => {
