@@ -13,11 +13,13 @@ export declare const QUERY_DEFAULT_FROM = 0;
 export declare const QUERY_DEFAULT_PAGE = 1;
 export declare const QUERY_DEFAULT_SIZE = 10;
 export declare const QUERY_INFINITE_SIZE = 1000;
+export declare const NO_MIN_SCORE = 0;
 /**
  * Query class
  */
 export declare class Query {
     private coordinate;
+    private fields;
     private universeFilters;
     private filters;
     private itemsPromoted;
@@ -33,6 +35,7 @@ export declare class Query {
     private filterFields;
     private scoreStrategy;
     private fuzziness;
+    private minScore;
     private user;
     /**
      * Constructor
@@ -83,6 +86,20 @@ export declare class Query {
      * @return {Query}
      */
     static createByUUIDs(...uuids: ItemUUID[]): Query;
+    /**
+     * set fields
+     *
+     * @param fields
+     *
+     * @return {Query}
+     */
+    setFields(fields: string[]): Query;
+    /**
+     * get fields
+     *
+     * @return {string[]}
+     */
+    getFields(): string[];
     /**
      * Filter universe by types
      *
@@ -481,6 +498,20 @@ export declare class Query {
      * @return {Query}
      */
     setAutoFuzziness(): Query;
+    /**
+     * Get min score
+     *
+     * @return any
+     */
+    getMinScore(): any;
+    /**
+     * Set min score
+     *
+     * @param minScore
+     *
+     * @return {Query}
+     */
+    setMinScore(minScore: number): Query;
     /**
      * By user
      *

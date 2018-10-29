@@ -4567,6 +4567,25 @@ var Item = /** @class */ (function () {
         return this.promoted;
     };
     /**
+     * Set score
+     *
+     * @param score
+     *
+     * @return {Item}
+     */
+    Item.prototype.setScore = function (score) {
+        this.score = score;
+        return this;
+    };
+    /**
+     * Get score
+     *
+     * @return {number}
+     */
+    Item.prototype.getScore = function () {
+        return this.score;
+    };
+    /**
      * To array
      */
     Item.prototype.toArray = function () {
@@ -4600,6 +4619,9 @@ var Item = /** @class */ (function () {
         if (typeof this.distance != "undefined") {
             itemAsArray.distance = this.distance;
         }
+        if (typeof this.score != "undefined") {
+            itemAsArray.score = this.score;
+        }
         return itemAsArray;
     };
     /**
@@ -4628,8 +4650,13 @@ var Item = /** @class */ (function () {
             array.distance != null) {
             item.highlights = array.highlights;
         }
-        if (array.is_promoted) {
-            item.promoted = true;
+        if (typeof array.is_promoted != "undefined" &&
+            array.is_promoted != null) {
+            item.promoted = array.is_promoted;
+        }
+        if (typeof array.score != "undefined" &&
+            array.score != null) {
+            item.score = array.score;
         }
         return item;
     };
@@ -5287,6 +5314,7 @@ exports.QUERY_DEFAULT_FROM = 0;
 exports.QUERY_DEFAULT_PAGE = 1;
 exports.QUERY_DEFAULT_SIZE = 10;
 exports.QUERY_INFINITE_SIZE = 1000;
+exports.NO_MIN_SCORE = 0.0;
 /**
  * Query class
  */
@@ -5297,11 +5325,13 @@ var Query = /** @class */ (function () {
      * @param queryText
      */
     function Query(queryText) {
+        this.fields = [];
         this.universeFilters = {};
         this.filters = {};
         this.itemsPromoted = [];
         this.aggregations = {};
         this.filterFields = [];
+        this.minScore = exports.NO_MIN_SCORE;
         this.sortByInstance = SortBy_1.SortBy.create();
         this.filters._query = Filter_1.Filter.create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
     }
@@ -5380,6 +5410,25 @@ var Query = /** @class */ (function () {
             .disableSuggestions();
         query.filters._id = Filter_1.Filter.create("_id", ids, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD);
         return query;
+    };
+    /**
+     * set fields
+     *
+     * @param fields
+     *
+     * @return {Query}
+     */
+    Query.prototype.setFields = function (fields) {
+        this.fields = fields;
+        return this;
+    };
+    /**
+     * get fields
+     *
+     * @return {string[]}
+     */
+    Query.prototype.getFields = function () {
+        return this.fields;
     };
     /**
      * Filter universe by types
@@ -6036,6 +6085,25 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
+     * Get min score
+     *
+     * @return any
+     */
+    Query.prototype.getMinScore = function () {
+        return this.minScore;
+    };
+    /**
+     * Set min score
+     *
+     * @param minScore
+     *
+     * @return {Query}
+     */
+    Query.prototype.setMinScore = function (minScore) {
+        this.minScore = minScore;
+        return this;
+    };
+    /**
      * By user
      *
      * @param user
@@ -6075,6 +6143,13 @@ var Query = /** @class */ (function () {
         }
         if (this.coordinate instanceof Coordinate_1.Coordinate) {
             array.coordinate = this.coordinate.toArray();
+        }
+        /**
+         * Fields
+         */
+        if (this.fields instanceof Array &&
+            this.fields.length > 0) {
+            array.fields = this.fields;
         }
         /**
          * Universe Filters
@@ -6166,6 +6241,13 @@ var Query = /** @class */ (function () {
             array.fuzziness = this.fuzziness;
         }
         /**
+         * Min score
+         */
+        var minScore = this.minScore;
+        if (minScore !== exports.NO_MIN_SCORE) {
+            array.min_score = minScore;
+        }
+        /**
          * User
          */
         if (this.user instanceof User_1.User) {
@@ -6198,6 +6280,12 @@ var Query = /** @class */ (function () {
         var query = array.coordinate instanceof Object
             ? Query.createLocated(Coordinate_1.Coordinate.createFromArray(array.coordinate), array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE)
             : Query.create(array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE);
+        /**
+         * Fields
+         */
+        query.fields = array.fields instanceof Array
+            ? array.fields
+            : [];
         /**
          * Aggregations
          */
@@ -6250,6 +6338,7 @@ var Query = /** @class */ (function () {
             ? array.highlights_enabled
             : false;
         query.fuzziness = array.fuzziness;
+        query.minScore = array.min_score ? array.min_score : exports.NO_MIN_SCORE;
         /**
          * Items promoted
          */

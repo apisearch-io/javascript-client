@@ -14,6 +14,7 @@ export declare class Item {
     private suggest;
     private highlights;
     private promoted;
+    private score;
     /**
      * Constructor
      *
@@ -197,6 +198,20 @@ export declare class Item {
      */
     isPromoted(): boolean;
     /**
+     * Set score
+     *
+     * @param score
+     *
+     * @return {Item}
+     */
+    setScore(score: number): Item;
+    /**
+     * Get score
+     *
+     * @return {number}
+     */
+    getScore(): number;
+    /**
      * To array
      */
     toArray(): {
@@ -210,6 +225,7 @@ export declare class Item {
         highlights?: {};
         is_promoted?: boolean;
         distance?: number;
+        score?: number;
     };
     /**
      * Create from array
