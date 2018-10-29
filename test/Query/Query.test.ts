@@ -4,7 +4,7 @@
 import { expect } from 'chai';
 import {ItemUUID} from "../../src/Model/ItemUUID";
 import {User} from "../../src/Model/User";
-import {Query} from '../../src/Query/Query';
+import {Query, NO_MIN_SCORE} from '../../src/Query/Query';
 import {Polygon, Square, CoordinateAndDistance} from "../../src/Geo/LocationRange";
 import {Coordinate} from "../../src/Model/Coordinate";
 
@@ -455,5 +455,35 @@ describe('Query()', () => {
             expect(Query.createMatchAll().setAutoFuzziness().getFuzziness()).to.be.equals('AUTO');
             expect(query.setAutoFuzziness()).to.be.instanceOf(Query);
         });
-    })
+    });
+
+    describe('-> Test fields', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll();
+            expect(query.getFields()).to.be.deep.equals([]);
+            expect(query.toArray().fields).to.be.undefined;
+            expect(Query.createFromArray({}).getFields()).to.be.deep.equals([]);
+            query = Query.createMatchAll().setFields(['a', 'b']);
+            expect(query.getFields()).to.be.deep.equals(['a', 'b']);
+            expect(query.toArray().fields).to.be.deep.equals(['a', 'b']);
+            expect(Query.createFromArray({
+                fields: ['a', 'b']
+            }).getFields()).to.be.deep.equals(['a', 'b']);
+        });
+    });
+
+    describe('-> Test min score', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll();
+            expect(query.getMinScore()).to.be.deep.equals(NO_MIN_SCORE);
+            expect(query.toArray().min_score).to.be.undefined;
+            expect(Query.createFromArray({}).getMinScore()).to.be.deep.equals(NO_MIN_SCORE);
+            query = Query.createMatchAll().setMinScore(4.5);
+            expect(query.getMinScore()).to.be.deep.equals(4.5);
+            expect(query.toArray().min_score).to.be.deep.equals(4.5);
+            expect(Query.createFromArray({
+                min_score: 4.5
+            }).getMinScore()).to.be.deep.equals(4.5);
+        });
+    });
 });

@@ -31,6 +31,7 @@ export const QUERY_DEFAULT_FROM = 0;
 export const QUERY_DEFAULT_PAGE = 1;
 export const QUERY_DEFAULT_SIZE = 10;
 export const QUERY_INFINITE_SIZE = 1000;
+export const NO_MIN_SCORE = 0.0;
 
 /**
  * Query class
@@ -38,6 +39,7 @@ export const QUERY_INFINITE_SIZE = 1000;
 export class Query {
 
     private coordinate: Coordinate;
+    private fields: string[] = [];
     private universeFilters: any = {};
     private filters: any = {};
     private itemsPromoted: ItemUUID[] = [];
@@ -53,6 +55,7 @@ export class Query {
     private filterFields: string[] = [];
     private scoreStrategy: ScoreStrategy;
     private fuzziness: any;
+    private minScore: number = NO_MIN_SCORE;
     private user: User;
 
     /**
@@ -165,6 +168,28 @@ export class Query {
         );
 
         return query;
+    }
+
+    /**
+     * set fields
+     *
+     * @param fields
+     *
+     * @return {Query}
+     */
+    public setFields(fields: string[]) : Query {
+        this.fields = fields;
+
+        return this;
+    }
+
+    /**
+     * get fields
+     *
+     * @return {string[]}
+     */
+    public getFields() : string[] {
+        return this.fields;
     }
 
     /**
@@ -1046,6 +1071,28 @@ export class Query {
     }
 
     /**
+     * Get min score
+     *
+     * @return any
+     */
+    public getMinScore():any {
+        return this.minScore;
+    }
+
+    /**
+     * Set min score
+     *
+     * @param minScore
+     *
+     * @return {Query}
+     */
+    public setMinScore(minScore: number) : Query {
+        this.minScore = minScore;
+
+        return this;
+    }
+
+    /**
      * By user
      *
      * @param user
@@ -1092,6 +1139,16 @@ export class Query {
 
         if (this.coordinate instanceof Coordinate) {
             array.coordinate = this.coordinate.toArray();
+        }
+
+        /**
+         * Fields
+         */
+        if (
+            this.fields instanceof Array &&
+            this.fields.length > 0
+        ) {
+            array.fields = this.fields;
         }
 
         /**
@@ -1203,6 +1260,14 @@ export class Query {
         }
 
         /**
+         * Min score
+         */
+        const minScore = this.minScore;
+        if (minScore !== NO_MIN_SCORE) {
+            array.min_score = minScore;
+        }
+
+        /**
          * User
          */
         if (this.user instanceof User) {
@@ -1247,6 +1312,13 @@ export class Query {
                 array.page ? array.page : QUERY_DEFAULT_PAGE,
                 array.size ? array.size : QUERY_DEFAULT_SIZE,
             );
+
+        /**
+         * Fields
+         */
+        query.fields = array.fields instanceof Array
+            ? array.fields
+            : [];
 
         /**
          * Aggregations
@@ -1312,6 +1384,7 @@ export class Query {
             : false;
 
         query.fuzziness = array.fuzziness;
+        query.minScore = array.min_score ? array.min_score : NO_MIN_SCORE;
 
         /**
          * Items promoted

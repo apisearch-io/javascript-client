@@ -17,6 +17,7 @@ export class Item {
     private suggest: string[] = [];
     private highlights: any = {};
     private promoted: boolean = false;
+    private score: number;
 
     /**
      * Constructor
@@ -326,6 +327,28 @@ export class Item {
     }
 
     /**
+     * Set score
+     *
+     * @param score
+     *
+     * @return {Item}
+     */
+    public setScore(score: number) : Item {
+        this.score = score;
+
+        return this;
+    }
+
+    /**
+     * Get score
+     *
+     * @return {number}
+     */
+    public getScore() : number {
+        return this.score;
+    }
+
+    /**
      * To array
      */
     public toArray(): {
@@ -339,6 +362,7 @@ export class Item {
         highlights?: {},
         is_promoted?: boolean,
         distance?: number,
+        score?: number
     } {
         const itemAsArray: {
             uuid: {},
@@ -351,6 +375,7 @@ export class Item {
             highlights?: {},
             is_promoted?: boolean,
             distance?: number,
+            score?: number
         } = {
             uuid: this.uuid.toArray(),
         };
@@ -389,6 +414,10 @@ export class Item {
 
         if (typeof this.distance != "undefined") {
             itemAsArray.distance = this.distance;
+        }
+
+        if (typeof this.score != "undefined") {
+            itemAsArray.score = this.score;
         }
 
         return itemAsArray;
@@ -448,8 +477,18 @@ export class Item {
             item.highlights = array.highlights;
         }
 
-        if (array.is_promoted) {
-            item.promoted = true;
+        if (
+            typeof array.is_promoted != "undefined" &&
+            array.is_promoted != null
+        ) {
+            item.promoted = array.is_promoted;
+        }
+
+        if (
+            typeof array.score != "undefined" &&
+            array.score != null
+        ) {
+            item.score = array.score;
         }
 
         return item;
