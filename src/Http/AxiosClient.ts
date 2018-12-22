@@ -111,6 +111,10 @@ export class AxiosClient extends Client implements HttpClient {
                     return resolve(response);
                 })
                 .catch((error) => {
+                    if(error.response === undefined){
+                      console.info("Request Canceled");
+                      return;
+                    }
                     const response = new Response(
                         error.response.status,
                         error.response.data,
