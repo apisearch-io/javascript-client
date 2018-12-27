@@ -7,7 +7,7 @@ This library is part of the Apisearch project.
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apisearch_io/general)
 
 Apisearch is an open source search engine fully based on open source third party
-technologies. The project provides an *in cresciendo* set of language 
+technologies. The project provides an *in crescendo* set of language 
 integration libraries for her users, as well as some third party projects 
 integration bundles, plugins, or javascript widgets.
 
