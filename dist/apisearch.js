@@ -3511,6 +3511,9 @@ var AxiosClient = /** @class */ (function (_super) {
                             var response = new Response_1.Response(axiosResponse.status, axiosResponse.data);
                             return resolve(response);
                         })["catch"](function (error) {
+                            if (error.response === undefined) {
+                                return;
+                            }
                             var response = new Response_1.Response(error.response.status, error.response.data);
                             return reject(response);
                         });
