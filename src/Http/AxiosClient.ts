@@ -112,7 +112,7 @@ export class AxiosClient extends Client implements HttpClient {
                 })
                 .catch((error) => {
                     if(error.response === undefined){
-                      return;
+                        return;
                     }
                     const response = new Response(
                         error.response.status,
