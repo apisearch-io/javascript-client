@@ -13,19 +13,22 @@ import {Config} from "../../../src/Config/Config";
 describe('Apisearch', () => {
     let repository = Apisearch.createRepository(
             {
-                'app_id': 'test-ts-app-id',
-                'index_id': 'test-ts-index-id',
+                'app_id': '789437438test',
+                'index_id': 'default',
                 'token': '0e4d75ba-c640-44c1-a745-06ee51db4e93',
                 'options': {
-                    'endpoint': 'http://127.0.0.1:8999',
+                    'endpoint': 'http://127.0.0.1:8201',
                 }
             }
         );
 
-    const indexUUID = IndexUUID.createById('test-ts-index-id');
+    const indexUUID = IndexUUID.createById('default');
 
     it('should properly make a query', async () => {
-        await repository.deleteIndex(indexUUID);
+        try {
+            await repository.deleteIndex(indexUUID);
+        } catch(e) {}
+
         await repository.createIndex(indexUUID, Config.createFromArray({}));
         await repository
             .query(Query.createMatchAll())

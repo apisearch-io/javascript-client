@@ -18,7 +18,7 @@ describe('Apisearch', () => {
         "index_id": 'bbbb',
         "token": 'cccc',
         "options": {
-            "endpoint": 'http://blabla',
+            "endpoint": 'http://localhost:8100',
             "http_client": client,
         }
     });

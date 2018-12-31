@@ -1,3 +1,4 @@
+import {Item} from "../Model/Item";
 /**
  export * Sort by constants
  */
@@ -184,7 +185,7 @@ export class SortBy {
                                   order: string,
                                   filter: Filter,
                                   mode: string = SORT_BY_MODE_AVG): SortBy {
-        const fieldPath = Filter.getFilterPathByField(filter.getField());
+        const fieldPath = Item.getPathByField(filter.getField());
         const filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter.createFromArray(filterAsArray);

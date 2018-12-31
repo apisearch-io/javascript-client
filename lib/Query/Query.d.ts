@@ -4,7 +4,7 @@ import { ItemUUID } from "../Model/ItemUUID";
 import { User } from "../Model/User";
 import { Aggregation } from "./Aggregation";
 import { Filter } from "./Filter";
-import { ScoreStrategy } from "./ScoreStrategy";
+import { ScoreStrategies } from "./ScoreStrategies";
 import { SortBy } from "./SortBy";
 /**
  * Query constants
@@ -33,7 +33,7 @@ export declare class Query {
     private suggestionsEnabled;
     private highlightsEnabled;
     private filterFields;
-    private scoreStrategy;
+    private scoreStrategies;
     private fuzziness;
     private minScore;
     private user;
@@ -467,17 +467,17 @@ export declare class Query {
      */
     excludeUUIDs(...uuids: ItemUUID[]): Query;
     /**
-     * Get score strategy
+     * Get score strategies
      *
-     * @return {ScoreStrategy}
+     * @return {ScoreStrategies}
      */
-    getScoreStrategy(): ScoreStrategy;
+    getScoreStrategies(): ScoreStrategies;
     /**
-     * Set score strategy
+     * Set score strategies
      *
-     * @param scoreStrategy
+     * @param scoreStrategies
      */
-    setScoreStrategy(scoreStrategy: ScoreStrategy): Query;
+    setScoreStrategies(scoreStrategies: ScoreStrategies): Query;
     /**
      * Get fuzziness
      *
