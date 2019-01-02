@@ -502,4 +502,18 @@ export class Item {
     public composeUUID(): string {
         return this.uuid.composedUUID();
     }
+
+    /**
+     * Get path by field.
+     *
+     * @param field
+     *
+     * @returns {string}
+     */
+    public static getPathByField(field: string): string {
+        return (["id", "type"].indexOf(field) > -1)
+            ? `uuid.${field}`
+            : `indexed_metadata.${field}`
+            ;
+    }
 }

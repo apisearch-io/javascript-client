@@ -10,12 +10,27 @@ import {Coordinate} from "../../src/Model/Coordinate";
 
 import {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../../src/Query/Query';
 import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL} from "../../src/Query/Filter";
+import {ScoreStrategies} from "../../src/Query/ScoreStrategies";
 
 /**
  * Query object tests
  */
 describe('Query()', () => {
 
+    describe('Test defaults', () => {
+        let query = Query.create('');
+        it('should have default values', () => {
+            expect(query.getFields()).to.be.deep.equals([]);
+            expect(query.areSuggestionsEnabled()).to.be.false;
+            expect(query.areAggregationsEnabled()).to.be.true;
+            expect(query.getQueryText()).to.be.equals('');
+            expect(query.getPage()).to.be.equals(QUERY_DEFAULT_PAGE);
+            expect(query.getSize()).to.be.equals(QUERY_DEFAULT_SIZE);
+            expect(query.getScoreStrategies()).to.be.undefined;
+            expect(query.getUser()).to.be.undefined;
+            expect(query.getMinScore()).to.be.equals(NO_MIN_SCORE);
+        });
+    });
 
     describe('-> filterBy...()', () => {
         let query = Query.create(
@@ -484,6 +499,14 @@ describe('Query()', () => {
             expect(Query.createFromArray({
                 min_score: 4.5
             }).getMinScore()).to.be.deep.equals(4.5);
+        });
+    });
+
+    describe('-> Test score strategy', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll().setScoreStrategies(ScoreStrategies.createEmpty());
+            query = Query.createFromArray(JSON.parse(JSON.stringify(query.toArray())));
+            expect(query.getScoreStrategies()).to.be.instanceof(ScoreStrategies);
         });
     });
 });

@@ -522,7 +522,7 @@ Axios.prototype.request = function request(config) {
     }, arguments[1]);
   }
 
-  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+  config = utils.merge(defaults, {method: 'get'}, this.defaults, config);
   config.method = config.method.toLowerCase();
 
   // Hook up interceptors middleware
@@ -939,6 +939,10 @@ var defaults = {
     return data;
   }],
 
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
   timeout: 0,
 
   xsrfCookieName: 'XSRF-TOKEN',
@@ -1093,9 +1097,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
       if (utils.isArray(val)) {
         key = key + '[]';
-      }
-
-      if (!utils.isArray(val)) {
+      } else {
         val = [val];
       }
 
@@ -4671,6 +4673,18 @@ var Item = /** @class */ (function () {
     Item.prototype.composeUUID = function () {
         return this.uuid.composedUUID();
     };
+    /**
+     * Get path by field.
+     *
+     * @param field
+     *
+     * @returns {string}
+     */
+    Item.getPathByField = function (field) {
+        return (["id", "type"].indexOf(field) > -1)
+            ? "uuid." + field
+            : "indexed_metadata." + field;
+    };
     return Item;
 }());
 exports.Item = Item;
@@ -5269,18 +5283,6 @@ var Filter = /** @class */ (function () {
         }
         return Filter.create(array.field, array.values, array.application_type, array.filter_type, array.filter_terms);
     };
-    /**
-     * Get path by field.
-     *
-     * @param field
-     *
-     * @returns {string}
-     */
-    Filter.getFilterPathByField = function (field) {
-        return (["id", "type"].indexOf(field) > -1)
-            ? "uuid." + field
-            : "indexed_metadata." + field;
-    };
     return Filter;
 }());
 exports.Filter = Filter;
@@ -5301,6 +5303,7 @@ exports.__esModule = true;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
 var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
+var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var User_1 = __webpack_require__(/*! ../Model/User */ "./src/Model/User.ts");
 var Aggregation_1 = __webpack_require__(/*! ./Aggregation */ "./src/Query/Aggregation.ts");
 var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
@@ -5308,7 +5311,7 @@ var Filter_2 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 var Aggregation_2 = __webpack_require__(/*! ./Aggregation */ "./src/Query/Aggregation.ts");
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 var Filter_3 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
-var ScoreStrategy_1 = __webpack_require__(/*! ./ScoreStrategy */ "./src/Query/ScoreStrategy.ts");
+var ScoreStrategies_1 = __webpack_require__(/*! ./ScoreStrategies */ "./src/Query/ScoreStrategies.ts");
 var SortBy_1 = __webpack_require__(/*! ./SortBy */ "./src/Query/SortBy.ts");
 /**
  * Query constants
@@ -5333,6 +5336,10 @@ var Query = /** @class */ (function () {
         this.filters = {};
         this.itemsPromoted = [];
         this.aggregations = {};
+        this.resultsEnabled = true;
+        this.aggregationsEnabled = true;
+        this.suggestionsEnabled = false;
+        this.highlightsEnabled = false;
         this.filterFields = [];
         this.minScore = exports.NO_MIN_SCORE;
         this.sortByInstance = SortBy_1.SortBy.create();
@@ -5442,7 +5449,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByTypes = function (values) {
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField("type");
+        var fieldPath = Item_1.Item.getPathByField("type");
         if (values.length > 0) {
             this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5464,7 +5471,7 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a, _b;
-        var fieldPath = Filter_1.Filter.getFilterPathByField("type");
+        var fieldPath = Item_1.Item.getPathByField("type");
         if (values.length > 0) {
             this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5485,7 +5492,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByIds = function (values) {
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField("id");
+        var fieldPath = Item_1.Item.getPathByField("id");
         if (values.length > 0) {
             this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5503,7 +5510,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterByIds = function (values) {
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField("id");
+        var fieldPath = Item_1.Item.getPathByField("id");
         if (values.length > 0) {
             this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5524,7 +5531,7 @@ var Query = /** @class */ (function () {
     Query.prototype.filterUniverseBy = function (field, values, applicationType) {
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
+        var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
             this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5550,7 +5557,7 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
+        var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
             this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
@@ -5576,7 +5583,7 @@ var Query = /** @class */ (function () {
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
+        var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
             this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
@@ -5618,7 +5625,7 @@ var Query = /** @class */ (function () {
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         var _a;
-        var fieldPath = Filter_1.Filter.getFilterPathByField(field);
+        var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length !== 0) {
             this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
@@ -5712,7 +5719,7 @@ var Query = /** @class */ (function () {
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = Aggregation_2.AGGREGATION_NO_LIMIT; }
         var _a;
-        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Filter_1.Filter.getFilterPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
+        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -5736,7 +5743,7 @@ var Query = /** @class */ (function () {
         if (options.length === 0) {
             return this;
         }
-        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Filter_1.Filter.getFilterPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
+        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -5835,7 +5842,7 @@ var Query = /** @class */ (function () {
      * @return {Filter|null}
      */
     Query.prototype.getFilterByField = function (fieldName) {
-        var fieldPath = Filter_1.Filter.getFilterPathByField(fieldName);
+        var fieldPath = Item_1.Item.getPathByField(fieldName);
         for (var i in this.filters) {
             if (this.filters[i].getField() == fieldPath) {
                 return this.filters[i];
@@ -6043,20 +6050,20 @@ var Query = /** @class */ (function () {
         return this;
     };
     /**
-     * Get score strategy
+     * Get score strategies
      *
-     * @return {ScoreStrategy}
+     * @return {ScoreStrategies}
      */
-    Query.prototype.getScoreStrategy = function () {
-        return this.scoreStrategy;
+    Query.prototype.getScoreStrategies = function () {
+        return this.scoreStrategies;
     };
     /**
-     * Set score strategy
+     * Set score strategies
      *
-     * @param scoreStrategy
+     * @param scoreStrategies
      */
-    Query.prototype.setScoreStrategy = function (scoreStrategy) {
-        this.scoreStrategy = scoreStrategy;
+    Query.prototype.setScoreStrategies = function (scoreStrategies) {
+        this.scoreStrategies = scoreStrategies;
         return this;
     };
     /**
@@ -6232,12 +6239,12 @@ var Query = /** @class */ (function () {
             array.filter_fields = this.filterFields;
         }
         /**
-         * Score strategy
+         * Score strategies
          */
-        if (this.scoreStrategy instanceof ScoreStrategy_1.ScoreStrategy) {
-            var scoreStrategyAsArray = this.scoreStrategy.toArray();
-            if (Object.keys(scoreStrategyAsArray).length > 0) {
-                array.score_strategy = scoreStrategyAsArray;
+        if (this.scoreStrategies instanceof ScoreStrategies_1.ScoreStrategies) {
+            var scoreStrategiesAsArray = this.scoreStrategies.toArray();
+            if (Object.keys(scoreStrategiesAsArray).length > 0) {
+                array.score_strategies = scoreStrategiesAsArray;
             }
         }
         if (this.fuzziness !== null) {
@@ -6359,8 +6366,8 @@ var Query = /** @class */ (function () {
         query.filterFields = array.filter_fields instanceof Array
             ? array.filter_fields
             : [];
-        query.scoreStrategy = array.score_strategy instanceof Object
-            ? ScoreStrategy_1.ScoreStrategy.createFromArray(array.score_stategy)
+        query.scoreStrategies = array.score_strategies instanceof Object
+            ? ScoreStrategies_1.ScoreStrategies.createFromArray(array.score_strategies)
             : null;
         query.user = array.user instanceof Object
             ? User_1.User.createFromArray(array.user)
@@ -6458,6 +6465,117 @@ exports.Range = Range;
 
 /***/ }),
 
+/***/ "./src/Query/ScoreStrategies.ts":
+/*!**************************************!*\
+  !*** ./src/Query/ScoreStrategies.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var ScoreStrategy_1 = __webpack_require__(/*! ./ScoreStrategy */ "./src/Query/ScoreStrategy.ts");
+/**
+ * ScoreStrategies constants
+ */
+exports.MULTIPLY = 'multiply';
+exports.SUM = 'sum';
+exports.AVG = 'avg';
+exports.MAX = 'max';
+exports.MIN = 'min';
+/**
+ * ScoreStrategies
+ */
+var ScoreStrategies = /** @class */ (function () {
+    function ScoreStrategies() {
+        this.scoreStrategies = [];
+    }
+    /**
+     * Create empty
+     *
+     * @param scoreMode
+     *
+     * @return {ScoreStrategies}
+     */
+    ScoreStrategies.createEmpty = function (scoreMode) {
+        if (scoreMode === void 0) { scoreMode = exports.SUM; }
+        var scoreStrategies = new ScoreStrategies;
+        scoreStrategies.scoreMode = scoreMode;
+        return scoreStrategies;
+    };
+    /**
+     * Add score strategy
+     *
+     * @param scoreStrategy
+     *
+     * @return {ScoreStrategies}
+     */
+    ScoreStrategies.prototype.addScoreStrategy = function (scoreStrategy) {
+        this.scoreStrategies.push(scoreStrategy);
+        return this;
+    };
+    /**
+     * Get score strategies
+     *
+     * @return {ScoreStrategy[]}
+     */
+    ScoreStrategies.prototype.getScoreStrategies = function () {
+        return this.scoreStrategies;
+    };
+    /**
+     * Get score mode
+     *
+     * @return {string}
+     */
+    ScoreStrategies.prototype.getScoreMode = function () {
+        return this.scoreMode;
+    };
+    /**
+     * To array
+     *
+     * @return {{
+     *      score_mode: string,
+     *      score_strategies: any
+     * }}
+     */
+    ScoreStrategies.prototype.toArray = function () {
+        var scoreStrategiesAsArray = [];
+        for (var i in this.scoreStrategies) {
+            scoreStrategiesAsArray.push(this.scoreStrategies[i].toArray());
+        }
+        return {
+            score_mode: this.scoreMode,
+            score_strategies: scoreStrategiesAsArray
+        };
+    };
+    /**
+     * Create from array
+     *
+     * @param array
+     *
+     * @return {ScoreStrategies}
+     */
+    ScoreStrategies.createFromArray = function (array) {
+        array = JSON.parse(JSON.stringify(array));
+        var scoreStrategies = (typeof array.score_mode != "undefined")
+            ? ScoreStrategies.createEmpty(array.score_mode)
+            : ScoreStrategies.createEmpty();
+        scoreStrategies.scoreStrategies = [];
+        for (var i in array.score_strategies) {
+            scoreStrategies
+                .scoreStrategies
+                .push(ScoreStrategy_1.ScoreStrategy.createFromArray(array.score_strategies[i]));
+        }
+        return scoreStrategies;
+    };
+    return ScoreStrategies;
+}());
+exports.ScoreStrategies = ScoreStrategies;
+
+
+/***/ }),
+
 /***/ "./src/Query/ScoreStrategy.ts":
 /*!************************************!*\
   !*** ./src/Query/ScoreStrategy.ts ***!
@@ -6468,35 +6586,84 @@ exports.Range = Range;
 "use strict";
 
 exports.__esModule = true;
+var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
+var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
- * Aggregation constants
+ * ScoreStrategy constants
  */
-exports.SCORE_STRATEGY_DEFAULT = 0;
-exports.SCORE_STRATEGY_BOOSTING_RELEVANCE_FIELD = 1;
-exports.SCORE_STRATEGY_BOOSTING_CUSTOM_FUNCTION = 2;
+exports.DEFAULT_TYPE = 'default';
+exports.DEFAULT_WEIGHT = 1.0;
+exports.BOOSTING_FIELD_VALUE = 'field_value';
+exports.CUSTOM_FUNCTION = 'custom_function';
+exports.DECAY = 'decay';
+exports.DECAY_LINEAR = 'linear';
+exports.DECAY_EXP = 'exp';
+exports.DECAY_GAUSS = 'gauss';
+exports.MODIFIER_NONE = 'none';
+exports.MODIFIER_SQRT = 'sqrt';
+exports.MODIFIER_LOG = 'log';
+exports.MODIFIER_LN = 'ln';
+exports.MODIFIER_SQUARE = 'square';
+exports.SCORE_MODE_NONE = 'none';
+exports.SCORE_MODE_SUM = 'sum';
+exports.SCORE_MODE_AVG = 'avg';
+exports.SCORE_MODE_MAX = 'max';
+exports.SCORE_MODE_MIN = 'min';
+exports.DEFAULT_MISSING = 1.0;
+exports.DEFAULT_FACTOR = 1.0;
 /**
  * ScoreStrategy
  */
 var ScoreStrategy = /** @class */ (function () {
     function ScoreStrategy() {
-        this.type = exports.SCORE_STRATEGY_DEFAULT;
-        this.innerFunction = null;
+        this.type = exports.DEFAULT_TYPE;
+        this.filter = null;
+        this.weight = exports.DEFAULT_WEIGHT;
+        this.scoreMode = exports.SCORE_MODE_AVG;
+        this.configuration = {};
     }
     /**
      * Get type
      *
-     * @returns {number}
+     * @returns {string}
      */
     ScoreStrategy.prototype.getType = function () {
         return this.type;
     };
     /**
-     * Get function
+     * Get configuration value
      *
      * @returns {string}
      */
-    ScoreStrategy.prototype.getFunction = function () {
-        return this.innerFunction;
+    ScoreStrategy.prototype.getConfigurationValue = function (element) {
+        if (typeof this.configuration[element] == "undefined") {
+            return null;
+        }
+        return this.configuration[element];
+    };
+    /**
+     * Get weight.
+     *
+     * @return {number}
+     */
+    ScoreStrategy.prototype.getWeight = function () {
+        return this.weight;
+    };
+    /**
+     * Get score mode.
+     *
+     * @return {string}
+     */
+    ScoreStrategy.prototype.getScoreMode = function () {
+        return this.scoreMode;
+    };
+    /**
+     * Get filter.
+     *
+     * @return {Filter}
+     */
+    ScoreStrategy.prototype.getFilter = function () {
+        return this.filter;
     };
     /**
      * Create default
@@ -6507,36 +6674,125 @@ var ScoreStrategy = /** @class */ (function () {
         return new ScoreStrategy();
     };
     /**
-     * Create relevance boosting
+     * Create field boosting
+     *
+     * @param field
+     * @param factor
+     * @param missing
+     * @param modifier
+     * @param weight
+     * @param filter
+     * @param scoreMode
      *
      * @return {ScoreStrategy}
      */
-    ScoreStrategy.createRelevanceBoosting = function () {
+    ScoreStrategy.createFieldBoosting = function (field, factor, missing, modifier, weight, filter, scoreMode) {
+        if (factor === void 0) { factor = exports.DEFAULT_FACTOR; }
+        if (missing === void 0) { missing = exports.DEFAULT_MISSING; }
+        if (modifier === void 0) { modifier = exports.MODIFIER_NONE; }
+        if (weight === void 0) { weight = exports.DEFAULT_WEIGHT; }
+        if (filter === void 0) { filter = null; }
+        if (scoreMode === void 0) { scoreMode = exports.SCORE_MODE_AVG; }
         var scoreStrategy = ScoreStrategy.createDefault();
-        scoreStrategy.type = exports.SCORE_STRATEGY_BOOSTING_RELEVANCE_FIELD;
+        scoreStrategy.type = exports.BOOSTING_FIELD_VALUE;
+        scoreStrategy.configuration['field'] = field;
+        scoreStrategy.configuration['factor'] = factor;
+        scoreStrategy.configuration['missing'] = missing;
+        scoreStrategy.configuration['modifier'] = modifier;
+        scoreStrategy.weight = weight;
+        scoreStrategy.filter = ScoreStrategy.fixFilterFieldPath(filter);
+        scoreStrategy.scoreMode = scoreMode;
         return scoreStrategy;
     };
     /**
-     * Create relevance boosting
+     * Create custom function
      *
-     * @param innerFunction
+     * @param func
+     * @param weight
+     * @param filter
+     * @param scoreMode
      *
      * @return {ScoreStrategy}
      */
-    ScoreStrategy.createCustomFunction = function (innerFunction) {
+    ScoreStrategy.createCustomFunction = function (func, weight, filter, scoreMode) {
+        if (weight === void 0) { weight = exports.DEFAULT_WEIGHT; }
+        if (filter === void 0) { filter = null; }
+        if (scoreMode === void 0) { scoreMode = exports.SCORE_MODE_AVG; }
         var scoreStrategy = ScoreStrategy.createDefault();
-        scoreStrategy.type = exports.SCORE_STRATEGY_BOOSTING_CUSTOM_FUNCTION;
-        scoreStrategy.innerFunction = innerFunction;
+        scoreStrategy.type = exports.CUSTOM_FUNCTION;
+        scoreStrategy.configuration['function'] = func;
+        scoreStrategy.weight = weight;
+        scoreStrategy.filter = ScoreStrategy.fixFilterFieldPath(filter);
+        scoreStrategy.scoreMode = scoreMode;
         return scoreStrategy;
     };
     /**
+     * Create decay function
      *
-     * @return {{type: number, function: string}}
+     * @param type
+     * @param field
+     * @param origin
+     * @param scale
+     * @param offset
+     * @param decay
+     * @param weight
+     * @param filter
+     * @param scoreMode
+     *
+     * @return {ScoreStrategy}
+     */
+    ScoreStrategy.createDecayFunction = function (type, field, origin, scale, offset, decay, weight, filter, scoreMode) {
+        if (weight === void 0) { weight = exports.DEFAULT_WEIGHT; }
+        if (filter === void 0) { filter = null; }
+        if (scoreMode === void 0) { scoreMode = exports.SCORE_MODE_AVG; }
+        var scoreStrategy = ScoreStrategy.createDefault();
+        scoreStrategy.type = exports.DECAY;
+        scoreStrategy.configuration['type'] = type;
+        scoreStrategy.configuration['field'] = field;
+        scoreStrategy.configuration['origin'] = origin;
+        scoreStrategy.configuration['scale'] = scale;
+        scoreStrategy.configuration['offset'] = offset;
+        scoreStrategy.configuration['decay'] = decay;
+        scoreStrategy.weight = weight;
+        scoreStrategy.filter = ScoreStrategy.fixFilterFieldPath(filter);
+        scoreStrategy.scoreMode = scoreMode;
+        return scoreStrategy;
+    };
+    /**
+     * Fix filter path.
+     *
+     * @param filter
+     *
+     * @return {Filter}
+     */
+    ScoreStrategy.fixFilterFieldPath = function (filter) {
+        if (filter == null) {
+            return filter;
+        }
+        var filterAsArray = filter.toArray();
+        filterAsArray['field'] = Item_1.Item.getPathByField(filterAsArray['field']);
+        return Filter_1.Filter.createFromArray(filterAsArray);
+    };
+    /**
+     * To array
+     *
+     * @return {{
+     *      type: string,
+     *      configuration: any,
+     *      weight: number,
+     *      score_mode: string,
+     *      filter: any
+     * }}
      */
     ScoreStrategy.prototype.toArray = function () {
         return {
             type: this.type,
-            "function": this.innerFunction
+            configuration: this.configuration,
+            weight: this.weight,
+            score_mode: this.scoreMode,
+            filter: this.filter instanceof Filter_1.Filter
+                ? this.filter.toArray()
+                : null
         };
     };
     /**
@@ -6549,14 +6805,21 @@ var ScoreStrategy = /** @class */ (function () {
     ScoreStrategy.createFromArray = function (array) {
         array = JSON.parse(JSON.stringify(array));
         var scoreStrategy = ScoreStrategy.createDefault();
-        if (typeof array.type == "undefined") {
-            array.type = exports.SCORE_STRATEGY_DEFAULT;
+        if (typeof array.type != "undefined") {
+            scoreStrategy.type = array.type;
         }
-        if (typeof array["function"] == "undefined") {
-            array.innerFunction = null;
+        if (typeof array.configuration != "undefined") {
+            scoreStrategy.configuration = array.configuration;
         }
-        scoreStrategy.type = array.type;
-        scoreStrategy.innerFunction = array["function"];
+        if (typeof array.weight != "undefined") {
+            scoreStrategy.weight = array.weight;
+        }
+        if (typeof array.score_mode != "undefined") {
+            scoreStrategy.scoreMode = array.score_mode;
+        }
+        if (typeof array.filter === 'object' && array.filter !== null) {
+            scoreStrategy.filter = Filter_1.Filter.createFromArray(array.filter);
+        }
         return scoreStrategy;
     };
     return ScoreStrategy;
@@ -6576,6 +6839,7 @@ exports.ScoreStrategy = ScoreStrategy;
 "use strict";
 
 exports.__esModule = true;
+var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 /**
  export * Sort by constants
  */
@@ -6742,7 +7006,7 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.byNestedFieldAndFilter = function (field, order, filter, mode) {
         if (mode === void 0) { mode = exports.SORT_BY_MODE_AVG; }
-        var fieldPath = Filter_1.Filter.getFilterPathByField(filter.getField());
+        var fieldPath = Item_1.Item.getPathByField(filter.getField());
         var filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter_1.Filter.createFromArray(filterAsArray);
@@ -8341,6 +8605,7 @@ tslib_1.__exportStar(__webpack_require__(/*! ./Query/Aggregation */ "./src/Query
 tslib_1.__exportStar(__webpack_require__(/*! ./Query/Filter */ "./src/Query/Filter.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Query/Range */ "./src/Query/Range.ts"), exports);
+tslib_1.__exportStar(__webpack_require__(/*! ./Query/ScoreStrategies */ "./src/Query/ScoreStrategies.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Query/ScoreStrategy */ "./src/Query/ScoreStrategy.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Query/SortBy */ "./src/Query/SortBy.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Repository/HttpRepository */ "./src/Repository/HttpRepository.ts"), exports);

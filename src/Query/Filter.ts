@@ -197,18 +197,4 @@ export class Filter {
             array.filter_terms,
         );
     }
-
-    /**
-     * Get path by field.
-     *
-     * @param field
-     *
-     * @returns {string}
-     */
-    public static getFilterPathByField(field: string): string {
-        return (["id", "type"].indexOf(field) > -1)
-            ? `uuid.${field}`
-            : `indexed_metadata.${field}`
-            ;
-    }
 }

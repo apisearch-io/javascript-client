@@ -239,4 +239,12 @@ export declare class Item {
      * @returns string
      */
     composeUUID(): string;
+    /**
+     * Get path by field.
+     *
+     * @param field
+     *
+     * @returns {string}
+     */
+    static getPathByField(field: string): string;
 }

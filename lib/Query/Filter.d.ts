@@ -94,12 +94,4 @@ export declare class Filter {
      * @returns {Filter}
      */
     static createFromArray(array: any): Filter;
-    /**
-     * Get path by field.
-     *
-     * @param field
-     *
-     * @returns {string}
-     */
-    static getFilterPathByField(field: string): string;
 }

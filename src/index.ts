@@ -36,6 +36,7 @@ export * from "./Query/Aggregation";
 export * from "./Query/Filter";
 export * from "./Query/Query";
 export * from "./Query/Range";
+export * from "./Query/ScoreStrategies";
 export * from "./Query/ScoreStrategy";
 export * from "./Query/SortBy";
 

@@ -1,6 +1,7 @@
 import {LocationRange} from "../Geo/LocationRange";
 import {Coordinate} from "../Model/Coordinate";
 import {ItemUUID} from "../Model/ItemUUID";
+import {Item} from "../Model/Item";
 import {User} from "../Model/User";
 import {Aggregation} from "./Aggregation";
 import {Filter} from "./Filter";
@@ -21,7 +22,7 @@ import {
 
 import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {FILTER_TYPE_QUERY} from "./Filter";
-import {ScoreStrategy} from "./ScoreStrategy";
+import {ScoreStrategies} from "./ScoreStrategies";
 import {SortBy} from "./SortBy";
 
 /**
@@ -48,12 +49,12 @@ export class Query {
     private page: number;
     private from: number;
     private size: number;
-    private resultsEnabled: boolean;
-    private aggregationsEnabled: boolean;
-    private suggestionsEnabled: boolean;
-    private highlightsEnabled: boolean;
+    private resultsEnabled: boolean = true;
+    private aggregationsEnabled: boolean = true;
+    private suggestionsEnabled: boolean = false;
+    private highlightsEnabled: boolean = false;
     private filterFields: string[] = [];
-    private scoreStrategy: ScoreStrategy;
+    private scoreStrategies: ScoreStrategies;
     private fuzziness: any;
     private minScore: number = NO_MIN_SCORE;
     private user: User;
@@ -200,7 +201,7 @@ export class Query {
      * @return {Query}
      */
     public filterUniverseByTypes(values: any[]): Query {
-        const fieldPath = Filter.getFilterPathByField("type");
+        const fieldPath = Item.getPathByField("type");
         if (values.length > 0) {
             this.universeFilters = {
                 ...this.universeFilters,
@@ -230,7 +231,7 @@ export class Query {
     public filterByTypes(values: any[],
                          aggregate: boolean = true,
                          aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
-        const fieldPath = Filter.getFilterPathByField("type");
+        const fieldPath = Item.getPathByField("type");
         if (values.length > 0) {
             this.filters = {
                 ...this.filters,
@@ -270,7 +271,7 @@ export class Query {
      * @return {Query}
      */
     public filterUniverseByIds(values: any[]): Query {
-        const fieldPath = Filter.getFilterPathByField("id");
+        const fieldPath = Item.getPathByField("id");
         if (values.length > 0) {
             this.universeFilters = {
                 ...this.universeFilters,
@@ -296,7 +297,7 @@ export class Query {
      * @return {Query}
      */
     public filterByIds(values: any[]): Query {
-        const fieldPath = Filter.getFilterPathByField("id");
+        const fieldPath = Item.getPathByField("id");
         if (values.length > 0) {
             this.filters = {
                 ...this.filters,
@@ -326,7 +327,7 @@ export class Query {
     public filterUniverseBy(field: string,
                             values: any[],
                             applicationType: number = FILTER_AT_LEAST_ONE): Query {
-        const fieldPath = Filter.getFilterPathByField(field);
+        const fieldPath = Item.getPathByField(field);
         if (values.length > 0) {
             this.universeFilters = {
                 ...this.universeFilters,
@@ -362,7 +363,7 @@ export class Query {
                     applicationType: number = FILTER_AT_LEAST_ONE,
                     aggregate: boolean = true,
                     aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
-        const fieldPath = Filter.getFilterPathByField(field);
+        const fieldPath = Item.getPathByField(field);
         if (values.length > 0) {
             this.filters = {
                 ...this.filters,
@@ -403,7 +404,7 @@ export class Query {
                                  values: any[],
                                  applicationType: number = FILTER_AT_LEAST_ONE,
                                  rangeType: string = FILTER_TYPE_RANGE): Query {
-        const fieldPath = Filter.getFilterPathByField(field);
+        const fieldPath = Item.getPathByField(field);
         if (values.length > 0) {
             this.universeFilters = {
                 ...this.universeFilters,
@@ -463,7 +464,7 @@ export class Query {
                          rangeType: string = FILTER_TYPE_RANGE,
                          aggregate: boolean = true,
                          aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC): Query {
-        const fieldPath = Filter.getFilterPathByField(field);
+        const fieldPath = Item.getPathByField(field);
         if (values.length !== 0) {
             this.filters = {
                 ...this.filters,
@@ -609,7 +610,7 @@ export class Query {
             ...this.aggregations,
             [filterName]: Aggregation.create(
                 filterName,
-                Filter.getFilterPathByField(field),
+                Item.getPathByField(field),
                 applicationType,
                 FILTER_TYPE_FIELD,
                 [],
@@ -649,7 +650,7 @@ export class Query {
             ...this.aggregations,
             [filterName]: Aggregation.create(
                 filterName,
-                Filter.getFilterPathByField(field),
+                Item.getPathByField(field),
                 applicationType,
                 rangeType,
                 options,
@@ -776,7 +777,7 @@ export class Query {
      * @return {Filter|null}
      */
     public getFilterByField(fieldName: string): Filter {
-        const fieldPath = Filter.getFilterPathByField(fieldName);
+        const fieldPath = Item.getPathByField(fieldName);
         for (const i in this.filters) {
             if (this.filters[i].getField() == fieldPath) {
                 return this.filters[i];
@@ -1018,21 +1019,21 @@ export class Query {
     }
 
     /**
-     * Get score strategy
+     * Get score strategies
      *
-     * @return {ScoreStrategy}
+     * @return {ScoreStrategies}
      */
-    public getScoreStrategy(): ScoreStrategy {
-        return this.scoreStrategy;
+    public getScoreStrategies(): ScoreStrategies {
+        return this.scoreStrategies;
     }
 
     /**
-     * Set score strategy
+     * Set score strategies
      *
-     * @param scoreStrategy
+     * @param scoreStrategies
      */
-    public setScoreStrategy(scoreStrategy: ScoreStrategy): Query {
-        this.scoreStrategy = scoreStrategy;
+    public setScoreStrategies(scoreStrategies: ScoreStrategies): Query {
+        this.scoreStrategies = scoreStrategies;
 
         return this;
     }
@@ -1246,12 +1247,12 @@ export class Query {
         }
 
         /**
-         * Score strategy
+         * Score strategies
          */
-        if (this.scoreStrategy instanceof ScoreStrategy) {
-            const scoreStrategyAsArray = this.scoreStrategy.toArray();
-            if (Object.keys(scoreStrategyAsArray).length > 0) {
-                array.score_strategy = scoreStrategyAsArray;
+        if (this.scoreStrategies instanceof ScoreStrategies) {
+            const scoreStrategiesAsArray = this.scoreStrategies.toArray();
+            if (Object.keys(scoreStrategiesAsArray).length > 0) {
+                array.score_strategies = scoreStrategiesAsArray;
             }
         }
 
@@ -1406,8 +1407,8 @@ export class Query {
             ? array.filter_fields
             : [];
 
-        query.scoreStrategy = array.score_strategy instanceof Object
-            ? ScoreStrategy.createFromArray(array.score_stategy)
+        query.scoreStrategies = array.score_strategies instanceof Object
+            ? ScoreStrategies.createFromArray(array.score_strategies)
             : null;
 
         query.user = array.user instanceof Object
