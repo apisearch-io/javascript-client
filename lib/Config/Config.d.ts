@@ -1,4 +1,6 @@
 import { Synonym } from "./Synonym";
+export declare const DEFAULT_SHARDS = 1;
+export declare const DEFAULT_REPLICAS = 0;
 /**
  * Result class
  */
@@ -6,13 +8,17 @@ export declare class Config {
     private language;
     private storeSearchableMetadata;
     private synonyms;
+    private shards;
+    private replicas;
     /**
      * Constructor
      *
      * @param language
      * @param storeSearchableMetadata
+     * @param shards
+     * @param replicas
      */
-    constructor(language?: string, storeSearchableMetadata?: boolean);
+    constructor(language?: string, storeSearchableMetadata?: boolean, shards?: number, replicas?: number);
     /**
      * Get language
      *
@@ -38,6 +44,18 @@ export declare class Config {
      */
     getSynonyms(): Synonym[];
     /**
+     * Get shards
+     *
+     * @return {number}
+     */
+    getShards(): number;
+    /**
+     * Get replicas
+     *
+     * @return {number}
+     */
+    getReplicas(): number;
+    /**
      * to array
      */
     toArray(): {
@@ -46,6 +64,8 @@ export declare class Config {
         synonyms: {
             words: string[];
         }[];
+        shards: number;
+        replicas: number;
     };
     /**
      * Create from array

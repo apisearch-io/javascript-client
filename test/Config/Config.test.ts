@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import {Synonym} from "../../src/Config/Synonym";
-import {Config} from "../../src/Config/Config";
+import {
+    Config, DEFAULT_SHARDS,
+    DEFAULT_REPLICAS
+} from "../../src/Config/Config";
 
 describe('Config/', () => {
     describe('Config', () => {
@@ -51,6 +54,8 @@ describe('Config/', () => {
                 expect(config.getLanguage()).to.be.null;
                 expect(config.shouldSearchableMetadataBeStored()).to.be.true;
                 expect(config.getSynonyms()).to.be.deep.equal([]);
+                expect(config.getShards()).to.be.equal(DEFAULT_SHARDS);
+                expect(config.getReplicas()).to.be.equal(DEFAULT_REPLICAS);
             })
         });
 
@@ -61,7 +66,9 @@ describe('Config/', () => {
                 'synonyms': [
                     {'words': ['a', 'b']},
                     {'words': ['b', 'c']},
-                ]
+                ],
+                'shards': 5,
+                'replicas': 8
             };
 
             it('should work properly', () => {
