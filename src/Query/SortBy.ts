@@ -2,8 +2,12 @@ import {Item} from "../Model/Item";
 /**
  export * Sort by constants
  */
-export const SORT_BY_TYPE_FIELD = 1;
-export const SORT_BY_TYPE_NESTED = 2;
+export const SORT_BY_TYPE_FIELD = 'field';
+export const SORT_BY_TYPE_NESTED = 'nested';
+export const SORT_BY_TYPE_SCORE = 'score';
+export const SORT_BY_TYPE_DISTANCE = 'distance';
+export const SORT_BY_TYPE_FUNCTION = 'function';
+export const SORT_BY_TYPE_RANDOM = 'random';
 export const SORT_BY_ASC = "asc";
 export const SORT_BY_DESC = "desc";
 export const SORT_BY_MODE_AVG = "avg";
@@ -13,47 +17,35 @@ export const SORT_BY_MODE_MAX = "max";
 export const SORT_BY_MODE_MEDIAN = "median";
 
 export const SORT_BY_SCORE = {
-    _score: {
-        order: SORT_BY_ASC,
-    },
+    type: SORT_BY_TYPE_SCORE,
 };
 export const SORT_BY_RANDOM = {
-    random: {
-        order: SORT_BY_ASC,
-    },
+    type: SORT_BY_TYPE_RANDOM,
 };
 export const SORT_BY_AL_TUN_TUN = SORT_BY_RANDOM;
 export const SORT_BY_ID_ASC = {
-    "uuid.id": {
-        order: SORT_BY_ASC,
-    },
+    field: "uuid.id",
+    order: SORT_BY_ASC
 };
 export const SORT_BY_ID_DESC = {
-    "uuid.id": {
-        order: SORT_BY_DESC,
-    },
+    field: "uuid.id",
+    order: SORT_BY_DESC
 };
 export const SORT_BY_TYPE_ASC = {
-    "uuid.type": {
-        order: SORT_BY_ASC,
-    },
+    field: "uuid.type",
+    order: SORT_BY_ASC
 };
 export const SORT_BY_TYPE_DESC = {
-    "uuid.type": {
-        order: SORT_BY_DESC,
-    },
+    field: "uuid.type",
+    order: SORT_BY_DESC
 };
 export const SORT_BY_LOCATION_KM_ASC = {
-    _geo_distance: {
-        order: SORT_BY_ASC,
-        unit: "km",
-    },
+    type: SORT_BY_TYPE_DISTANCE,
+    unit: "km"
 };
 export const SORT_BY_LOCATION_MI_ASC = {
-    _geo_distance: {
-        order: SORT_BY_DESC,
-        unit: "mi",
-    },
+    type: SORT_BY_TYPE_DISTANCE,
+    unit: "mi"
 };
 
 import {Coordinate} from "../Model/Coordinate";
@@ -136,13 +128,11 @@ export class SortBy {
      */
     public byFieldValue(field: string,
                         order: string): SortBy {
-        const object = {
+        this.sortsBy.push({
             type: SORT_BY_TYPE_FIELD,
-        };
-        object["indexed_metadata." + field] = {
-            order,
-        };
-        this.sortsBy.push(object);
+            field: Item.getPathByField(field),
+            order: order
+        });
 
         return this;
     }
@@ -159,14 +149,12 @@ export class SortBy {
     public byNestedField(field: string,
                          order: string,
                          mode: string = SORT_BY_MODE_AVG): SortBy {
-        const object = {
+        this.sortsBy.push({
             type: SORT_BY_TYPE_NESTED,
-            mode,
-        };
-        object["indexed_metadata." + field] = {
-            order,
-        };
-        this.sortsBy.push(object);
+            mode: mode,
+            field: 'indexed_metadata.' + field,
+            order: order
+        });
 
         return this;
     }
@@ -189,15 +177,32 @@ export class SortBy {
         const filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter.createFromArray(filterAsArray);
-        const object = {
+        this.sortsBy.push({
             type: SORT_BY_TYPE_NESTED,
-            mode,
-            filter,
-        };
-        object["indexed_metadata." + field] = {
-            order,
-        };
-        this.sortsBy.push(object);
+            mode: mode,
+            filter: filter,
+            field: 'indexed_metadata.' + field,
+            order: order
+        });
+
+        return this;
+    }
+
+    /**
+     * Sort by function
+     *
+     * @param func
+     * @param order
+     *
+     * @return {SortBy}
+     */
+    public byFunction(func: string,
+                        order: string): SortBy {
+        this.sortsBy.push({
+            type: SORT_BY_TYPE_FUNCTION,
+            "function": func,
+            order: order
+        });
 
         return this;
     }
@@ -209,7 +214,7 @@ export class SortBy {
      */
     public isSortedByGeoDistance(): boolean {
         for (const i in this.sortsBy) {
-            if (typeof this.sortsBy[i]._geo_distance === typeof {}) {
+            if (this.sortsBy[i].type === SORT_BY_TYPE_DISTANCE) {
                 return true;
             }
         }
@@ -226,8 +231,8 @@ export class SortBy {
      */
     public setCoordinate(coordinate: Coordinate): SortBy {
         for (const i in this.sortsBy) {
-            if (typeof this.sortsBy[i]._geo_distance === typeof {}) {
-                this.sortsBy[i]._geo_distance.coordinate = coordinate;
+            if (this.sortsBy[i].type === SORT_BY_TYPE_DISTANCE) {
+                this.sortsBy[i].coordinate = coordinate;
             }
         }
 
@@ -241,7 +246,7 @@ export class SortBy {
      */
     public hasRandomSort(): boolean {
         for (const i in this.sortsBy) {
-            if (JSON.stringify(this.sortsBy[i]) === JSON.stringify(SORT_BY_RANDOM)) {
+            if (this.sortsBy[i].type === SORT_BY_TYPE_RANDOM) {
                 return true;
             }
         }
@@ -259,10 +264,6 @@ export class SortBy {
         const sortsByAsArray = copySortBy.sortsBy;
 
         for (const i in sortsByAsArray) {
-            if (sortsByAsArray[i].type == SORT_BY_TYPE_FIELD) {
-                delete sortsByAsArray[i].type;
-            }
-
             if (
                 typeof sortsByAsArray[i].filter === typeof {} &&
                 sortsByAsArray[i].filter != null
@@ -271,11 +272,10 @@ export class SortBy {
             }
 
             if (
-                typeof sortsByAsArray[i]._geo_distance === typeof {} &&
-                sortsByAsArray[i]._geo_distance !== null &&
-                sortsByAsArray[i]._geo_distance.coordinate instanceof Coordinate
+                sortsByAsArray[i].coordinate !== null &&
+                sortsByAsArray[i].coordinate instanceof Coordinate
             ) {
-                sortsByAsArray[i]._geo_distance.coordinate = sortsByAsArray[i]._geo_distance.coordinate.toArray();
+                sortsByAsArray[i].coordinate = sortsByAsArray[i].coordinate.toArray();
             }
         }
 
@@ -295,15 +295,8 @@ export class SortBy {
         for (const i in innerArray) {
             const element = innerArray[i];
 
-            if (
-                JSON.stringify(element) !== JSON.stringify(SORT_BY_RANDOM) &&
-                JSON.stringify(element) !== JSON.stringify(SORT_BY_SCORE)
-            ) {
-                if (
-                    typeof element.type == "undefined"
-                ) {
-                    element.type = SORT_BY_TYPE_FIELD;
-                }
+            if (typeof element.type == "undefined") {
+                element.type = SORT_BY_TYPE_FIELD;
             }
 
             if (
@@ -314,11 +307,10 @@ export class SortBy {
             }
 
             if (
-                typeof element._geo_distance === typeof {} &&
-                element._geo_distance != null &&
-                typeof element._geo_distance.coordinate === typeof {}
+                element.coordinate != null &&
+                typeof element.coordinate === typeof {}
             ) {
-                element._geo_distance.coordinate = Coordinate.createFromArray(element._geo_distance.coordinate);
+                element.coordinate = Coordinate.createFromArray(element.coordinate);
             }
 
             sortBy.sortsBy.push(element);
@@ -346,11 +338,10 @@ export class SortBy {
             }
 
             if (
-                typeof sortBy._geo_distance === typeof {} &&
-                sortBy._geo_distance != null &&
-                typeof sortBy._geo_distance.coordinate == typeof {}
+                sortBy.coordinate != null &&
+                typeof sortBy.coordinate == typeof {}
             ) {
-                sortByAsArray._geo_distance.coordinate = Coordinate.createFromArray(sortBy._geo_distance.coordinate.toArray());
+                sortByAsArray.coordinate = Coordinate.createFromArray(sortBy.coordinate.toArray());
             }
 
             newSortBy.sortsBy.push(sortByAsArray);
