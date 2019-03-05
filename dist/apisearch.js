@@ -6875,8 +6875,12 @@ var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 /**
  export * Sort by constants
  */
-exports.SORT_BY_TYPE_FIELD = 1;
-exports.SORT_BY_TYPE_NESTED = 2;
+exports.SORT_BY_TYPE_FIELD = 'field';
+exports.SORT_BY_TYPE_NESTED = 'nested';
+exports.SORT_BY_TYPE_SCORE = 'score';
+exports.SORT_BY_TYPE_DISTANCE = 'distance';
+exports.SORT_BY_TYPE_FUNCTION = 'function';
+exports.SORT_BY_TYPE_RANDOM = 'random';
 exports.SORT_BY_ASC = "asc";
 exports.SORT_BY_DESC = "desc";
 exports.SORT_BY_MODE_AVG = "avg";
@@ -6885,47 +6889,35 @@ exports.SORT_BY_MODE_MIN = "min";
 exports.SORT_BY_MODE_MAX = "max";
 exports.SORT_BY_MODE_MEDIAN = "median";
 exports.SORT_BY_SCORE = {
-    _score: {
-        order: exports.SORT_BY_ASC
-    }
+    type: exports.SORT_BY_TYPE_SCORE
 };
 exports.SORT_BY_RANDOM = {
-    random: {
-        order: exports.SORT_BY_ASC
-    }
+    type: exports.SORT_BY_TYPE_RANDOM
 };
 exports.SORT_BY_AL_TUN_TUN = exports.SORT_BY_RANDOM;
 exports.SORT_BY_ID_ASC = {
-    "uuid.id": {
-        order: exports.SORT_BY_ASC
-    }
+    field: "uuid.id",
+    order: exports.SORT_BY_ASC
 };
 exports.SORT_BY_ID_DESC = {
-    "uuid.id": {
-        order: exports.SORT_BY_DESC
-    }
+    field: "uuid.id",
+    order: exports.SORT_BY_DESC
 };
 exports.SORT_BY_TYPE_ASC = {
-    "uuid.type": {
-        order: exports.SORT_BY_ASC
-    }
+    field: "uuid.type",
+    order: exports.SORT_BY_ASC
 };
 exports.SORT_BY_TYPE_DESC = {
-    "uuid.type": {
-        order: exports.SORT_BY_DESC
-    }
+    field: "uuid.type",
+    order: exports.SORT_BY_DESC
 };
 exports.SORT_BY_LOCATION_KM_ASC = {
-    _geo_distance: {
-        order: exports.SORT_BY_ASC,
-        unit: "km"
-    }
+    type: exports.SORT_BY_TYPE_DISTANCE,
+    unit: "km"
 };
 exports.SORT_BY_LOCATION_MI_ASC = {
-    _geo_distance: {
-        order: exports.SORT_BY_DESC,
-        unit: "mi"
-    }
+    type: exports.SORT_BY_TYPE_DISTANCE,
+    unit: "mi"
 };
 var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
 var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
@@ -6996,13 +6988,11 @@ var SortBy = /** @class */ (function () {
      * @return {SortBy}
      */
     SortBy.prototype.byFieldValue = function (field, order) {
-        var object = {
-            type: exports.SORT_BY_TYPE_FIELD
-        };
-        object["indexed_metadata." + field] = {
+        this.sortsBy.push({
+            type: exports.SORT_BY_TYPE_FIELD,
+            field: Item_1.Item.getPathByField(field),
             order: order
-        };
-        this.sortsBy.push(object);
+        });
         return this;
     };
     /**
@@ -7016,14 +7006,12 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.byNestedField = function (field, order, mode) {
         if (mode === void 0) { mode = exports.SORT_BY_MODE_AVG; }
-        var object = {
+        this.sortsBy.push({
             type: exports.SORT_BY_TYPE_NESTED,
-            mode: mode
-        };
-        object["indexed_metadata." + field] = {
+            mode: mode,
+            field: 'indexed_metadata.' + field,
             order: order
-        };
-        this.sortsBy.push(object);
+        });
         return this;
     };
     /**
@@ -7042,15 +7030,29 @@ var SortBy = /** @class */ (function () {
         var filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter_1.Filter.createFromArray(filterAsArray);
-        var object = {
+        this.sortsBy.push({
             type: exports.SORT_BY_TYPE_NESTED,
             mode: mode,
-            filter: filter
-        };
-        object["indexed_metadata." + field] = {
+            filter: filter,
+            field: 'indexed_metadata.' + field,
             order: order
-        };
-        this.sortsBy.push(object);
+        });
+        return this;
+    };
+    /**
+     * Sort by function
+     *
+     * @param func
+     * @param order
+     *
+     * @return {SortBy}
+     */
+    SortBy.prototype.byFunction = function (func, order) {
+        this.sortsBy.push({
+            type: exports.SORT_BY_TYPE_FUNCTION,
+            "function": func,
+            order: order
+        });
         return this;
     };
     /**
@@ -7060,7 +7062,7 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.isSortedByGeoDistance = function () {
         for (var i in this.sortsBy) {
-            if (typeof this.sortsBy[i]._geo_distance === typeof {}) {
+            if (this.sortsBy[i].type === exports.SORT_BY_TYPE_DISTANCE) {
                 return true;
             }
         }
@@ -7075,8 +7077,8 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.setCoordinate = function (coordinate) {
         for (var i in this.sortsBy) {
-            if (typeof this.sortsBy[i]._geo_distance === typeof {}) {
-                this.sortsBy[i]._geo_distance.coordinate = coordinate;
+            if (this.sortsBy[i].type === exports.SORT_BY_TYPE_DISTANCE) {
+                this.sortsBy[i].coordinate = coordinate;
             }
         }
         return this;
@@ -7088,7 +7090,7 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.hasRandomSort = function () {
         for (var i in this.sortsBy) {
-            if (JSON.stringify(this.sortsBy[i]) === JSON.stringify(exports.SORT_BY_RANDOM)) {
+            if (this.sortsBy[i].type === exports.SORT_BY_TYPE_RANDOM) {
                 return true;
             }
         }
@@ -7103,17 +7105,13 @@ var SortBy = /** @class */ (function () {
         var copySortBy = this.copy();
         var sortsByAsArray = copySortBy.sortsBy;
         for (var i in sortsByAsArray) {
-            if (sortsByAsArray[i].type == exports.SORT_BY_TYPE_FIELD) {
-                delete sortsByAsArray[i].type;
-            }
             if (typeof sortsByAsArray[i].filter === typeof {} &&
                 sortsByAsArray[i].filter != null) {
                 sortsByAsArray[i].filter = sortsByAsArray[i].filter.toArray();
             }
-            if (typeof sortsByAsArray[i]._geo_distance === typeof {} &&
-                sortsByAsArray[i]._geo_distance !== null &&
-                sortsByAsArray[i]._geo_distance.coordinate instanceof Coordinate_1.Coordinate) {
-                sortsByAsArray[i]._geo_distance.coordinate = sortsByAsArray[i]._geo_distance.coordinate.toArray();
+            if (sortsByAsArray[i].coordinate !== null &&
+                sortsByAsArray[i].coordinate instanceof Coordinate_1.Coordinate) {
+                sortsByAsArray[i].coordinate = sortsByAsArray[i].coordinate.toArray();
             }
         }
         return sortsByAsArray;
@@ -7130,20 +7128,16 @@ var SortBy = /** @class */ (function () {
         var sortBy = SortBy.create();
         for (var i in innerArray) {
             var element = innerArray[i];
-            if (JSON.stringify(element) !== JSON.stringify(exports.SORT_BY_RANDOM) &&
-                JSON.stringify(element) !== JSON.stringify(exports.SORT_BY_SCORE)) {
-                if (typeof element.type == "undefined") {
-                    element.type = exports.SORT_BY_TYPE_FIELD;
-                }
+            if (typeof element.type == "undefined") {
+                element.type = exports.SORT_BY_TYPE_FIELD;
             }
             if (typeof element.filter === typeof {} &&
                 element.filter != null) {
                 element.filter = Filter_1.Filter.createFromArray(element.filter);
             }
-            if (typeof element._geo_distance === typeof {} &&
-                element._geo_distance != null &&
-                typeof element._geo_distance.coordinate === typeof {}) {
-                element._geo_distance.coordinate = Coordinate_1.Coordinate.createFromArray(element._geo_distance.coordinate);
+            if (element.coordinate != null &&
+                typeof element.coordinate === typeof {}) {
+                element.coordinate = Coordinate_1.Coordinate.createFromArray(element.coordinate);
             }
             sortBy.sortsBy.push(element);
         }
@@ -7163,10 +7157,9 @@ var SortBy = /** @class */ (function () {
                 sortBy.filter != null) {
                 sortByAsArray.filter = Filter_1.Filter.createFromArray(sortBy.filter.toArray());
             }
-            if (typeof sortBy._geo_distance === typeof {} &&
-                sortBy._geo_distance != null &&
-                typeof sortBy._geo_distance.coordinate == typeof {}) {
-                sortByAsArray._geo_distance.coordinate = Coordinate_1.Coordinate.createFromArray(sortBy._geo_distance.coordinate.toArray());
+            if (sortBy.coordinate != null &&
+                typeof sortBy.coordinate == typeof {}) {
+                sortByAsArray.coordinate = Coordinate_1.Coordinate.createFromArray(sortBy.coordinate.toArray());
             }
             newSortBy.sortsBy.push(sortByAsArray);
         }

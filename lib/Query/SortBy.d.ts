@@ -1,8 +1,12 @@
 /**
  export * Sort by constants
  */
-export declare const SORT_BY_TYPE_FIELD = 1;
-export declare const SORT_BY_TYPE_NESTED = 2;
+export declare const SORT_BY_TYPE_FIELD = "field";
+export declare const SORT_BY_TYPE_NESTED = "nested";
+export declare const SORT_BY_TYPE_SCORE = "score";
+export declare const SORT_BY_TYPE_DISTANCE = "distance";
+export declare const SORT_BY_TYPE_FUNCTION = "function";
+export declare const SORT_BY_TYPE_RANDOM = "random";
 export declare const SORT_BY_ASC = "asc";
 export declare const SORT_BY_DESC = "desc";
 export declare const SORT_BY_MODE_AVG = "avg";
@@ -11,51 +15,37 @@ export declare const SORT_BY_MODE_MIN = "min";
 export declare const SORT_BY_MODE_MAX = "max";
 export declare const SORT_BY_MODE_MEDIAN = "median";
 export declare const SORT_BY_SCORE: {
-    _score: {
-        order: string;
-    };
+    type: string;
 };
 export declare const SORT_BY_RANDOM: {
-    random: {
-        order: string;
-    };
+    type: string;
 };
 export declare const SORT_BY_AL_TUN_TUN: {
-    random: {
-        order: string;
-    };
+    type: string;
 };
 export declare const SORT_BY_ID_ASC: {
-    "uuid.id": {
-        order: string;
-    };
+    field: string;
+    order: string;
 };
 export declare const SORT_BY_ID_DESC: {
-    "uuid.id": {
-        order: string;
-    };
+    field: string;
+    order: string;
 };
 export declare const SORT_BY_TYPE_ASC: {
-    "uuid.type": {
-        order: string;
-    };
+    field: string;
+    order: string;
 };
 export declare const SORT_BY_TYPE_DESC: {
-    "uuid.type": {
-        order: string;
-    };
+    field: string;
+    order: string;
 };
 export declare const SORT_BY_LOCATION_KM_ASC: {
-    _geo_distance: {
-        order: string;
-        unit: string;
-    };
+    type: string;
+    unit: string;
 };
 export declare const SORT_BY_LOCATION_MI_ASC: {
-    _geo_distance: {
-        order: string;
-        unit: string;
-    };
+    type: string;
+    unit: string;
 };
 import { Coordinate } from "../Model/Coordinate";
 import { Filter } from "./Filter";
@@ -122,6 +112,15 @@ export declare class SortBy {
      * @return {SortBy}
      */
     byNestedFieldAndFilter(field: string, order: string, filter: Filter, mode?: string): SortBy;
+    /**
+     * Sort by function
+     *
+     * @param func
+     * @param order
+     *
+     * @return {SortBy}
+     */
+    byFunction(func: string, order: string): SortBy;
     /**
      * Is sorted by geo distance
      *

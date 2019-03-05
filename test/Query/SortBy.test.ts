@@ -7,6 +7,10 @@ import {
     SORT_BY_RANDOM,
     SORT_BY_TYPE_FIELD,
     SORT_BY_TYPE_NESTED,
+    SORT_BY_TYPE_RANDOM,
+    SORT_BY_TYPE_SCORE,
+    SORT_BY_TYPE_FUNCTION,
+    SORT_BY_TYPE_DISTANCE,
     SORT_BY_ASC,
     SORT_BY_DESC,
     SORT_BY_ID_ASC,
@@ -52,15 +56,13 @@ describe('Query/', () => {
                 expect(sortBy.all()).to.be.deep.equal([
                     {
                         'type': SORT_BY_TYPE_FIELD,
-                        'indexed_metadata.category': {
-                            'order': SORT_BY_ASC
-                        }
+                        'field': 'indexed_metadata.category',
+                        'order': SORT_BY_ASC
                     },
                     {
                         'type': SORT_BY_TYPE_FIELD,
-                        'indexed_metadata.brand': {
-                            'order': SORT_BY_DESC
-                        }
+                        'field': 'indexed_metadata.brand',
+                        'order': SORT_BY_DESC
                     },
                 ]);
             });
@@ -79,9 +81,8 @@ describe('Query/', () => {
                 expect(sortBy.all()).to.be.deep.equal([
                     {
                         'type': SORT_BY_TYPE_FIELD,
-                        'indexed_metadata.category': {
-                            'order': SORT_BY_ASC
-                        }
+                        'field': 'indexed_metadata.category',
+                        'order': SORT_BY_ASC
                     },
                 ]);
             });
@@ -98,9 +99,8 @@ describe('Query/', () => {
                 expect(sortBy.all()).to.be.deep.equal([
                     {
                         'type': SORT_BY_TYPE_NESTED,
-                        'indexed_metadata.category': {
-                            'order': SORT_BY_ASC
-                        },
+                        'field': 'indexed_metadata.category',
+                        'order': SORT_BY_ASC,
                         'mode': SORT_BY_MODE_AVG,
                         'filter': Filter.create('uuid.id', [1, 2], FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD)
                     },
@@ -111,21 +111,25 @@ describe('Query/', () => {
         describe('.createFromArray()', () => {
             let sortByAsArray = [
                 {
-                    'indexed_metadata.category': {
-                        'order': SORT_BY_ASC
-                    }
+                    'type': SORT_BY_TYPE_FIELD,
+                    'field': 'indexed_metadata.category',
+                    'order': SORT_BY_ASC,
                 },
                 {
-                    'indexed_metadata.brand': {
-                        'order': SORT_BY_ASC
-                    }
+                    'type': SORT_BY_TYPE_FIELD,
+                    'field': 'indexed_metadata.brand',
+                    'order': SORT_BY_ASC,
                 },
                 {
                     'type': SORT_BY_TYPE_NESTED,
-                    'indexed_metadata.manufacturer': {
-                        'order': SORT_BY_ASC
-                    },
+                    'field': 'indexed_metadata.manufacturer',
+                    'order': SORT_BY_ASC,
                     'filter': Filter.create('id', [1, 2], FILTER_AT_LEAST_ONE, FILTER_TYPE_FIELD).toArray()
+                },
+                {
+                    'type': SORT_BY_TYPE_FUNCTION,
+                    'function': "my-function",
+                    'order': SORT_BY_DESC
                 }
             ];
             it('Should work properly', () => {
@@ -188,12 +192,9 @@ describe('Query/', () => {
             it('Coordinate should be inside all() as a Coordinate object', () => {
                 expect(sortBy.all()).to.be.deep.equal([
                     {
-                        'type': SORT_BY_TYPE_FIELD,
-                        '_geo_distance': {
-                            'coordinate': coordinate,
-                            'order': SORT_BY_ASC,
-                            'unit': 'km',
-                        }
+                        'type': SORT_BY_TYPE_DISTANCE,
+                        'coordinate': coordinate,
+                        'unit': 'km',
                     },
                     SORT_BY_AL_TUN_TUN
                 ]);
@@ -202,11 +203,9 @@ describe('Query/', () => {
             it('Coordinate should be inside toArray() as a plain object', () => {
                 expect(sortBy.toArray()).to.be.deep.equal([
                     {
-                        '_geo_distance': {
-                            'coordinate': coordinate.toArray(),
-                            'order': SORT_BY_ASC,
-                            'unit': 'km',
-                        }
+                        'type': SORT_BY_TYPE_DISTANCE,
+                        'coordinate': coordinate.toArray(),
+                        'unit': 'km'
                     },
                     SORT_BY_AL_TUN_TUN
                 ]);
@@ -215,11 +214,9 @@ describe('Query/', () => {
             it('Coordinate should be build form array', () => {
                 expect(SortBy.createFromArray([
                     {
-                        '_geo_distance': {
-                            'coordinate': coordinate.toArray(),
-                            'order': SORT_BY_ASC,
-                            'unit': 'km',
-                        }
+                        'type': SORT_BY_TYPE_DISTANCE,
+                        'coordinate': coordinate.toArray(),
+                        'unit': 'km'
                     },
                     SORT_BY_AL_TUN_TUN
                 ])).to.be.deep.equal(sortBy);
