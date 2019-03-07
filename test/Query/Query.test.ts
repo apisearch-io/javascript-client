@@ -509,4 +509,42 @@ describe('Query()', () => {
             expect(query.getScoreStrategies()).to.be.instanceof(ScoreStrategies);
         });
     });
+
+    describe('-> Test metadata', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll()
+                .setMetadataValue('a', 'a1')
+                .setMetadataValue('b', ['b1', 'b2']);
+
+            expect(query.getMetadata()).to.be.deep.equal({
+                'a': 'a1',
+                'b': ['b1', 'b2']
+            });
+            query = Query.createFromArray(JSON.parse(JSON.stringify(query.toArray())));
+            expect(query.getMetadata()).to.be.deep.equal({
+                'a': 'a1',
+                'b': ['b1', 'b2']
+            });
+        });
+    });
+
+    describe('-> Test multiquery', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll()
+                .addSubquery('sub1', Query.create('sub1'))
+                .addSubquery('sub2', Query.create('sub2'))
+                .addSubquery('sub3', Query.create('sub3'));
+
+            expect(Object.keys(query.getSubqueries()).length).to.be.equal(3);
+            query = Query.createFromArray(JSON.parse(JSON.stringify(query.toArray())));
+            expect(Object.keys(query.getSubqueries()).length).to.be.equal(3);
+
+            query = Query.createMultiquery({
+                'sub1': Query.create('sub1'),
+                'sub2': Query.create('sub2'),
+                'sub3': Query.create('sub3')
+            });
+            expect(Object.keys(query.getSubqueries()).length).to.be.equal(3);
+        });
+    });
 });

@@ -1,6 +1,6 @@
 import { Item } from "../Model/Item";
 import { Query } from "../Query/Query";
-import { ResultAggregation } from "../Result/ResultAggregation";
+import { ResultAggregation } from "./ResultAggregation";
 import { ResultAggregations } from "./ResultAggregations";
 /**
  * Result class
@@ -13,6 +13,7 @@ export declare class Result {
     private totalItems;
     private totalHits;
     private itemsGroupedByTypeCache;
+    private subresults;
     /**
      * Constructor
      *
@@ -34,6 +35,15 @@ export declare class Result {
      * @returns {Result}
      */
     static create(query: Query, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggests: string[], items: Item[]): Result;
+    /**
+     * Create multi results
+     *
+     * @param query
+     * @param subresults
+     *
+     * @returns {Result}
+     */
+    static createMultiresults(query: Query, subresults: Object): Result;
     /**
      * Add item
      *
@@ -130,6 +140,12 @@ export declare class Result {
      * @return {number}
      */
     getTotalHits(): number;
+    /**
+     * Get subresults
+     *
+     * @return Object
+     */
+    getSubresults(): Object;
     /**
      * to array
      *

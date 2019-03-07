@@ -9,10 +9,8 @@ import { SortBy } from "./SortBy";
 /**
  * Query constants
  */
-export declare const QUERY_DEFAULT_FROM = 0;
 export declare const QUERY_DEFAULT_PAGE = 1;
 export declare const QUERY_DEFAULT_SIZE = 10;
-export declare const QUERY_INFINITE_SIZE = 1000;
 export declare const NO_MIN_SCORE = 0;
 /**
  * Query class
@@ -37,6 +35,8 @@ export declare class Query {
     private fuzziness;
     private minScore;
     private user;
+    private metadata;
+    private subqueries;
     /**
      * Constructor
      *
@@ -86,6 +86,14 @@ export declare class Query {
      * @return {Query}
      */
     static createByUUIDs(...uuids: ItemUUID[]): Query;
+    /**
+     * Create by UUIDs
+     *
+     * @param queries
+     *
+     * @return {Query}
+     */
+    static createMultiquery(queries: Object): Query;
     /**
      * set fields
      *
@@ -532,6 +540,36 @@ export declare class Query {
      * @return {User}
      */
     getUser(): User;
+    /**
+     * set metadata value
+     *
+     * @param name
+     * @param value
+     *
+     * @return Query
+     */
+    setMetadataValue(name: string, value: any): Query;
+    /**
+     * Get metadata
+     *
+     * @return any
+     */
+    getMetadata(): any;
+    /**
+     * Add subquery
+     *
+     * @param name
+     * @param subquery
+     *
+     * @return Query
+     */
+    addSubquery(name: string, subquery: Query): Query;
+    /**
+     * Get subqueries
+     *
+     * @return Object
+     */
+    getSubqueries(): Object;
     /**
      * To array
      *

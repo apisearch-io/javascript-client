@@ -5348,10 +5348,8 @@ var SortBy_1 = __webpack_require__(/*! ./SortBy */ "./src/Query/SortBy.ts");
 /**
  * Query constants
  */
-exports.QUERY_DEFAULT_FROM = 0;
 exports.QUERY_DEFAULT_PAGE = 1;
 exports.QUERY_DEFAULT_SIZE = 10;
-exports.QUERY_INFINITE_SIZE = 1000;
 exports.NO_MIN_SCORE = 0.0;
 /**
  * Query class
@@ -5374,6 +5372,8 @@ var Query = /** @class */ (function () {
         this.highlightsEnabled = false;
         this.filterFields = [];
         this.minScore = exports.NO_MIN_SCORE;
+        this.metadata = {};
+        this.subqueries = {};
         this.sortByInstance = SortBy_1.SortBy.create();
         this.filters._query = Filter_1.Filter.create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
     }
@@ -5451,6 +5451,18 @@ var Query = /** @class */ (function () {
             .disableAggregations()
             .disableSuggestions();
         query.filters._id = Filter_1.Filter.create("_id", ids, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD);
+        return query;
+    };
+    /**
+     * Create by UUIDs
+     *
+     * @param queries
+     *
+     * @return {Query}
+     */
+    Query.createMultiquery = function (queries) {
+        var query = Query.createMatchAll();
+        query.subqueries = queries;
         return query;
     };
     /**
@@ -6174,6 +6186,46 @@ var Query = /** @class */ (function () {
         return this.user;
     };
     /**
+     * set metadata value
+     *
+     * @param name
+     * @param value
+     *
+     * @return Query
+     */
+    Query.prototype.setMetadataValue = function (name, value) {
+        this.metadata[name] = value;
+        return this;
+    };
+    /**
+     * Get metadata
+     *
+     * @return any
+     */
+    Query.prototype.getMetadata = function () {
+        return this.metadata;
+    };
+    /**
+     * Add subquery
+     *
+     * @param name
+     * @param subquery
+     *
+     * @return Query
+     */
+    Query.prototype.addSubquery = function (name, subquery) {
+        this.subqueries[name] = subquery;
+        return this;
+    };
+    /**
+     * Get subqueries
+     *
+     * @return Object
+     */
+    Query.prototype.getSubqueries = function () {
+        return this.subqueries;
+    };
+    /**
      * To array
      *
      * @return {any}
@@ -6298,6 +6350,15 @@ var Query = /** @class */ (function () {
                 array.user = userAsArray;
             }
         }
+        array.metadata = this.metadata;
+        if (this.subqueries instanceof Object &&
+            Object.keys(this.subqueries).length) {
+            array.subqueries = {};
+            for (var i in this.subqueries) {
+                var subquery = this.subqueries[i];
+                array.subqueries[i] = subquery.toArray();
+            }
+        }
         /**
          * items promoted
          */
@@ -6393,8 +6454,20 @@ var Query = /** @class */ (function () {
                 .push(ItemUUID_1.ItemUUID.createFromArray(itemsPromotedAsArray[i]));
         }
         /**
+         * Subqueries
+         */
+        var subqueriesAsArray = typeof array.subqueries === typeof {}
+            ? array.subqueries
+            : {};
+        for (var i in subqueriesAsArray) {
+            query.subqueries[i] = Query.createFromArray(subqueriesAsArray[i]);
+        }
+        /**
          * Filter fields
          */
+        query.metadata = typeof array.metadata === typeof {}
+            ? array.metadata
+            : {};
         query.filterFields = array.filter_fields instanceof Array
             ? array.filter_fields
             : [];
@@ -7866,6 +7939,7 @@ var Result = /** @class */ (function () {
     function Result(query, totalItems, totalHits) {
         this.items = [];
         this.suggests = [];
+        this.subresults = {};
         this.query = query;
         this.totalItems = totalItems;
         this.totalHits = totalHits;
@@ -7887,6 +7961,19 @@ var Result = /** @class */ (function () {
         result.aggregations = aggregations;
         result.suggests = suggests;
         result.items = items;
+        return result;
+    };
+    /**
+     * Create multi results
+     *
+     * @param query
+     * @param subresults
+     *
+     * @returns {Result}
+     */
+    Result.createMultiresults = function (query, subresults) {
+        var result = new Result(query, 0, 0);
+        result.subresults = subresults;
         return result;
     };
     /**
@@ -8040,12 +8127,20 @@ var Result = /** @class */ (function () {
         return this.totalHits;
     };
     /**
+     * Get subresults
+     *
+     * @return Object
+     */
+    Result.prototype.getSubresults = function () {
+        return this.subresults;
+    };
+    /**
      * to array
      *
      * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggests: string[]}}
      */
     Result.prototype.toArray = function () {
-        return {
+        var array = {
             query: this.query.toArray(),
             total_items: this.totalItems,
             total_hits: this.totalHits,
@@ -8055,6 +8150,15 @@ var Result = /** @class */ (function () {
                 : this.aggregations.toArray(),
             suggests: this.suggests
         };
+        if (this.subresults instanceof Object &&
+            Object.keys(this.subresults).length) {
+            array.subresults = {};
+            for (var i in this.subresults) {
+                var subresult = this.subresults[i];
+                array.subresults[i] = subresult.toArray();
+            }
+        }
+        return array;
     };
     /**
      * Create from array
@@ -8064,7 +8168,7 @@ var Result = /** @class */ (function () {
      * @return {Result}
      */
     Result.createFromArray = function (array) {
-        return Result.create(Query_1.Query.createFromArray(array.query), array.total_items
+        var result = Result.create(Query_1.Query.createFromArray(array.query), array.total_items
             ? array.total_items
             : 0, array.total_hits
             ? array.total_hits
@@ -8075,6 +8179,16 @@ var Result = /** @class */ (function () {
             : null, array.items instanceof Array
             ? array.items.map(function (itemAsArray) { return Item_1.Item.createFromArray(itemAsArray); })
             : []);
+        /**
+         * Subqueries
+         */
+        var subresultsAsArray = typeof array.subresults === typeof {}
+            ? array.subresults
+            : {};
+        for (var i in subresultsAsArray) {
+            result.subresults[i] = Query_1.Query.createFromArray(subresultsAsArray[i]);
+        }
+        return result;
     };
     return Result;
 }());
