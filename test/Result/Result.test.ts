@@ -157,4 +157,21 @@ describe('Result/', () => {
             expect(result.getFirstItem().getType()).to.be.equal('product');
         });
     });
+
+
+
+    describe('-> Test multiresult', () => {
+        it('should work properly', () => {
+            const query = Query.createMatchAll();
+            let result = Result.createMultiresults(query, {
+                'res1': Query.create('sub1'),
+                'res2': Query.create('sub2'),
+                'res3': Query.create('sub3'),
+            });
+
+            expect(Object.keys(result.getSubresults()).length).to.be.equal(3);
+            result = Result.createFromArray(JSON.parse(JSON.stringify(result.toArray())));
+            expect(Object.keys(result.getSubresults()).length).to.be.equal(3);
+        });
+    });
 });

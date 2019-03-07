@@ -28,10 +28,8 @@ import {SortBy} from "./SortBy";
 /**
  * Query constants
  */
-export const QUERY_DEFAULT_FROM = 0;
 export const QUERY_DEFAULT_PAGE = 1;
 export const QUERY_DEFAULT_SIZE = 10;
-export const QUERY_INFINITE_SIZE = 1000;
 export const NO_MIN_SCORE = 0.0;
 
 /**
@@ -58,6 +56,8 @@ export class Query {
     private fuzziness: any;
     private minScore: number = NO_MIN_SCORE;
     private user: User;
+    private metadata: any = {};
+    private subqueries: any = {};
 
     /**
      * Constructor
@@ -167,6 +167,20 @@ export class Query {
             FILTER_AT_LEAST_ONE,
             FILTER_TYPE_FIELD,
         );
+
+        return query;
+    }
+
+    /**
+     * Create by UUIDs
+     *
+     * @param queries
+     *
+     * @return {Query}
+     */
+    public static createMultiquery(queries: Object): Query {
+        const query = Query.createMatchAll();
+        query.subqueries = queries;
 
         return query;
     }
@@ -1127,6 +1141,60 @@ export class Query {
     }
 
     /**
+     * set metadata value
+     *
+     * @param name
+     * @param value
+     *
+     * @return Query
+     */
+    public setMetadataValue(
+        name: string,
+        value
+    ) : Query {
+        this.metadata[name] = value;
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return any
+     */
+    public getMetadata() : any {
+        return this.metadata;
+    }
+
+    /**
+     * Add subquery
+     *
+     * @param name
+     * @param subquery
+     *
+     * @return Query
+     */
+    public addSubquery(
+        name: string,
+        subquery: Query
+    ) : Query
+    {
+        this.subqueries[name] = subquery;
+
+        return this;
+    }
+
+    /**
+     * Get subqueries
+     *
+     * @return Object
+     */
+    public getSubqueries() : Object
+    {
+        return this.subqueries;
+    }
+
+    /**
      * To array
      *
      * @return {any}
@@ -1278,6 +1346,19 @@ export class Query {
             }
         }
 
+        array.metadata = this.metadata;
+
+        if (
+            this.subqueries instanceof Object &&
+            Object.keys(this.subqueries).length
+        ) {
+            array.subqueries = {};
+            for (const i in this.subqueries) {
+                const subquery = this.subqueries[i];
+                array.subqueries[i] = subquery.toArray();
+            }
+        }
+
         /**
          * items promoted
          */
@@ -1401,8 +1482,23 @@ export class Query {
         }
 
         /**
+         * Subqueries
+         */
+        const subqueriesAsArray = typeof array.subqueries === typeof {}
+            ? array.subqueries
+            : {};
+
+        for (const i in subqueriesAsArray) {
+            query.subqueries[i] = Query.createFromArray(subqueriesAsArray[i]);
+        }
+
+        /**
          * Filter fields
          */
+        query.metadata = typeof array.metadata === typeof {}
+            ? array.metadata
+            : {};
+
         query.filterFields = array.filter_fields instanceof Array
             ? array.filter_fields
             : [];

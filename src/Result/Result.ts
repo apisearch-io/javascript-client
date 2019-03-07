@@ -1,6 +1,6 @@
 import {Item} from "../Model/Item";
 import {Query} from "../Query/Query";
-import {ResultAggregation} from "../Result/ResultAggregation";
+import {ResultAggregation} from "./ResultAggregation";
 import {ResultAggregations} from "./ResultAggregations";
 /**
  * Result class
@@ -14,6 +14,7 @@ export class Result {
     private totalItems: number;
     private totalHits: number;
     private itemsGroupedByTypeCache: any;
+    private subresults: any = {};
 
     /**
      * Constructor
@@ -55,12 +56,30 @@ export class Result {
         const result = new Result(
             query,
             totalItems,
-            totalHits,
+            totalHits
         );
 
         result.aggregations = aggregations;
         result.suggests = suggests;
         result.items = items;
+
+        return result;
+    }
+
+    /**
+     * Create multi results
+     *
+     * @param query
+     * @param subresults
+     *
+     * @returns {Result}
+     */
+    public static createMultiresults(
+        query: Query,
+        subresults: Object
+    ): Result {
+        const result = new Result(query, 0, 0);
+        result.subresults = subresults;
 
         return result;
     }
@@ -239,12 +258,22 @@ export class Result {
     }
 
     /**
+     * Get subresults
+     *
+     * @return Object
+     */
+    public getSubresults() : Object
+    {
+        return this.subresults;
+    }
+
+    /**
      * to array
      *
      * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggests: string[]}}
      */
     public toArray(): any {
-        return {
+        const array: any = {
             query: this.query.toArray(),
             total_items: this.totalItems,
             total_hits: this.totalHits,
@@ -254,6 +283,19 @@ export class Result {
                 : this.aggregations.toArray(),
             suggests: this.suggests,
         };
+
+        if (
+            this.subresults instanceof Object &&
+            Object.keys(this.subresults).length
+        ) {
+            array.subresults = {};
+            for (const i in this.subresults) {
+                const subresult = this.subresults[i];
+                array.subresults[i] = subresult.toArray();
+            }
+        }
+
+        return array;
     }
 
     /**
@@ -264,7 +306,7 @@ export class Result {
      * @return {Result}
      */
     public static createFromArray(array: any): Result {
-        return Result.create(
+        const result: any = Result.create(
             Query.createFromArray(array.query),
             array.total_items
                 ? array.total_items
@@ -282,5 +324,18 @@ export class Result {
                 ? array.items.map((itemAsArray) => Item.createFromArray(itemAsArray))
                 : [],
         );
+
+        /**
+         * Subqueries
+         */
+        const subresultsAsArray = typeof array.subresults === typeof {}
+            ? array.subresults
+            : {};
+
+        for (const i in subresultsAsArray) {
+            result.subresults[i] = Query.createFromArray(subresultsAsArray[i]);
+        }
+
+        return result;
     }
 }
