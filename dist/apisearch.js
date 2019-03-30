@@ -141,7 +141,7 @@ module.exports = function xhrAdapter(config) {
     // For IE 8/9 CORS support
     // Only supports POST and GET calls and doesn't returns the response headers.
     // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if ("development" !== 'test' &&
+    if ( true &&
         typeof window !== 'undefined' &&
         window.XDomainRequest && !('withCredentials' in request) &&
         !isURLSameOrigin(config.url)) {
@@ -2344,7 +2344,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Result}
      */
     Apisearch.createEmptyResult = function () {
-        return Result_1.Result.create(Apisearch.createQueryMatchAll(), 0, 0, new ResultAggregations_1.ResultAggregations(0), [], []);
+        return Result_1.Result.create('', 0, 0, new ResultAggregations_1.ResultAggregations(0), [], []);
     };
     /**
      * Create empty sortby
@@ -6191,7 +6191,7 @@ var Query = /** @class */ (function () {
      * @param name
      * @param value
      *
-     * @return Query
+     * @return {Query}
      */
     Query.prototype.setMetadataValue = function (name, value) {
         this.metadata[name] = value;
@@ -6211,7 +6211,7 @@ var Query = /** @class */ (function () {
      * @param name
      * @param subquery
      *
-     * @return Query
+     * @return {Query}
      */
     Query.prototype.addSubquery = function (name, subquery) {
         this.subqueries[name] = subquery;
@@ -6220,10 +6220,29 @@ var Query = /** @class */ (function () {
     /**
      * Get subqueries
      *
-     * @return Object
+     * @return {Object}
      */
     Query.prototype.getSubqueries = function () {
         return this.subqueries;
+    };
+    /**
+     * Identify it
+     *
+     * @param UUID
+     *
+     * @return {Query}
+     */
+    Query.prototype.identifyWith = function (UUID) {
+        this.UUID = UUID;
+        return this;
+    };
+    /**
+     * Get identification
+     *
+     * @return {string|null}
+     */
+    Query.prototype.getUUID = function () {
+        return this.UUID;
     };
     /**
      * To array
@@ -6232,6 +6251,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.toArray = function () {
         var array = {};
+        array.UUID = this.UUID;
         if (this.getQueryText() !== "") {
             array.q = this.getQueryText();
         }
@@ -6383,6 +6403,9 @@ var Query = /** @class */ (function () {
         var query = array.coordinate instanceof Object
             ? Query.createLocated(Coordinate_1.Coordinate.createFromArray(array.coordinate), array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE)
             : Query.create(array.q ? array.q : "", array.page ? array.page : exports.QUERY_DEFAULT_PAGE, array.size ? array.size : exports.QUERY_DEFAULT_SIZE);
+        query.UUID = typeof array.UUID === typeof ''
+            ? array.UUID
+            : undefined;
         /**
          * Fields
          */
@@ -6473,10 +6496,10 @@ var Query = /** @class */ (function () {
             : [];
         query.scoreStrategies = array.score_strategies instanceof Object
             ? ScoreStrategies_1.ScoreStrategies.createFromArray(array.score_strategies)
-            : null;
+            : undefined;
         query.user = array.user instanceof Object
             ? User_1.User.createFromArray(array.user)
-            : null;
+            : undefined;
         return query;
     };
     return Query;
@@ -7381,27 +7404,42 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.query = function (query) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var that;
+            var _this = this;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        that = this;
-                        return [4 /*yield*/, this
-                                .httpClient
-                                .get("/", "get", this.getCredentialsWithIndex(this.indexId), {
-                                query: JSON.stringify(query.toArray())
-                            }, {})
-                                .then(function (response) {
-                                HttpRepository.throwTransportableExceptionIfNeeded(response);
-                                var result = Result_1.Result.createFromArray(response.getBody());
-                                return Result_1.Result.create(result.getQuery(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), that
-                                    .transformer
-                                    .fromItems(result.getItems()));
-                            })];
+                    case 0: return [4 /*yield*/, this
+                            .httpClient
+                            .get("/", "get", this.getCredentialsWithIndex(this.indexId), {
+                            query: JSON.stringify(query.toArray())
+                        }, {})
+                            .then(function (response) {
+                            HttpRepository.throwTransportableExceptionIfNeeded(response);
+                            var result = Result_1.Result.createFromArray(response.getBody());
+                            return _this.applyTransformersToResult(result);
+                        })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
+    };
+    /**
+     * Apply transformers to results
+     *
+     * @param result
+     *
+     * @return {Result}
+     */
+    HttpRepository.prototype.applyTransformersToResult = function (result) {
+        var subresults = result.getSubresults();
+        if (Object.keys(subresults).length > 0) {
+            Object.keys(subresults).map(function (key) {
+                subresults[key] = this.applyTransformersToResult(subresults[key]);
+            }.bind(this));
+            return Result_1.Result.createMultiresults(subresults);
+        }
+        return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), this
+            .transformer
+            .fromItems(result.getItems()));
     };
     /**
      * Update items
@@ -7923,7 +7961,6 @@ exports.Counter = Counter;
 
 exports.__esModule = true;
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
-var Query_1 = __webpack_require__(/*! ../Query/Query */ "./src/Query/Query.ts");
 var ResultAggregations_1 = __webpack_require__(/*! ./ResultAggregations */ "./src/Result/ResultAggregations.ts");
 /**
  * Result class
@@ -7932,22 +7969,22 @@ var Result = /** @class */ (function () {
     /**
      * Constructor
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      */
-    function Result(query, totalItems, totalHits) {
+    function Result(queryUUID, totalItems, totalHits) {
         this.items = [];
         this.suggests = [];
         this.subresults = {};
-        this.query = query;
+        this.queryUUID = queryUUID;
         this.totalItems = totalItems;
         this.totalHits = totalHits;
     }
     /**
      * Create
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      * @param aggregations
@@ -7956,8 +7993,8 @@ var Result = /** @class */ (function () {
      *
      * @returns {Result}
      */
-    Result.create = function (query, totalItems, totalHits, aggregations, suggests, items) {
-        var result = new Result(query, totalItems, totalHits);
+    Result.create = function (queryUUID, totalItems, totalHits, aggregations, suggests, items) {
+        var result = new Result(queryUUID, totalItems, totalHits);
         result.aggregations = aggregations;
         result.suggests = suggests;
         result.items = items;
@@ -7966,13 +8003,12 @@ var Result = /** @class */ (function () {
     /**
      * Create multi results
      *
-     * @param query
      * @param subresults
      *
      * @returns {Result}
      */
-    Result.createMultiresults = function (query, subresults) {
-        var result = new Result(query, 0, 0);
+    Result.createMultiresults = function (subresults) {
+        var result = new Result('', 0, 0);
         result.subresults = subresults;
         return result;
     };
@@ -8103,12 +8139,12 @@ var Result = /** @class */ (function () {
         return this.suggests;
     };
     /**
-     * Get query
+     * Get query uuid
      *
-     * @return {Query}
+     * @return {string}
      */
-    Result.prototype.getQuery = function () {
-        return this.query;
+    Result.prototype.getQueryUUID = function () {
+        return this.queryUUID;
     };
     /**
      * Get total elements
@@ -8141,7 +8177,7 @@ var Result = /** @class */ (function () {
      */
     Result.prototype.toArray = function () {
         var array = {
-            query: this.query.toArray(),
+            query_uuid: this.queryUUID,
             total_items: this.totalItems,
             total_hits: this.totalHits,
             items: this.items.map(function (item) { return item.toArray(); }),
@@ -8168,7 +8204,9 @@ var Result = /** @class */ (function () {
      * @return {Result}
      */
     Result.createFromArray = function (array) {
-        var result = Result.create(Query_1.Query.createFromArray(array.query), array.total_items
+        var result = Result.create(array.query_uuid
+            ? array.query_uuid
+            : '', array.total_items
             ? array.total_items
             : 0, array.total_hits
             ? array.total_hits
@@ -8186,7 +8224,7 @@ var Result = /** @class */ (function () {
             ? array.subresults
             : {};
         for (var i in subresultsAsArray) {
-            result.subresults[i] = Query_1.Query.createFromArray(subresultsAsArray[i]);
+            result.subresults[i] = Result.createFromArray(subresultsAsArray[i]);
         }
         return result;
     };

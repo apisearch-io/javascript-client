@@ -1,12 +1,11 @@
 import { Item } from "../Model/Item";
-import { Query } from "../Query/Query";
 import { ResultAggregation } from "./ResultAggregation";
 import { ResultAggregations } from "./ResultAggregations";
 /**
  * Result class
  */
 export declare class Result {
-    private query;
+    private queryUUID;
     private items;
     private suggests;
     private aggregations;
@@ -17,15 +16,15 @@ export declare class Result {
     /**
      * Constructor
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      */
-    constructor(query: Query, totalItems: number, totalHits: number);
+    constructor(queryUUID: string, totalItems: number, totalHits: number);
     /**
      * Create
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      * @param aggregations
@@ -34,16 +33,15 @@ export declare class Result {
      *
      * @returns {Result}
      */
-    static create(query: Query, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggests: string[], items: Item[]): Result;
+    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggests: string[], items: Item[]): Result;
     /**
      * Create multi results
      *
-     * @param query
      * @param subresults
      *
      * @returns {Result}
      */
-    static createMultiresults(query: Query, subresults: Object): Result;
+    static createMultiresults(subresults: Object): Result;
     /**
      * Add item
      *
@@ -123,11 +121,11 @@ export declare class Result {
      */
     getSuggests(): string[];
     /**
-     * Get query
+     * Get query uuid
      *
-     * @return {Query}
+     * @return {string}
      */
-    getQuery(): Query;
+    getQueryUUID(): string;
     /**
      * Get total elements
      *
