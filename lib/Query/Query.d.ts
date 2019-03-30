@@ -16,6 +16,7 @@ export declare const NO_MIN_SCORE = 0;
  * Query class
  */
 export declare class Query {
+    private UUID;
     private coordinate;
     private fields;
     private universeFilters;
@@ -546,7 +547,7 @@ export declare class Query {
      * @param name
      * @param value
      *
-     * @return Query
+     * @return {Query}
      */
     setMetadataValue(name: string, value: any): Query;
     /**
@@ -561,15 +562,29 @@ export declare class Query {
      * @param name
      * @param subquery
      *
-     * @return Query
+     * @return {Query}
      */
     addSubquery(name: string, subquery: Query): Query;
     /**
      * Get subqueries
      *
-     * @return Object
+     * @return {Object}
      */
     getSubqueries(): Object;
+    /**
+     * Identify it
+     *
+     * @param UUID
+     *
+     * @return {Query}
+     */
+    identifyWith(UUID: string): Query;
+    /**
+     * Get identification
+     *
+     * @return {string|null}
+     */
+    getUUID(): string;
     /**
      * To array
      *

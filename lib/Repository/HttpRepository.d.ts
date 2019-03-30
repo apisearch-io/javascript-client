@@ -69,6 +69,14 @@ export declare class HttpRepository extends Repository {
      */
     query(query: Query): Promise<Result>;
     /**
+     * Apply transformers to results
+     *
+     * @param result
+     *
+     * @return {Result}
+     */
+    private applyTransformersToResult;
+    /**
      * Update items
      *
      * @param query
