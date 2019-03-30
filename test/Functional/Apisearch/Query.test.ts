@@ -1,4 +1,3 @@
-import Apisearch from "../../../src/Apisearch";
 import { expect } from 'chai';
 import {Query} from "../../../src/Query/Query";
 import {Item} from "../../../src/Model/Item";
@@ -6,22 +5,13 @@ import {ItemUUID} from "../../../src/Model/ItemUUID";
 import {FILTER_MUST_ALL} from "../../../src/Query/Filter";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Config} from "../../../src/Config/Config";
+import FunctionalTest from "./FunctionalTest";
 
 /**
  *
  */
 describe('Apisearch', () => {
-    let repository = Apisearch.createRepository(
-            {
-                'app_id': '789437438test',
-                'index_id': 'default',
-                'token': '0e4d75ba-c640-44c1-a745-06ee51db4e93',
-                'options': {
-                    'endpoint': 'http://127.0.0.1:8201',
-                }
-            }
-        );
-
+    const repository = FunctionalTest.createRepository();
     const indexUUID = IndexUUID.createById('default');
 
     it('should properly make a query', async () => {
@@ -125,4 +115,37 @@ describe('Apisearch', () => {
                 expect(result.getTotalHits()).to.be.equal(1);
             });
     });
+
+    it('should be able to work with multiqueries', async() => {
+
+        repository.addItem(Item.create(
+            ItemUUID.createByComposedUUID('1~item'), {}, {},
+            {'name': 'This is my house'},
+        ));
+
+        repository.addItem(Item.create(
+            ItemUUID.createByComposedUUID('2~item'), {}, {},
+            {'name': 'This is my country'},
+        ));
+
+        await repository.flush();
+
+        await repository
+            .query(Query.createMultiquery({
+                'q1': Query.create('house'),
+                'q2': Query.create('country')
+            }))
+            .then(result => {
+                const r1 = result.getSubresults()['q1'];
+                expect(r1.getTotalItems()).to.be.equal(2);
+                expect(r1.getTotalHits()).to.be.equal(1);
+                expect(r1.getFirstItem().getId()).to.be.equal('1');
+                expect(r1.getQueryUUID()).to.not.be.undefined;
+                const r2 = result.getSubresults()['q2'];
+                expect(r2.getTotalItems()).to.be.equal(2);
+                expect(r2.getTotalHits()).to.be.equal(1);
+                expect(r2.getFirstItem().getId()).to.be.equal('2');
+                expect(r2.getQueryUUID()).to.not.be.undefined;
+            });
+    })
 });

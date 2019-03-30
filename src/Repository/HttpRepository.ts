@@ -154,8 +154,6 @@ export class HttpRepository extends Repository {
      */
     public async query(query: Query): Promise<Result> {
 
-        const that = this;
-
         return await this
             .httpClient
             .get(
@@ -169,20 +167,40 @@ export class HttpRepository extends Repository {
             )
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
-
                 const result = Result.createFromArray(response.getBody());
 
-                return Result.create(
-                    result.getQuery(),
-                    result.getTotalItems(),
-                    result.getTotalHits(),
-                    result.getAggregations(),
-                    result.getSuggests(),
-                    that
-                        .transformer
-                        .fromItems(result.getItems()),
-                );
+                return this.applyTransformersToResult(result);
             });
+    }
+
+    /**
+     * Apply transformers to results
+     *
+     * @param result
+     *
+     * @return {Result}
+     */
+    private applyTransformersToResult(result: Result): Result {
+        const subresults = result.getSubresults();
+
+        if (Object.keys(subresults).length > 0) {
+            Object.keys(subresults).map(function(key) {
+                subresults[key] = this.applyTransformersToResult(subresults[key])
+            }.bind(this));
+
+            return Result.createMultiresults(subresults);
+        }
+
+        return Result.create(
+            result.getQueryUUID(),
+            result.getTotalItems(),
+            result.getTotalHits(),
+            result.getAggregations(),
+            result.getSuggests(),
+            this
+                .transformer
+                .fromItems(result.getItems())
+        );
     }
 
     /**

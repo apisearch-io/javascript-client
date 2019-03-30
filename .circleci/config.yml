@@ -2,13 +2,28 @@ version: 2
 jobs:
     build:
         docker:
-            - image: circleci/node:7.10.0
+            - image: circleci/node:latest
+
+            - image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+              environment:
+                ES_JAVA_OPTS: "-Xms256m -Xmx256m"
+                discovery.type: single-node
+                action.auto_create_index: "-apisearch*,+*"
+
+            - image: apisearchio/search-server
+              environment:
+                APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
+                ELASTICSEARCH_HOST: localhost
+                ELASTICSEARCH_PORT: 9200
+                ELASTICSEARCH_REFRESH_ON_WRITE: 1
+
         steps:
             - checkout
             - run:
                 name: Install dependencies
                 command: |
                     npm install
+
             - run:
                 name: Run test scenarios
                 command: |
