@@ -1,5 +1,4 @@
 import {Item} from "../Model/Item";
-import {Query} from "../Query/Query";
 import {ResultAggregation} from "./ResultAggregation";
 import {ResultAggregations} from "./ResultAggregations";
 /**
@@ -7,7 +6,7 @@ import {ResultAggregations} from "./ResultAggregations";
  */
 export class Result {
 
-    private query: Query;
+    private queryUUID: string;
     private items: Item[] = [];
     private suggests: string[] = [];
     private aggregations: ResultAggregations;
@@ -19,16 +18,16 @@ export class Result {
     /**
      * Constructor
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      */
     constructor(
-        query: Query,
+        queryUUID: string,
         totalItems: number,
         totalHits: number,
     ) {
-        this.query = query;
+        this.queryUUID = queryUUID;
         this.totalItems = totalItems;
         this.totalHits = totalHits;
     }
@@ -36,7 +35,7 @@ export class Result {
     /**
      * Create
      *
-     * @param query
+     * @param queryUUID
      * @param totalItems
      * @param totalHits
      * @param aggregations
@@ -46,7 +45,7 @@ export class Result {
      * @returns {Result}
      */
     public static create(
-        query: Query,
+        queryUUID: string,
         totalItems: number,
         totalHits: number,
         aggregations: ResultAggregations,
@@ -54,7 +53,7 @@ export class Result {
         items: Item[],
     ): Result {
         const result = new Result(
-            query,
+            queryUUID,
             totalItems,
             totalHits
         );
@@ -69,16 +68,12 @@ export class Result {
     /**
      * Create multi results
      *
-     * @param query
      * @param subresults
      *
      * @returns {Result}
      */
-    public static createMultiresults(
-        query: Query,
-        subresults: Object
-    ): Result {
-        const result = new Result(query, 0, 0);
+    public static createMultiresults(subresults: Object): Result {
+        const result = new Result('', 0, 0);
         result.subresults = subresults;
 
         return result;
@@ -231,12 +226,12 @@ export class Result {
     }
 
     /**
-     * Get query
+     * Get query uuid
      *
-     * @return {Query}
+     * @return {string}
      */
-    public getQuery(): Query {
-        return this.query;
+    public getQueryUUID(): string {
+        return this.queryUUID;
     }
 
     /**
@@ -262,8 +257,7 @@ export class Result {
      *
      * @return Object
      */
-    public getSubresults() : Object
-    {
+    public getSubresults(): Object {
         return this.subresults;
     }
 
@@ -274,7 +268,7 @@ export class Result {
      */
     public toArray(): any {
         const array: any = {
-            query: this.query.toArray(),
+            query_uuid: this.queryUUID,
             total_items: this.totalItems,
             total_hits: this.totalHits,
             items: this.items.map((item) => item.toArray()),
@@ -307,7 +301,9 @@ export class Result {
      */
     public static createFromArray(array: any): Result {
         const result: any = Result.create(
-            Query.createFromArray(array.query),
+            array.query_uuid
+                ? array.query_uuid
+                : '',
             array.total_items
                 ? array.total_items
                 : 0,
@@ -333,7 +329,7 @@ export class Result {
             : {};
 
         for (const i in subresultsAsArray) {
-            result.subresults[i] = Query.createFromArray(subresultsAsArray[i]);
+            result.subresults[i] = Result.createFromArray(subresultsAsArray[i]);
         }
 
         return result;

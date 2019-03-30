@@ -6,23 +6,32 @@ import {ItemUUID} from "../../src/Model/ItemUUID";
 import {Item} from "../../src/Model/Item";
 import {ResultAggregation} from "../../src/Result/ResultAggregation";
 import {ResultAggregations} from "../../src/Result/ResultAggregations";
+import {HttpHelper} from "../HttpHelper";
 
 describe('Result/', () => {
     describe('Counter', () => {
         describe('()', () => {
             let result = new Result(
-                Query.createMatchAll(),
+                '123',
                 2, 1
             );
             let resultAsArray = result.toArray();
 
             it('Should work properly', () => {
-                expect(result.getQuery()).to.be.deep.equal(Query.createMatchAll());
-                expect(resultAsArray.query).to.be.deep.equal(Query.createMatchAll().toArray());
+                expect(result.getQueryUUID()).to.be.equal('123');
                 expect(result.getTotalHits()).to.be.equal(1);
                 expect(resultAsArray.total_hits).to.be.equal(1);
                 expect(result.getTotalItems()).to.be.equal(2);
                 expect(resultAsArray.total_items).to.be.equal(2);
+                expect(result.getItems().length).to.be.equal(0);
+                expect(result.getFirstItem()).to.be.null;
+                expect(result.getSuggests().length).to.be.equal(0);
+                expect(result.getAggregations()).to.be.null;
+
+                result = HttpHelper.emulateHttpTransport(result);
+                expect(result.getQueryUUID()).to.be.equal('123');
+                expect(result.getTotalHits()).to.be.equal(1);
+                expect(result.getTotalItems()).to.be.equal(2);
                 expect(result.getItems().length).to.be.equal(0);
                 expect(result.getFirstItem()).to.be.null;
                 expect(result.getSuggests().length).to.be.equal(0);
@@ -32,7 +41,7 @@ describe('Result/', () => {
 
         describe('Test items', () => {
             let result = new Result(
-                Query.createMatchAll(),
+                '123',
                 2, 1
             );
             result.addItem(Item.create(ItemUUID.createByComposedUUID('1~product')));
@@ -44,12 +53,16 @@ describe('Result/', () => {
                 expect(resultAsArray.items.length).to.be.equal(2);
                 expect(result.getFirstItem().getId()).to.be.equal('1');
                 expect(resultAsArray.items[0].uuid.id).to.be.equal('1');
+
+                result = HttpHelper.emulateHttpTransport(result);
+                expect(result.getItems().length).to.be.equal(2);
+                expect(result.getFirstItem().getId()).to.be.equal('1');
             });
         });
 
         describe('Test aggregations', () => {
             let result = new Result(
-                Query.createMatchAll(),
+                '123',
                 2, 1
             );
             let aggregations = new ResultAggregations(2);
@@ -66,12 +79,20 @@ describe('Result/', () => {
                 expect(result.hasNotEmptyAggregation('blabla')).to.be.true;
                 expect(result.hasNotEmptyAggregation('empty')).to.be.false;
                 expect(result.hasNotEmptyAggregation('adeu')).to.be.false;
+
+                result = HttpHelper.emulateHttpTransport(result);
+                expect(result.getAggregations()).to.not.be.null;
+                expect(result.getAggregation('blabla').getName()).to.be.equal('hola');
+                expect(result.getAggregation('adeu')).to.be.null;
+                expect(result.hasNotEmptyAggregation('blabla')).to.be.true;
+                expect(result.hasNotEmptyAggregation('empty')).to.be.false;
+                expect(result.hasNotEmptyAggregation('adeu')).to.be.false;
             });
         });
 
         describe('Test suggests', () => {
             let result = new Result(
-                Query.createMatchAll(),
+                '123',
                 2, 1
             );
             result.addSuggest('hola');
@@ -85,7 +106,7 @@ describe('Result/', () => {
 
         describe('Test items grouped by type', () => {
             let result = new Result(
-                Query.createMatchAll(),
+                '123',
                 2, 1
             );
             result.addItem(Item.create(ItemUUID.createByComposedUUID('1~type1')));
@@ -110,15 +131,30 @@ describe('Result/', () => {
                 expect(result.getItemsByTypes(['type1', 'type3']).length).to.be.equal(3);
                 expect(result.getItemsByTypes(['type1', 'type-nonexisting']).length).to.be.equal(2);
                 expect(result.getItemsByTypes(['type-nonexisting']).length).to.be.equal(0);
+
+                result = HttpHelper.emulateHttpTransport(result);
+                expect(result.getItemsByType('type1').length).to.be.equal(2);
+                expect(result.getItemsByType('type2').length).to.be.equal(2);
+                expect(result.getItemsByType('type3').length).to.be.equal(1);
+                expect(result.getItemsByType('nonexisting').length).to.be.equal(0);
+
+                expect(Object.keys(result.getItemsGroupedByTypes()).length).to.be.equal(3);
+                expect(result.getItemsGroupedByTypes()['type1'].length).to.be.equal(2);
+                expect(result.getItemsGroupedByTypes()['type2'].length).to.be.equal(2);
+                expect(result.getItemsGroupedByTypes()['type3'].length).to.be.equal(1);
+                expect(result.getItemsGroupedByTypes()['type-nonexisting']).to.be.undefined;
+
+                expect(result.getItemsByTypes(['type1', 'type2']).length).to.be.equal(4);
+                expect(result.getItemsByTypes(['type1', 'type3']).length).to.be.equal(3);
+                expect(result.getItemsByTypes(['type1', 'type-nonexisting']).length).to.be.equal(2);
+                expect(result.getItemsByTypes(['type-nonexisting']).length).to.be.equal(0);
             });
         });
 
 
         describe('create from array all values', () => {
             let resultAsArray = {
-                'query': {
-                    'q': 'engonga',
-                },
+                'query_uuid': '123',
                 'total_items': 10,
                 'total_hits': 20,
                 'aggregations': {
@@ -148,7 +184,15 @@ describe('Result/', () => {
                 ]
             };
             let result = Result.createFromArray(resultAsArray);
-            expect(result.getQuery().toArray()).to.be.deep.equal(Query.create('engonga').toArray());
+            expect(result.getQueryUUID()).to.be.equal('123');
+            expect(result.getTotalItems()).to.be.equal(10);
+            expect(result.getTotalHits()).to.be.equal(20);
+            expect(result.getAggregation('gogo').getName()).to.be.equal('hola');
+            expect(result.getSuggests()).to.be.deep.equal(['sug1', 'sug2']);
+            expect(result.getItems().length).to.be.equal(2);
+            expect(result.getFirstItem().getType()).to.be.equal('product');
+            result = HttpHelper.emulateHttpTransport(result);
+            expect(result.getQueryUUID()).to.be.equal('123');
             expect(result.getTotalItems()).to.be.equal(10);
             expect(result.getTotalHits()).to.be.equal(20);
             expect(result.getAggregation('gogo').getName()).to.be.equal('hola');
@@ -162,16 +206,21 @@ describe('Result/', () => {
 
     describe('-> Test multiresult', () => {
         it('should work properly', () => {
-            const query = Query.createMatchAll();
-            let result = Result.createMultiresults(query, {
-                'res1': Query.create('sub1'),
-                'res2': Query.create('sub2'),
-                'res3': Query.create('sub3'),
+            let result = Result.createMultiresults({
+                'res1': Result.create('1', 10, 3, null, [], []),
+                'res2': Result.create('2', 10, 3, null, [], []),
+                'res3': Result.create('3', 10, 3, null, [], []),
             });
 
             expect(Object.keys(result.getSubresults()).length).to.be.equal(3);
-            result = Result.createFromArray(JSON.parse(JSON.stringify(result.toArray())));
+            expect(result.getSubresults()['res1'].getQueryUUID()).to.be.equal('1');
+            expect(result.getSubresults()['res2'].getQueryUUID()).to.be.equal('2');
+            expect(result.getSubresults()['res3'].getQueryUUID()).to.be.equal('3');
+            result = HttpHelper.emulateHttpTransport(result);
             expect(Object.keys(result.getSubresults()).length).to.be.equal(3);
+            expect(result.getSubresults()['res1'].getQueryUUID()).to.be.equal('1');
+            expect(result.getSubresults()['res2'].getQueryUUID()).to.be.equal('2');
+            expect(result.getSubresults()['res3'].getQueryUUID()).to.be.equal('3');
         });
     });
 });

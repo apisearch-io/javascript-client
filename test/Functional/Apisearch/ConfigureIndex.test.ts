@@ -1,27 +1,17 @@
 import { expect } from 'chai';
-import Apisearch from "../../../src/Apisearch";
 import {Query} from "../../../src/Query/Query";
 import {Item} from "../../../src/Model/Item";
 import {ItemUUID} from "../../../src/Model/ItemUUID";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Config} from "../../../src/Config/Config";
 import {Synonym} from "../../../src/Config/Synonym";
+import FunctionalTest from "./FunctionalTest";
 
 /**
  *
  */
 describe('Configure Index', () => {
-    let repository = Apisearch.createRepository(
-            {
-                'app_id': '789437438test',
-                'index_id': 'default',
-                'token': '0e4d75ba-c640-44c1-a745-06ee51db4e93',
-                'options': {
-                    'endpoint': 'http://127.0.0.1:8201',
-                }
-            }
-        );
-
+    const repository = FunctionalTest.createRepository();
     const indexUUID = IndexUUID.createById('default');
 
     it('should configure properly the index', async () => {

@@ -37,6 +37,7 @@ export const NO_MIN_SCORE = 0.0;
  */
 export class Query {
 
+    private UUID: string;
     private coordinate: Coordinate;
     private fields: string[] = [];
     private universeFilters: any = {};
@@ -1146,7 +1147,7 @@ export class Query {
      * @param name
      * @param value
      *
-     * @return Query
+     * @return {Query}
      */
     public setMetadataValue(
         name: string,
@@ -1172,7 +1173,7 @@ export class Query {
      * @param name
      * @param subquery
      *
-     * @return Query
+     * @return {Query}
      */
     public addSubquery(
         name: string,
@@ -1187,11 +1188,35 @@ export class Query {
     /**
      * Get subqueries
      *
-     * @return Object
+     * @return {Object}
      */
     public getSubqueries() : Object
     {
         return this.subqueries;
+    }
+
+    /**
+     * Identify it
+     *
+     * @param UUID
+     *
+     * @return {Query}
+     */
+    public identifyWith(UUID: string) : Query
+    {
+        this.UUID = UUID;
+
+        return this;
+    }
+
+    /**
+     * Get identification
+     *
+     * @return {string|null}
+     */
+    public getUUID() : string
+    {
+        return this.UUID;
     }
 
     /**
@@ -1202,6 +1227,7 @@ export class Query {
     public toArray(): any {
         const array: any = {};
 
+        array.UUID = this.UUID;
         if (this.getQueryText() !== "") {
             array.q = this.getQueryText();
         }
@@ -1395,6 +1421,10 @@ export class Query {
                 array.size ? array.size : QUERY_DEFAULT_SIZE,
             );
 
+        query.UUID = typeof array.UUID === typeof ''
+            ? array.UUID
+            : undefined;
+
         /**
          * Fields
          */
@@ -1505,11 +1535,11 @@ export class Query {
 
         query.scoreStrategies = array.score_strategies instanceof Object
             ? ScoreStrategies.createFromArray(array.score_strategies)
-            : null;
+            : undefined;
 
         query.user = array.user instanceof Object
             ? User.createFromArray(array.user)
-            : null;
+            : undefined;
 
         return query;
     }

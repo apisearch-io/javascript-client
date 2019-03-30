@@ -179,7 +179,7 @@ export default class Apisearch {
      */
     public static createEmptyResult(): Result {
         return Result.create(
-            Apisearch.createQueryMatchAll(),
+            '',
             0,
             0,
             new ResultAggregations(0),
