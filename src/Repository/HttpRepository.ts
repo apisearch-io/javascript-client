@@ -99,15 +99,13 @@ export class HttpRepository extends Repository {
         return this
             .httpClient
             .get(
-                "/items",
-                "post",
-                this.getCredentialsWithIndex(this.indexId),
+                "/" + this.appId + "/indices/" + this.indexId + "/items",
+                "put",
+                this.getCredentials(),
                 {},
-                {
-                    items: itemsToUpdate.map((item) => {
-                        return item.toArray();
-                    }),
-                },
+                itemsToUpdate.map((item) => {
+                    return item.toArray();
+                }),
             )
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
@@ -130,15 +128,13 @@ export class HttpRepository extends Repository {
         return this
             .httpClient
             .get(
-                "/items",
+                "/" + this.appId + "/indices/" + this.indexId + "/items",
                 "delete",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {},
-                {
-                    items: itemsToDelete.map((itemUUID) => {
-                        return itemUUID.toArray();
-                    }),
-                },
+                itemsToDelete.map((itemUUID) => {
+                    return itemUUID.toArray();
+                }),
             )
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
@@ -157,9 +153,9 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/",
+                "/" + this.appId + "/indices/" + this.indexId,
                 "get",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {
                     query: JSON.stringify(query.toArray()),
                 },
@@ -218,9 +214,9 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/items",
-                "put",
-                this.getCredentialsWithIndex(this.indexId),
+                "/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query",
+                "post",
+                this.getCredentials(),
                 {},
                 {
                     query: query.toArray(),
@@ -250,7 +246,7 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/index",
+                "/" + this.appId + "/indices",
                 "put",
                 this.getCredentials(),
                 {},
@@ -278,9 +274,9 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/index",
+                "/" + this.appId + "/indices/" + this.indexId,
                 "delete",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {},
                 {},
             )
@@ -303,9 +299,9 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/index/reset",
+                "/" + this.appId + "/indices/" + this.indexId + '/reset',
                 "post",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {},
                 {},
             )
@@ -328,9 +324,9 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/index",
+                "/" + this.appId + "/indices/" + this.indexId + '/reset',
                 "head",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {},
                 {},
             )
@@ -351,7 +347,7 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/indices",
+                "/" + this.appId + "/indices/",
                 "get",
                 this.getCredentials(),
                 {},
@@ -385,13 +381,11 @@ export class HttpRepository extends Repository {
         return await this
             .httpClient
             .get(
-                "/index",
+                "/" + this.appId + "/indices/" + this.indexId + '/configure',
                 "post",
-                this.getCredentialsWithIndex(this.indexId),
+                this.getCredentials(),
                 {},
-                {
-                    config: config.toArray(),
-                },
+                config.toArray(),
             )
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
@@ -408,21 +402,6 @@ export class HttpRepository extends Repository {
     private getCredentials(): any {
         return {
             app_id: this.appId,
-            token: this.token,
-        };
-    }
-
-    /**
-     * Get query values
-     *
-     * @param indexComposedUUID
-     *
-     * @returns any
-     */
-    private getCredentialsWithIndex(indexComposedUUID: string): any {
-        return {
-            app_id: this.appId,
-            index: indexComposedUUID,
             token: this.token,
         };
     }
