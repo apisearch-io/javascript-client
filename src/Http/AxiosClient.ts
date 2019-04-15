@@ -82,12 +82,12 @@ export class AxiosClient extends Client implements HttpClient {
                     "Content-Type": "application/json",
                 };
 
-            headers['Apisearch-Token-ID'] = credentials.token;
-            headers['Apisearch-App-ID'] = credentials.app_id;
-
             let axiosRequestConfig:any = {
                 url: url + "?" + Client.objectToUrlParameters({
                     ...parameters,
+                    ...{
+                        'token': credentials.token
+                    }
                 }),
                 data,
                 headers,
