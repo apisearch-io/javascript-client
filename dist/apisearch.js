@@ -3527,8 +3527,10 @@ var AxiosClient = /** @class */ (function (_super) {
                                 "Content-Encoding": "gzip",
                                 "Content-Type": "application/json"
                             };
+                        headers['Apisearch-Token-ID'] = credentials.token;
+                        headers['Apisearch-App-ID'] = credentials.app_id;
                         var axiosRequestConfig = {
-                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, credentials, parameters)),
+                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, parameters)),
                             data: data,
                             headers: headers,
                             method: method,
@@ -7358,11 +7360,9 @@ var HttpRepository = /** @class */ (function (_super) {
                 }
                 return [2 /*return*/, this
                         .httpClient
-                        .get("/items", "post", this.getCredentialsWithIndex(this.indexId), {}, {
-                        items: itemsToUpdate.map(function (item) {
-                            return item.toArray();
-                        })
-                    })
+                        .get("/" + this.appId + "/indices/" + this.indexId + "/items", "put", this.getCredentials(), {}, itemsToUpdate.map(function (item) {
+                        return item.toArray();
+                    }))
                         .then(function (response) {
                         HttpRepository.throwTransportableExceptionIfNeeded(response);
                     })];
@@ -7384,11 +7384,9 @@ var HttpRepository = /** @class */ (function (_super) {
                 }
                 return [2 /*return*/, this
                         .httpClient
-                        .get("/items", "delete", this.getCredentialsWithIndex(this.indexId), {}, {
-                        items: itemsToDelete.map(function (itemUUID) {
-                            return itemUUID.toArray();
-                        })
-                    })
+                        .get("/" + this.appId + "/indices/" + this.indexId + "/items", "delete", this.getCredentials(), {}, itemsToDelete.map(function (itemUUID) {
+                        return itemUUID.toArray();
+                    }))
                         .then(function (response) {
                         HttpRepository.throwTransportableExceptionIfNeeded(response);
                     })];
@@ -7409,7 +7407,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/", "get", this.getCredentialsWithIndex(this.indexId), {
+                            .get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
                             query: JSON.stringify(query.toArray())
                         }, {})
                             .then(function (response) {
@@ -7455,7 +7453,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/items", "put", this.getCredentialsWithIndex(this.indexId), {}, {
+                            .get("/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query", "post", this.getCredentials(), {}, {
                             query: query.toArray(),
                             changes: changes.toArray()
                         })
@@ -7482,7 +7480,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/index", "put", this.getCredentials(), {}, {
+                            .get("/" + this.appId + "/indices", "put", this.getCredentials(), {}, {
                             index: indexUUID.toArray(),
                             config: config.toArray()
                         })
@@ -7508,7 +7506,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/index", "delete", this.getCredentialsWithIndex(this.indexId), {}, {})
+                            .get("/" + this.appId + "/indices/" + this.indexId, "delete", this.getCredentials(), {}, {})
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             return;
@@ -7531,7 +7529,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/index/reset", "post", this.getCredentialsWithIndex(this.indexId), {}, {})
+                            .get("/" + this.appId + "/indices/" + this.indexId + '/reset', "post", this.getCredentials(), {}, {})
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             return;
@@ -7554,7 +7552,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/index", "head", this.getCredentialsWithIndex(this.indexId), {}, {})
+                            .get("/" + this.appId + "/indices/" + this.indexId + '/reset', "head", this.getCredentials(), {}, {})
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             return response.getCode() === 200;
@@ -7575,7 +7573,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/indices", "get", this.getCredentials(), {}, {})
+                            .get("/" + this.appId + "/indices/", "get", this.getCredentials(), {}, {})
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             var result = [];
@@ -7604,9 +7602,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/index", "post", this.getCredentialsWithIndex(this.indexId), {}, {
-                            config: config.toArray()
-                        })
+                            .get("/" + this.appId + "/indices/" + this.indexId + '/configure', "post", this.getCredentials(), {}, config.toArray())
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             return;
@@ -7624,20 +7620,6 @@ var HttpRepository = /** @class */ (function (_super) {
     HttpRepository.prototype.getCredentials = function () {
         return {
             app_id: this.appId,
-            token: this.token
-        };
-    };
-    /**
-     * Get query values
-     *
-     * @param indexComposedUUID
-     *
-     * @returns any
-     */
-    HttpRepository.prototype.getCredentialsWithIndex = function (indexComposedUUID) {
-        return {
-            app_id: this.appId,
-            index: indexComposedUUID,
             token: this.token
         };
     };

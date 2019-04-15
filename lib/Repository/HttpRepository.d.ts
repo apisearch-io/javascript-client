@@ -140,14 +140,6 @@ export declare class HttpRepository extends Repository {
      */
     private getCredentials;
     /**
-     * Get query values
-     *
-     * @param indexComposedUUID
-     *
-     * @returns any
-     */
-    private getCredentialsWithIndex;
-    /**
      * throw error if needed
      *
      * @param response
