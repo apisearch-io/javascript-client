@@ -771,4 +771,13 @@ describe('Query()', () => {
             expect(query.getUUID()).to.be.equal('123');
         });
     });
+
+    describe('-> Test searchable fields', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll().setSearchableFields(['a', 'b']);
+            expect(query.getSearchableFields()).to.be.deep.equal(['a', 'b']);
+            query = HttpHelper.emulateHttpTransport(query);
+            expect(query.getSearchableFields()).to.be.deep.equal(['a', 'b']);
+        });
+    });
 });

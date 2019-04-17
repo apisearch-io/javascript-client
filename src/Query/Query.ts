@@ -52,7 +52,7 @@ export class Query {
     private aggregationsEnabled: boolean = true;
     private suggestionsEnabled: boolean = false;
     private highlightsEnabled: boolean = false;
-    private filterFields: string[] = [];
+    private searchableFields: string[] = [];
     private scoreStrategies: ScoreStrategies;
     private fuzziness: any;
     private minScore: number = NO_MIN_SCORE;
@@ -564,12 +564,12 @@ export class Query {
     /**
      * Set filter fields
      *
-     * @param filterFields
+     * @param searchableFields
      *
      * @return {Query}
      */
-    public setFilterFields(filterFields: string[]): Query {
-        this.filterFields = filterFields;
+    public setSearchableFields(searchableFields: string[]): Query {
+        this.searchableFields = searchableFields;
 
         return this;
     }
@@ -579,8 +579,8 @@ export class Query {
      *
      * @return {string[]}
      */
-    public getFilterFields(): string[] {
-        return this.filterFields;
+    public getSearchableFields(): string[] {
+        return this.searchableFields;
     }
 
     /**
@@ -1334,10 +1334,10 @@ export class Query {
          * Filter fields
          */
         if (
-            this.filterFields instanceof Array &&
-            this.filterFields.length > 0
+            this.searchableFields instanceof Array &&
+            this.searchableFields.length > 0
         ) {
-            array.filter_fields = this.filterFields;
+            array.searchable_fields = this.searchableFields;
         }
 
         /**
@@ -1529,8 +1529,8 @@ export class Query {
             ? array.metadata
             : {};
 
-        query.filterFields = array.filter_fields instanceof Array
-            ? array.filter_fields
+        query.searchableFields = array.searchable_fields instanceof Array
+            ? array.searchable_fields
             : [];
 
         query.scoreStrategies = array.score_strategies instanceof Object
