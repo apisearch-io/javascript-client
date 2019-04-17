@@ -12,6 +12,7 @@ import {QUERY_DEFAULT_PAGE, QUERY_DEFAULT_SIZE} from '../../src/Query/Query';
 import {FILTER_AT_LEAST_ONE, FILTER_MUST_ALL} from "../../src/Query/Filter";
 import {ScoreStrategies} from "../../src/Query/ScoreStrategies";
 import {HttpHelper} from "../HttpHelper";
+import {IndexUUID} from "../../src/Model/IndexUUID";
 
 /**
  * Query object tests
@@ -31,6 +32,8 @@ describe('Query()', () => {
             expect(query.getUser()).to.be.undefined;
             expect(query.getMinScore()).to.be.equals(NO_MIN_SCORE);
             expect(query.getUUID()).to.be.undefined;
+            expect(query.getIndexUUID()).to.be.undefined;
+            expect(query.getSearchableFields()).to.be.deep.equals([]);
 
             query = HttpHelper.emulateHttpTransport(query);
             expect(query.getFields()).to.be.deep.equals([]);
@@ -43,6 +46,8 @@ describe('Query()', () => {
             expect(query.getUser()).to.be.undefined;
             expect(query.getMinScore()).to.be.equals(NO_MIN_SCORE);
             expect(query.getUUID()).to.be.undefined;
+            expect(query.getIndexUUID()).to.be.undefined;
+            expect(query.getSearchableFields()).to.be.deep.equals([]);
         });
     });
 
@@ -778,6 +783,15 @@ describe('Query()', () => {
             expect(query.getSearchableFields()).to.be.deep.equal(['a', 'b']);
             query = HttpHelper.emulateHttpTransport(query);
             expect(query.getSearchableFields()).to.be.deep.equal(['a', 'b']);
+        });
+    });
+
+    describe('-> Test forced index uuid', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll().forceIndexUUID(IndexUUID.createById('i'));
+            expect(query.getIndexUUID().composedUUID()).to.be.equal('i');
+            query = HttpHelper.emulateHttpTransport(query);
+            expect(query.getIndexUUID().composedUUID()).to.be.equal('i');
         });
     });
 });

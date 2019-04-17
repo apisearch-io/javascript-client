@@ -24,6 +24,7 @@ import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {FILTER_TYPE_QUERY} from "./Filter";
 import {ScoreStrategies} from "./ScoreStrategies";
 import {SortBy} from "./SortBy";
+import {IndexUUID} from "../Model/IndexUUID";
 
 /**
  * Query constants
@@ -59,6 +60,7 @@ export class Query {
     private user: User;
     private metadata: any = {};
     private subqueries: any = {};
+    private indexUUID: IndexUUID;
 
     /**
      * Constructor
@@ -1219,6 +1221,31 @@ export class Query {
         return this.UUID;
     }
 
+
+    /**
+     * Force Index UUID.
+     *
+     * @param indexUUID
+     *
+     * @return {Query}
+     */
+    public forceIndexUUID(indexUUID: IndexUUID) : Query
+    {
+        this.indexUUID = indexUUID;
+
+        return this;
+    }
+
+    /**
+     * Get IndexUUID
+     *
+     * @return {IndexUUID|null}
+     */
+    public getIndexUUID() : IndexUUID
+    {
+        return this.indexUUID;
+    }
+
     /**
      * To array
      *
@@ -1366,10 +1393,7 @@ export class Query {
          * User
          */
         if (this.user instanceof User) {
-            const userAsArray = this.user.toArray();
-            if (Object.keys(userAsArray).length > 0) {
-                array.user = userAsArray;
-            }
+            array.user = this.user.toArray();
         }
 
         array.metadata = this.metadata;
@@ -1383,6 +1407,10 @@ export class Query {
                 const subquery = this.subqueries[i];
                 array.subqueries[i] = subquery.toArray();
             }
+        }
+
+        if (this.indexUUID instanceof IndexUUID) {
+            array.index_uuid = this.indexUUID.toArray();
         }
 
         /**
@@ -1539,6 +1567,10 @@ export class Query {
 
         query.user = array.user instanceof Object
             ? User.createFromArray(array.user)
+            : undefined;
+
+        query.indexUUID = array.index_uuid instanceof Object
+            ? IndexUUID.createFromArray(array.index_uuid)
             : undefined;
 
         return query;
