@@ -240,20 +240,17 @@ export class HttpRepository extends Repository {
      */
     public async createIndex(
         indexUUID: IndexUUID,
-        config: Config
+        config: Config,
     ): Promise<void> {
 
         return await this
             .httpClient
             .get(
-                "/" + this.appId + "/indices",
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID(),
                 "put",
                 this.getCredentials(),
                 {},
-                {
-                    index: indexUUID.toArray(),
-                    config: config.toArray(),
-                },
+                config.toArray(),
             )
             .then((response) => {
                 HttpRepository.throwTransportableExceptionIfNeeded(response);
