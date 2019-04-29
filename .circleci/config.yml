@@ -25,6 +25,13 @@ jobs:
                     npm install
 
             - run:
+                name: Wait services to be running
+                command: |
+                    sudo apt-get install wait-for-it
+                    wait-for-it localhost:9200
+                    wait-for-it localhost:8200
+
+            - run:
                 name: Run test scenarios
                 command: |
                     npm run test
