@@ -5347,6 +5347,7 @@ var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError *
 var Filter_3 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 var ScoreStrategies_1 = __webpack_require__(/*! ./ScoreStrategies */ "./src/Query/ScoreStrategies.ts");
 var SortBy_1 = __webpack_require__(/*! ./SortBy */ "./src/Query/SortBy.ts");
+var IndexUUID_1 = __webpack_require__(/*! ../Model/IndexUUID */ "./src/Model/IndexUUID.ts");
 /**
  * Query constants
  */
@@ -5372,7 +5373,7 @@ var Query = /** @class */ (function () {
         this.aggregationsEnabled = true;
         this.suggestionsEnabled = false;
         this.highlightsEnabled = false;
-        this.filterFields = [];
+        this.searchableFields = [];
         this.minScore = exports.NO_MIN_SCORE;
         this.metadata = {};
         this.subqueries = {};
@@ -5717,12 +5718,12 @@ var Query = /** @class */ (function () {
     /**
      * Set filter fields
      *
-     * @param filterFields
+     * @param searchableFields
      *
      * @return {Query}
      */
-    Query.prototype.setFilterFields = function (filterFields) {
-        this.filterFields = filterFields;
+    Query.prototype.setSearchableFields = function (searchableFields) {
+        this.searchableFields = searchableFields;
         return this;
     };
     /**
@@ -5730,8 +5731,8 @@ var Query = /** @class */ (function () {
      *
      * @return {string[]}
      */
-    Query.prototype.getFilterFields = function () {
-        return this.filterFields;
+    Query.prototype.getSearchableFields = function () {
+        return this.searchableFields;
     };
     /**
      * Sort by
@@ -6247,6 +6248,25 @@ var Query = /** @class */ (function () {
         return this.UUID;
     };
     /**
+     * Force Index UUID.
+     *
+     * @param indexUUID
+     *
+     * @return {Query}
+     */
+    Query.prototype.forceIndexUUID = function (indexUUID) {
+        this.indexUUID = indexUUID;
+        return this;
+    };
+    /**
+     * Get IndexUUID
+     *
+     * @return {IndexUUID|null}
+     */
+    Query.prototype.getIndexUUID = function () {
+        return this.indexUUID;
+    };
+    /**
      * To array
      *
      * @return {any}
@@ -6340,9 +6360,9 @@ var Query = /** @class */ (function () {
         /**
          * Filter fields
          */
-        if (this.filterFields instanceof Array &&
-            this.filterFields.length > 0) {
-            array.filter_fields = this.filterFields;
+        if (this.searchableFields instanceof Array &&
+            this.searchableFields.length > 0) {
+            array.searchable_fields = this.searchableFields;
         }
         /**
          * Score strategies
@@ -6367,10 +6387,7 @@ var Query = /** @class */ (function () {
          * User
          */
         if (this.user instanceof User_1.User) {
-            var userAsArray = this.user.toArray();
-            if (Object.keys(userAsArray).length > 0) {
-                array.user = userAsArray;
-            }
+            array.user = this.user.toArray();
         }
         array.metadata = this.metadata;
         if (this.subqueries instanceof Object &&
@@ -6380,6 +6397,9 @@ var Query = /** @class */ (function () {
                 var subquery = this.subqueries[i];
                 array.subqueries[i] = subquery.toArray();
             }
+        }
+        if (this.indexUUID instanceof IndexUUID_1.IndexUUID) {
+            array.index_uuid = this.indexUUID.toArray();
         }
         /**
          * items promoted
@@ -6493,14 +6513,17 @@ var Query = /** @class */ (function () {
         query.metadata = typeof array.metadata === typeof {}
             ? array.metadata
             : {};
-        query.filterFields = array.filter_fields instanceof Array
-            ? array.filter_fields
+        query.searchableFields = array.searchable_fields instanceof Array
+            ? array.searchable_fields
             : [];
         query.scoreStrategies = array.score_strategies instanceof Object
             ? ScoreStrategies_1.ScoreStrategies.createFromArray(array.score_strategies)
             : undefined;
         query.user = array.user instanceof Object
             ? User_1.User.createFromArray(array.user)
+            : undefined;
+        query.indexUUID = array.index_uuid instanceof Object
+            ? IndexUUID_1.IndexUUID.createFromArray(array.index_uuid)
             : undefined;
         return query;
     };
@@ -7480,10 +7503,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this
                             .httpClient
-                            .get("/" + this.appId + "/indices", "put", this.getCredentials(), {}, {
-                            index: indexUUID.toArray(),
-                            config: config.toArray()
-                        })
+                            .get("/" + this.appId + "/indices/" + indexUUID.composedUUID(), "put", this.getCredentials(), {}, config.toArray())
                             .then(function (response) {
                             HttpRepository.throwTransportableExceptionIfNeeded(response);
                             return;
