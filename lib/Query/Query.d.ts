@@ -6,6 +6,7 @@ import { Aggregation } from "./Aggregation";
 import { Filter } from "./Filter";
 import { ScoreStrategies } from "./ScoreStrategies";
 import { SortBy } from "./SortBy";
+import { IndexUUID } from "../Model/IndexUUID";
 /**
  * Query constants
  */
@@ -31,13 +32,14 @@ export declare class Query {
     private aggregationsEnabled;
     private suggestionsEnabled;
     private highlightsEnabled;
-    private filterFields;
+    private searchableFields;
     private scoreStrategies;
     private fuzziness;
     private minScore;
     private user;
     private metadata;
     private subqueries;
+    private indexUUID;
     /**
      * Constructor
      *
@@ -227,17 +229,17 @@ export declare class Query {
     /**
      * Set filter fields
      *
-     * @param filterFields
+     * @param searchableFields
      *
      * @return {Query}
      */
-    setFilterFields(filterFields: string[]): Query;
+    setSearchableFields(searchableFields: string[]): Query;
     /**
      * Get filter fields
      *
      * @return {string[]}
      */
-    getFilterFields(): string[];
+    getSearchableFields(): string[];
     /**
      * Sort by
      *
@@ -585,6 +587,20 @@ export declare class Query {
      * @return {string|null}
      */
     getUUID(): string;
+    /**
+     * Force Index UUID.
+     *
+     * @param indexUUID
+     *
+     * @return {Query}
+     */
+    forceIndexUUID(indexUUID: IndexUUID): Query;
+    /**
+     * Get IndexUUID
+     *
+     * @return {IndexUUID|null}
+     */
+    getIndexUUID(): IndexUUID;
     /**
      * To array
      *
