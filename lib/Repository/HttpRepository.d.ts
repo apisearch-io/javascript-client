@@ -1,15 +1,14 @@
 import { Config } from "../Config/Config";
 import { HttpClient } from "../Http/HttpClient";
-import { Response } from "../Http/Response";
 import { Changes } from "../Model/Changes";
+import { Index } from "../Model/Index";
+import { IndexUUID } from "../Model/IndexUUID";
 import { Item } from "../Model/Item";
 import { ItemUUID } from "../Model/ItemUUID";
 import { Query } from "../Query/Query";
 import { Result } from "../Result/Result";
 import { Transformer } from "../Transformer/Transformer";
 import { Repository } from "./Repository";
-import { IndexUUID } from "../Model/IndexUUID";
-import { Index } from "../Model/Index";
 /**
  * Aggregation class
  */
@@ -36,18 +35,22 @@ export declare class HttpRepository extends Repository {
      * Generate item document by a simple object.
      *
      * @param object
+     *
+     * @returns {void}
      */
     addObject(object: any): void;
     /**
      * Delete item document by uuid.
      *
      * @param object
+     *
+     * @returns {void}
      */
     deleteObject(object: any): void;
     /**
      * Flush update items
      *
-     * @param itemsToUpdate
+     * @param {Item[]} itemsToUpdate
      *
      * @return {Promise<void>}
      */
@@ -55,7 +58,7 @@ export declare class HttpRepository extends Repository {
     /**
      * Flush delete items
      *
-     * @param itemsToDelete
+     * @param {ItemUUID[]} itemsToDelete
      *
      * @return {Promise<void>}
      */
@@ -63,24 +66,16 @@ export declare class HttpRepository extends Repository {
     /**
      * Query
      *
-     * @param query
+     * @param {Query} query
      *
      * @return {Promise<Result>}
      */
     query(query: Query): Promise<Result>;
     /**
-     * Apply transformers to results
-     *
-     * @param result
-     *
-     * @return {Result}
-     */
-    private applyTransformersToResult;
-    /**
      * Update items
      *
-     * @param query
-     * @param changes
+     * @param {Query} query
+     * @param {Changes} changes
      *
      * @return {Promise<void>}
      */
@@ -88,8 +83,8 @@ export declare class HttpRepository extends Repository {
     /**
      * Create index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
@@ -97,7 +92,7 @@ export declare class HttpRepository extends Repository {
     /**
      * Delete index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
@@ -105,7 +100,7 @@ export declare class HttpRepository extends Repository {
     /**
      * Reset index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
@@ -113,7 +108,7 @@ export declare class HttpRepository extends Repository {
     /**
      * Check index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<boolean>}
      */
@@ -127,8 +122,8 @@ export declare class HttpRepository extends Repository {
     /**
      * Configure index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
@@ -140,9 +135,17 @@ export declare class HttpRepository extends Repository {
      */
     private getCredentials;
     /**
-     * throw error if needed
+     * Apply transformers to results
      *
-     * @param response
+     * @param {Result} result
+     *
+     * @return {Result}
      */
-    static throwTransportableExceptionIfNeeded(response: Response): void;
+    private applyTransformersToResult;
+    /**
+     * Create exception to match an error response
+     *
+     * @param any response
+     */
+    private createErrorFromResponse;
 }

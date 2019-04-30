@@ -4,17 +4,19 @@ import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {InvalidTokenError} from "../Error/InvalidTokenError";
 import {ResourceExistsError} from "../Error/ResourceExistsError";
 import {ResourceNotAvailableError} from "../Error/ResourceNotAvailableError";
+import {UnknownError} from "../Error/UnknownError";
 import {HttpClient} from "../Http/HttpClient";
 import {Response} from "../Http/Response";
 import {Changes} from "../Model/Changes";
+import {Index} from "../Model/Index";
+import {IndexUUID} from "../Model/IndexUUID";
 import {Item} from "../Model/Item";
 import {ItemUUID} from "../Model/ItemUUID";
 import {Query} from "../Query/Query";
 import {Result} from "../Result/Result";
 import {Transformer} from "../Transformer/Transformer";
 import {Repository} from "./Repository";
-import {IndexUUID} from "../Model/IndexUUID";
-import {Index} from "../Model/Index";
+
 /**
  * Aggregation class
  */
@@ -57,8 +59,10 @@ export class HttpRepository extends Repository {
      * Generate item document by a simple object.
      *
      * @param object
+     *
+     * @returns {void}
      */
-    public addObject(object) {
+    public addObject(object): void {
         const item = this
             .transformer
             .toItem(object);
@@ -72,8 +76,10 @@ export class HttpRepository extends Repository {
      * Delete item document by uuid.
      *
      * @param object
+     *
+     * @returns {void}
      */
-    public deleteObject(object) {
+    public deleteObject(object): void {
         const itemUUID = this
             .transformer
             .toItemUUID(object);
@@ -86,7 +92,7 @@ export class HttpRepository extends Repository {
     /**
      * Flush update items
      *
-     * @param itemsToUpdate
+     * @param {Item[]} itemsToUpdate
      *
      * @return {Promise<void>}
      */
@@ -96,9 +102,8 @@ export class HttpRepository extends Repository {
             return;
         }
 
-        return this
-            .httpClient
-            .get(
+        try {
+            await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/items",
                 "put",
                 this.getCredentials(),
@@ -106,16 +111,16 @@ export class HttpRepository extends Repository {
                 itemsToUpdate.map((item) => {
                     return item.toArray();
                 }),
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Flush delete items
      *
-     * @param itemsToDelete
+     * @param {ItemUUID[]} itemsToDelete
      *
      * @return {Promise<void>}
      */
@@ -125,9 +130,8 @@ export class HttpRepository extends Repository {
             return;
         }
 
-        return this
-            .httpClient
-            .get(
+        try {
+            await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/items",
                 "delete",
                 this.getCredentials(),
@@ -135,24 +139,23 @@ export class HttpRepository extends Repository {
                 itemsToDelete.map((itemUUID) => {
                     return itemUUID.toArray();
                 }),
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Query
      *
-     * @param query
+     * @param {Query} query
      *
      * @return {Promise<Result>}
      */
     public async query(query: Query): Promise<Result> {
-
-        return await this
-            .httpClient
-            .get(
+        let response: Response;
+        try {
+            response = await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId,
                 "get",
                 this.getCredentials(),
@@ -160,50 +163,20 @@ export class HttpRepository extends Repository {
                     query: JSON.stringify(query.toArray()),
                 },
                 {},
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-                const result = Result.createFromArray(response.getBody());
-
-                return this.applyTransformersToResult(result);
-            });
-    }
-
-    /**
-     * Apply transformers to results
-     *
-     * @param result
-     *
-     * @return {Result}
-     */
-    private applyTransformersToResult(result: Result): Result {
-        const subresults = result.getSubresults();
-
-        if (Object.keys(subresults).length > 0) {
-            Object.keys(subresults).map(function(key) {
-                subresults[key] = this.applyTransformersToResult(subresults[key])
-            }.bind(this));
-
-            return Result.createMultiresults(subresults);
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
         }
+        const result = Result.createFromArray(response.getBody());
 
-        return Result.create(
-            result.getQueryUUID(),
-            result.getTotalItems(),
-            result.getTotalHits(),
-            result.getAggregations(),
-            result.getSuggests(),
-            this
-                .transformer
-                .fromItems(result.getItems())
-        );
+        return this.applyTransformersToResult(result);
     }
 
     /**
      * Update items
      *
-     * @param query
-     * @param changes
+     * @param {Query} query
+     * @param {Changes} changes
      *
      * @return {Promise<void>}
      */
@@ -211,30 +184,27 @@ export class HttpRepository extends Repository {
         query: Query,
         changes: Changes,
     ): Promise<void> {
-        return await this
-            .httpClient
-            .get(
+        try {
+            await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query",
                 "post",
                 this.getCredentials(),
                 {},
                 {
-                    query: query.toArray(),
                     changes: changes.toArray(),
+                    query: query.toArray(),
                 },
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-
-                return;
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Create index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
@@ -242,96 +212,83 @@ export class HttpRepository extends Repository {
         indexUUID: IndexUUID,
         config: Config,
     ): Promise<void> {
-
-        return await this
-            .httpClient
-            .get(
+        try {
+            await this.httpClient.get(
                 "/" + this.appId + "/indices/" + indexUUID.composedUUID(),
                 "put",
                 this.getCredentials(),
                 {},
                 config.toArray(),
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-
-                return;
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Delete index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
     public async deleteIndex(indexUUID: IndexUUID): Promise<void> {
-
-        return await this
-            .httpClient
-            .get(
+        try {
+            await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId,
                 "delete",
                 this.getCredentials(),
                 {},
                 {},
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-
-                return;
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Reset index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
     public async resetIndex(indexUUID: IndexUUID): Promise<void> {
-
-        return await this
-            .httpClient
-            .get(
-                "/" + this.appId + "/indices/" + this.indexId + '/reset',
+        try {
+            await this.httpClient.get(
+                "/" + this.appId + "/indices/" + this.indexId + "/reset",
                 "post",
                 this.getCredentials(),
                 {},
                 {},
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-
-                return;
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
      * Check index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<boolean>}
      */
     public async checkIndex(indexUUID: IndexUUID): Promise<boolean> {
-
-        return await this
-            .httpClient
-            .get(
-                "/" + this.appId + "/indices/" + this.indexId + '/reset',
+        let response: Response;
+        try {
+            response = await this.httpClient.get(
+                "/" + this.appId + "/indices/" + this.indexId,
                 "head",
                 this.getCredentials(),
                 {},
                 {},
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
 
-                return response.getCode() === 200;
-            });
+        return response.getCode() === 200;
     }
 
     /**
@@ -340,55 +297,49 @@ export class HttpRepository extends Repository {
      * @return {Promise<Index[]>}
      */
     public async getIndices(): Promise<Index[]> {
-
-        return await this
-            .httpClient
-            .get(
+        let response: Response;
+        try {
+            response = await this.httpClient.get(
                 "/" + this.appId + "/indices/",
                 "get",
                 this.getCredentials(),
                 {},
                 {},
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
+        const result: Index[] = [];
+        for (const indexAsArray of response.getBody()) {
+            result.push(Index.createFromArray(indexAsArray));
+        }
 
-                let result = [];
-                for (var indexAsArray of response.getBody()) {
-                    result.push(Index.createFromArray(indexAsArray));
-                }
-
-                return result;
-            });
+        return result;
     }
 
     /**
      * Configure index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
     public async configureIndex(
         indexUUID: IndexUUID,
-        config: Config
+        config: Config,
     ): Promise<void> {
-
-        return await this
-            .httpClient
-            .get(
-                "/" + this.appId + "/indices/" + this.indexId + '/configure',
+        try {
+            await this.httpClient.get(
+                "/" + this.appId + "/indices/" + this.indexId + "/configure",
                 "post",
                 this.getCredentials(),
                 {},
                 config.toArray(),
-            )
-            .then((response) => {
-                HttpRepository.throwTransportableExceptionIfNeeded(response);
-
-                return;
-            });
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
     }
 
     /**
@@ -404,27 +355,65 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * throw error if needed
+     * Apply transformers to results
      *
-     * @param response
+     * @param {Result} result
+     *
+     * @return {Result}
      */
-    public static throwTransportableExceptionIfNeeded(response: Response) {
+    private applyTransformersToResult(result: Result): Result {
+        const subresults = result.getSubresults();
 
-        if (typeof response.getCode() == "undefined") {
-            return;
+        if (Object.keys(subresults).length > 0) {
+            Object.keys(subresults).map(function(key) {
+                subresults[key] = this.applyTransformersToResult(subresults[key]);
+            }.bind(this));
+
+            return Result.createMultiresults(subresults);
         }
 
-        switch (response.getCode()) {
-            case ResourceNotAvailableError.getTransportableHTTPError():
-                throw new ResourceNotAvailableError(response.getBody().message);
-            case InvalidTokenError.getTransportableHTTPError():
-                throw new InvalidTokenError(response.getBody().message);
-            case InvalidFormatError.getTransportableHTTPError():
-                throw new InvalidFormatError(response.getBody().message);
-            case ResourceExistsError.getTransportableHTTPError():
-                throw new ResourceExistsError(response.getBody().message);
-            case ConnectionError.getTransportableHTTPError():
-                throw new ConnectionError(response.getBody().message);
+        return Result.create(
+            result.getQueryUUID(),
+            result.getTotalItems(),
+            result.getTotalHits(),
+            result.getAggregations(),
+            result.getSuggests(),
+            this
+                .transformer
+                .fromItems(result.getItems()),
+        );
+    }
+
+    /**
+     * Create exception to match an error response
+     *
+     * @param any response
+     */
+    private createErrorFromResponse(response: any) {
+
+        let error;
+        if (response instanceof Response) {
+            switch (response.getCode()) {
+                case ResourceNotAvailableError.getTransportableHTTPError():
+                    error = new ResourceNotAvailableError(response.getBody().message);
+                    break;
+                case InvalidTokenError.getTransportableHTTPError():
+                    error = new InvalidTokenError(response.getBody().message);
+                    break;
+                case InvalidFormatError.getTransportableHTTPError():
+                    error = new InvalidFormatError(response.getBody().message);
+                    break;
+                case ResourceExistsError.getTransportableHTTPError():
+                    error = new ResourceExistsError(response.getBody().message);
+                    break;
+                case ConnectionError.getTransportableHTTPError():
+                    error = new ConnectionError(response.getBody().message);
+                    break;
+            }
         }
+
+        return undefined === error
+            ? UnknownError.createUnknownError()
+            : error;
     }
 }
