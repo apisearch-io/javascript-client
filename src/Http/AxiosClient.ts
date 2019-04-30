@@ -1,4 +1,5 @@
 import Axios from "axios";
+import {ConnectionError} from "..";
 import {KeyValueCache} from "../Cache/KeyValueCache";
 import {Client} from "./Client";
 import {HttpClient} from "./HttpClient";
@@ -75,29 +76,29 @@ export class AxiosClient extends Client implements HttpClient {
 
         return new Promise<Response> ((resolve, reject) => {
 
-            const headers = "get" == method
+            const headers = "get" === method
                 ? {}
                 : {
                     "Content-Encoding": "gzip",
                     "Content-Type": "application/json",
                 };
 
-            let axiosRequestConfig:any = {
-                url: url + "?" + Client.objectToUrlParameters({
-                    ...parameters,
-                    ...{
-                        'token': credentials.token
-                    }
-                }),
+            const axiosRequestConfig: any = {
+                baseURL: that.host.replace(/\/*$/g, ""),
                 data,
                 headers,
                 method,
-                baseURL: that.host.replace(/\/*$/g, ""),
                 timeout: that.timeout,
-                transformRequest: [(data) => JSON.stringify(data)],
+                transformRequest: [(rawData) => JSON.stringify(rawData)],
+                url: url + "?" + Client.objectToUrlParameters({
+                    ...parameters,
+                    ...{
+                        token: credentials.token,
+                    },
+                }),
             };
 
-            if (typeof this.cancelToken[url] != 'undefined') {
+            if (typeof this.cancelToken[url] !== "undefined") {
                 axiosRequestConfig.cancelToken = this.cancelToken[url].token;
             }
 
@@ -113,15 +114,21 @@ export class AxiosClient extends Client implements HttpClient {
                     return resolve(response);
                 })
                 .catch((error) => {
-                    if (error.response === undefined) {
-                        return;
+                    let response: Response;
+                    if (error.response) {
+                        response = new Response(
+                            error.response.status,
+                            error.response.data,
+                        );
+                    } else {
+                        response = new Response(
+                          ConnectionError.getTransportableHTTPError(),
+                          {
+                              message: "Connection failed or timed out",
+                          },
+                        );
                     }
-                    const response = new Response(
-                        error.response.status,
-                        error.response.data,
-                    );
-
-                    return reject(response);
+                    reject(response);
                 });
         });
     }
@@ -133,7 +140,7 @@ export class AxiosClient extends Client implements HttpClient {
      * @param url
      */
     public abort(url: string) {
-        if (typeof this.cancelToken[url] != 'undefined') {
+        if (typeof this.cancelToken[url] !== "undefined") {
             this.cancelToken[url].cancel();
         }
 

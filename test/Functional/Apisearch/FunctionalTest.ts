@@ -11,14 +11,14 @@ export default class FunctionalTest {
      *
      * @return {HttpRepository}
      */
-    static createRepository() : HttpRepository {
+    public static createRepository(): HttpRepository {
         return Apisearch.createRepository({
-            'app_id': '789437438test',
-            'index_id': 'default',
-            'token': '0e4d75ba-c640-44c1-a745-06ee51db4e93',
-            'options': {
-                'endpoint': 'http://localhost:8200',
-            }
+            app_id: "789437438test",
+            index_id: "default",
+            options: {
+                endpoint: "http://localhost:8200",
+            },
+            token: "0e4d75ba-c640-44c1-a745-06ee51db4e93",
         });
     }
 }

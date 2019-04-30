@@ -3198,6 +3198,41 @@ exports.ResourceNotAvailableError = ResourceNotAvailableError;
 
 /***/ }),
 
+/***/ "./src/Error/UnknownError.ts":
+/*!***********************************!*\
+  !*** ./src/Error/UnknownError.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
+/**
+ * Connection error
+ */
+var UnknownError = /** @class */ (function (_super) {
+    tslib_1.__extends(UnknownError, _super);
+    function UnknownError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Unknown error
+     *
+     * @return this
+     */
+    UnknownError.createUnknownError = function () {
+        return new this("Unknown error.");
+    };
+    return UnknownError;
+}(ErrorWithMessage_1.ErrorWithMessage));
+exports.UnknownError = UnknownError;
+
+
+/***/ }),
+
 /***/ "./src/Error/UnsupportedContentTypeError.ts":
 /*!**************************************************!*\
   !*** ./src/Error/UnsupportedContentTypeError.ts ***!
@@ -3468,6 +3503,7 @@ exports.Square = Square;
 exports.__esModule = true;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+var __1 = __webpack_require__(/*! .. */ "./src/index.ts");
 var Client_1 = __webpack_require__(/*! ./Client */ "./src/Http/Client.ts");
 var Response_1 = __webpack_require__(/*! ./Response */ "./src/Http/Response.ts");
 /**
@@ -3521,24 +3557,24 @@ var AxiosClient = /** @class */ (function (_super) {
                     this.abort(url);
                 }
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var headers = "get" == method
+                        var headers = "get" === method
                             ? {}
                             : {
                                 "Content-Encoding": "gzip",
                                 "Content-Type": "application/json"
                             };
                         var axiosRequestConfig = {
-                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, parameters, {
-                                'token': credentials.token
-                            })),
+                            baseURL: that.host.replace(/\/*$/g, ""),
                             data: data,
                             headers: headers,
                             method: method,
-                            baseURL: that.host.replace(/\/*$/g, ""),
                             timeout: that.timeout,
-                            transformRequest: [function (data) { return JSON.stringify(data); }]
+                            transformRequest: [function (rawData) { return JSON.stringify(rawData); }],
+                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, parameters, {
+                                token: credentials.token
+                            }))
                         };
-                        if (typeof _this.cancelToken[url] != 'undefined') {
+                        if (typeof _this.cancelToken[url] !== "undefined") {
                             axiosRequestConfig.cancelToken = _this.cancelToken[url].token;
                         }
                         axios_1["default"]
@@ -3547,11 +3583,16 @@ var AxiosClient = /** @class */ (function (_super) {
                             var response = new Response_1.Response(axiosResponse.status, axiosResponse.data);
                             return resolve(response);
                         })["catch"](function (error) {
-                            if (error.response === undefined) {
-                                return;
+                            var response;
+                            if (error.response) {
+                                response = new Response_1.Response(error.response.status, error.response.data);
                             }
-                            var response = new Response_1.Response(error.response.status, error.response.data);
-                            return reject(response);
+                            else {
+                                response = new Response_1.Response(__1.ConnectionError.getTransportableHTTPError(), {
+                                    message: "Connection failed or timed out"
+                                });
+                            }
+                            reject(response);
                         });
                     })];
             });
@@ -3564,7 +3605,7 @@ var AxiosClient = /** @class */ (function (_super) {
      * @param url
      */
     AxiosClient.prototype.abort = function (url) {
-        if (typeof this.cancelToken[url] != 'undefined') {
+        if (typeof this.cancelToken[url] !== "undefined") {
             this.cancelToken[url].cancel();
         }
         this.generateCancelToken(url);
@@ -7309,11 +7350,13 @@ var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError *
 var InvalidTokenError_1 = __webpack_require__(/*! ../Error/InvalidTokenError */ "./src/Error/InvalidTokenError.ts");
 var ResourceExistsError_1 = __webpack_require__(/*! ../Error/ResourceExistsError */ "./src/Error/ResourceExistsError.ts");
 var ResourceNotAvailableError_1 = __webpack_require__(/*! ../Error/ResourceNotAvailableError */ "./src/Error/ResourceNotAvailableError.ts");
+var UnknownError_1 = __webpack_require__(/*! ../Error/UnknownError */ "./src/Error/UnknownError.ts");
+var Response_1 = __webpack_require__(/*! ../Http/Response */ "./src/Http/Response.ts");
+var Index_1 = __webpack_require__(/*! ../Model/Index */ "./src/Model/Index.ts");
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
 var Result_1 = __webpack_require__(/*! ../Result/Result */ "./src/Result/Result.ts");
 var Repository_1 = __webpack_require__(/*! ./Repository */ "./src/Repository/Repository.ts");
-var Index_1 = __webpack_require__(/*! ../Model/Index */ "./src/Model/Index.ts");
 /**
  * Aggregation class
  */
@@ -7346,6 +7389,8 @@ var HttpRepository = /** @class */ (function (_super) {
      * Generate item document by a simple object.
      *
      * @param object
+     *
+     * @returns {void}
      */
     HttpRepository.prototype.addObject = function (object) {
         var item = this
@@ -7359,6 +7404,8 @@ var HttpRepository = /** @class */ (function (_super) {
      * Delete item document by uuid.
      *
      * @param object
+     *
+     * @returns {void}
      */
     HttpRepository.prototype.deleteObject = function (object) {
         var itemUUID = this
@@ -7371,120 +7418,125 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Flush update items
      *
-     * @param itemsToUpdate
+     * @param {Item[]} itemsToUpdate
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.flushUpdateItems = function (itemsToUpdate) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_1;
             return tslib_1.__generator(this, function (_a) {
-                if (itemsToUpdate.length === 0) {
-                    return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        if (itemsToUpdate.length === 0) {
+                            return [2 /*return*/];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/items", "put", this.getCredentials(), {}, itemsToUpdate.map(function (item) {
+                                return item.toArray();
+                            }))];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        response_1 = _a.sent();
+                        throw this.createErrorFromResponse(response_1);
+                    case 4: return [2 /*return*/];
                 }
-                return [2 /*return*/, this
-                        .httpClient
-                        .get("/" + this.appId + "/indices/" + this.indexId + "/items", "put", this.getCredentials(), {}, itemsToUpdate.map(function (item) {
-                        return item.toArray();
-                    }))
-                        .then(function (response) {
-                        HttpRepository.throwTransportableExceptionIfNeeded(response);
-                    })];
             });
         });
     };
     /**
      * Flush delete items
      *
-     * @param itemsToDelete
+     * @param {ItemUUID[]} itemsToDelete
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.flushDeleteItems = function (itemsToDelete) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_2;
             return tslib_1.__generator(this, function (_a) {
-                if (itemsToDelete.length === 0) {
-                    return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        if (itemsToDelete.length === 0) {
+                            return [2 /*return*/];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/items", "delete", this.getCredentials(), {}, itemsToDelete.map(function (itemUUID) {
+                                return itemUUID.toArray();
+                            }))];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        response_2 = _a.sent();
+                        throw this.createErrorFromResponse(response_2);
+                    case 4: return [2 /*return*/];
                 }
-                return [2 /*return*/, this
-                        .httpClient
-                        .get("/" + this.appId + "/indices/" + this.indexId + "/items", "delete", this.getCredentials(), {}, itemsToDelete.map(function (itemUUID) {
-                        return itemUUID.toArray();
-                    }))
-                        .then(function (response) {
-                        HttpRepository.throwTransportableExceptionIfNeeded(response);
-                    })];
             });
         });
     };
     /**
      * Query
      *
-     * @param query
+     * @param {Query} query
      *
      * @return {Promise<Result>}
      */
     HttpRepository.prototype.query = function (query) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var response, response_3, result;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
-                            query: JSON.stringify(query.toArray())
-                        }, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            var result = Result_1.Result.createFromArray(response.getBody());
-                            return _this.applyTransformersToResult(result);
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
+                                query: JSON.stringify(query.toArray())
+                            }, {})];
+                    case 1:
+                        response = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_3 = _a.sent();
+                        throw this.createErrorFromResponse(response_3);
+                    case 3:
+                        result = Result_1.Result.createFromArray(response.getBody());
+                        return [2 /*return*/, this.applyTransformersToResult(result)];
                 }
             });
         });
     };
     /**
-     * Apply transformers to results
-     *
-     * @param result
-     *
-     * @return {Result}
-     */
-    HttpRepository.prototype.applyTransformersToResult = function (result) {
-        var subresults = result.getSubresults();
-        if (Object.keys(subresults).length > 0) {
-            Object.keys(subresults).map(function (key) {
-                subresults[key] = this.applyTransformersToResult(subresults[key]);
-            }.bind(this));
-            return Result_1.Result.createMultiresults(subresults);
-        }
-        return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), this
-            .transformer
-            .fromItems(result.getItems()));
-    };
-    /**
      * Update items
      *
-     * @param query
-     * @param changes
+     * @param {Query} query
+     * @param {Changes} changes
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.updateItems = function (query, changes) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_4;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query", "post", this.getCredentials(), {}, {
-                            query: query.toArray(),
-                            changes: changes.toArray()
-                        })
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query", "post", this.getCredentials(), {}, {
+                                changes: changes.toArray(),
+                                query: query.toArray()
+                            })];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_4 = _a.sent();
+                        throw this.createErrorFromResponse(response_4);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -7492,23 +7544,26 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Create index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.createIndex = function (indexUUID, config) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_5;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + indexUUID.composedUUID(), "put", this.getCredentials(), {}, config.toArray())
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID(), "put", this.getCredentials(), {}, config.toArray())];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_5 = _a.sent();
+                        throw this.createErrorFromResponse(response_5);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -7516,22 +7571,25 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Delete index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.deleteIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_6;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId, "delete", this.getCredentials(), {}, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "delete", this.getCredentials(), {}, {})];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_6 = _a.sent();
+                        throw this.createErrorFromResponse(response_6);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -7539,22 +7597,25 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Reset index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.resetIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_7;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId + '/reset', "post", this.getCredentials(), {}, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/reset", "post", this.getCredentials(), {}, {})];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_7 = _a.sent();
+                        throw this.createErrorFromResponse(response_7);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -7562,22 +7623,25 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Check index
      *
-     * @param indexUUID
+     * @param {IndexUUID} indexUUID
      *
      * @return {Promise<boolean>}
      */
     HttpRepository.prototype.checkIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response, response_8;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId + '/reset', "head", this.getCredentials(), {}, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return response.getCode() === 200;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "head", this.getCredentials(), {}, {})];
+                    case 1:
+                        response = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_8 = _a.sent();
+                        throw this.createErrorFromResponse(response_8);
+                    case 3: return [2 /*return*/, response.getCode() === 200];
                 }
             });
         });
@@ -7589,21 +7653,25 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.getIndices = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/", "get", this.getCredentials(), {}, {})
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            var result = [];
-                            for (var _i = 0, _a = response.getBody(); _i < _a.length; _i++) {
-                                var indexAsArray = _a[_i];
-                                result.push(Index_1.Index.createFromArray(indexAsArray));
-                            }
-                            return result;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+            var response, response_9, result, _i, _a, indexAsArray;
+            return tslib_1.__generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/", "get", this.getCredentials(), {}, {})];
+                    case 1:
+                        response = _b.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_9 = _b.sent();
+                        throw this.createErrorFromResponse(response_9);
+                    case 3:
+                        result = [];
+                        for (_i = 0, _a = response.getBody(); _i < _a.length; _i++) {
+                            indexAsArray = _a[_i];
+                            result.push(Index_1.Index.createFromArray(indexAsArray));
+                        }
+                        return [2 /*return*/, result];
                 }
             });
         });
@@ -7611,23 +7679,26 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Configure index
      *
-     * @param indexUUID
-     * @param config
+     * @param {IndexUUID} indexUUID
+     * @param {Config} config
      *
      * @return {Promise<void>}
      */
     HttpRepository.prototype.configureIndex = function (indexUUID, config) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response_10;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this
-                            .httpClient
-                            .get("/" + this.appId + "/indices/" + this.indexId + '/configure', "post", this.getCredentials(), {}, config.toArray())
-                            .then(function (response) {
-                            HttpRepository.throwTransportableExceptionIfNeeded(response);
-                            return;
-                        })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/configure", "post", this.getCredentials(), {}, config.toArray())];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_10 = _a.sent();
+                        throw this.createErrorFromResponse(response_10);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -7644,26 +7715,53 @@ var HttpRepository = /** @class */ (function (_super) {
         };
     };
     /**
-     * throw error if needed
+     * Apply transformers to results
      *
-     * @param response
+     * @param {Result} result
+     *
+     * @return {Result}
      */
-    HttpRepository.throwTransportableExceptionIfNeeded = function (response) {
-        if (typeof response.getCode() == "undefined") {
-            return;
+    HttpRepository.prototype.applyTransformersToResult = function (result) {
+        var subresults = result.getSubresults();
+        if (Object.keys(subresults).length > 0) {
+            Object.keys(subresults).map(function (key) {
+                subresults[key] = this.applyTransformersToResult(subresults[key]);
+            }.bind(this));
+            return Result_1.Result.createMultiresults(subresults);
         }
-        switch (response.getCode()) {
-            case ResourceNotAvailableError_1.ResourceNotAvailableError.getTransportableHTTPError():
-                throw new ResourceNotAvailableError_1.ResourceNotAvailableError(response.getBody().message);
-            case InvalidTokenError_1.InvalidTokenError.getTransportableHTTPError():
-                throw new InvalidTokenError_1.InvalidTokenError(response.getBody().message);
-            case InvalidFormatError_1.InvalidFormatError.getTransportableHTTPError():
-                throw new InvalidFormatError_1.InvalidFormatError(response.getBody().message);
-            case ResourceExistsError_1.ResourceExistsError.getTransportableHTTPError():
-                throw new ResourceExistsError_1.ResourceExistsError(response.getBody().message);
-            case ConnectionError_1.ConnectionError.getTransportableHTTPError():
-                throw new ConnectionError_1.ConnectionError(response.getBody().message);
+        return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), this
+            .transformer
+            .fromItems(result.getItems()));
+    };
+    /**
+     * Create exception to match an error response
+     *
+     * @param any response
+     */
+    HttpRepository.prototype.createErrorFromResponse = function (response) {
+        var error;
+        if (response instanceof Response_1.Response) {
+            switch (response.getCode()) {
+                case ResourceNotAvailableError_1.ResourceNotAvailableError.getTransportableHTTPError():
+                    error = new ResourceNotAvailableError_1.ResourceNotAvailableError(response.getBody().message);
+                    break;
+                case InvalidTokenError_1.InvalidTokenError.getTransportableHTTPError():
+                    error = new InvalidTokenError_1.InvalidTokenError(response.getBody().message);
+                    break;
+                case InvalidFormatError_1.InvalidFormatError.getTransportableHTTPError():
+                    error = new InvalidFormatError_1.InvalidFormatError(response.getBody().message);
+                    break;
+                case ResourceExistsError_1.ResourceExistsError.getTransportableHTTPError():
+                    error = new ResourceExistsError_1.ResourceExistsError(response.getBody().message);
+                    break;
+                case ConnectionError_1.ConnectionError.getTransportableHTTPError():
+                    error = new ConnectionError_1.ConnectionError(response.getBody().message);
+                    break;
+            }
         }
+        return undefined === error
+            ? UnknownError_1.UnknownError.createUnknownError()
+            : error;
     };
     return HttpRepository;
 }(Repository_1.Repository));
