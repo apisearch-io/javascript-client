@@ -57,9 +57,9 @@ export declare abstract class Repository {
      * @param bulkNumber
      * @param skipIfLess
      *
-     * @return {Promise<void>}
+     * @return {Promise<any[]>}
      */
-    flush(bulkNumber?: number, skipIfLess?: boolean): Promise<void>;
+    flush(bulkNumber?: number, skipIfLess?: boolean): Promise<any[]>;
     /**
      * Make chunks of n elements
      *

@@ -7848,10 +7848,11 @@ var Repository = /** @class */ (function () {
      * @param bulkNumber
      * @param skipIfLess
      *
-     * @return {Promise<void>}
+     * @return {Promise<any[]>}
      */
     Repository.prototype.flush = function (bulkNumber, skipIfLess) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var promise, resetCachedElements;
             var _this = this;
             return tslib_1.__generator(this, function (_a) {
                 if (!bulkNumber) {
@@ -7864,20 +7865,21 @@ var Repository = /** @class */ (function () {
                     this.itemsToUpdate.length < bulkNumber) {
                     return [2 /*return*/];
                 }
-                return [2 /*return*/, Promise.all(Repository
-                        .chunkArray(this.itemsToUpdate, bulkNumber)
-                        .map(function (arrayOfItems) {
-                        return _this.flushUpdateItems(arrayOfItems);
-                    })
-                        .concat(Repository
-                        .chunkArray(this.itemsToDelete, bulkNumber)
-                        .map(function (arrayOfItemsUUID) {
-                        return _this.flushDeleteItems(arrayOfItemsUUID);
-                    }))).then(function (_) {
-                        _this.resetCachedElements();
-                    })["catch"](function (_) {
-                        _this.resetCachedElements();
-                    })];
+                promise = Promise.all(Repository
+                    .chunkArray(this.itemsToUpdate, bulkNumber)
+                    .map(function (arrayOfItems) {
+                    return _this.flushUpdateItems(arrayOfItems);
+                })
+                    .concat(Repository
+                    .chunkArray(this.itemsToDelete, bulkNumber)
+                    .map(function (arrayOfItemsUUID) {
+                    return _this.flushDeleteItems(arrayOfItemsUUID);
+                })));
+                resetCachedElements = function () {
+                    _this.resetCachedElements();
+                };
+                promise.then(resetCachedElements, resetCachedElements);
+                return [2 /*return*/, promise];
             });
         });
     };

@@ -89,12 +89,12 @@ export abstract class Repository {
      * @param bulkNumber
      * @param skipIfLess
      *
-     * @return {Promise<void>}
+     * @return {Promise<any[]>}
      */
     public async flush(
         bulkNumber?: number,
         skipIfLess?: boolean,
-    ): Promise<void> {
+    ): Promise<any[]> {
 
         if (!bulkNumber) {
             bulkNumber = 500;
@@ -111,7 +111,7 @@ export abstract class Repository {
             return;
         }
 
-        return Promise.all(Repository
+        const promise = Promise.all(Repository
             .chunkArray(
                 this.itemsToUpdate,
                 bulkNumber,
@@ -128,11 +128,15 @@ export abstract class Repository {
                     return this.flushDeleteItems(arrayOfItemsUUID);
                 }),
             ),
-        ).then((_) => {
+        );
+
+        const resetCachedElements = () => {
             this.resetCachedElements();
-        }).catch((_) => {
-            this.resetCachedElements();
-        });
+        };
+
+        promise.then(resetCachedElements, resetCachedElements);
+
+        return promise;
     }
 
     /**
