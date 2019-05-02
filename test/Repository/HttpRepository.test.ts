@@ -199,6 +199,30 @@ describe('Repository/', () => {
                 });
         });
 
+        it("Should fail on flush when client fails", async () => {
+            const client = new TestClient();
+            const repository = new HttpRepository(
+                client,
+                "aaa",
+                "bbb",
+                "error",
+                transformer,
+            );
+
+            repository.addItems([
+                Item.create(ItemUUID.createByComposedUUID("1~product")),
+            ]);
+
+            expect(client.calls.length).to.be.equal(0);
+
+            try {
+                await repository.flush();
+                expect.fail("flush() should have failed");
+            } catch (error) {
+                //
+            }
+        });
+
         it('All other calls', async () => {
             let client = new TestClient();
             let repository = new HttpRepository(
