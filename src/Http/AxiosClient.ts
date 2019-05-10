@@ -1,6 +1,5 @@
 import Axios from "axios";
 import {ConnectionError} from "..";
-import {KeyValueCache} from "../Cache/KeyValueCache";
 import {Client} from "./Client";
 import {HttpClient} from "./HttpClient";
 import {Response} from "./Response";
@@ -12,7 +11,6 @@ import {RetryMap} from "./RetryMap";
 export class AxiosClient extends Client implements HttpClient {
 
     private host: string;
-    private cache: KeyValueCache;
     private timeout: number;
     private overrideQueries: boolean;
     private cancelToken: any;
@@ -25,7 +23,6 @@ export class AxiosClient extends Client implements HttpClient {
      * @param timeout
      * @param retryMap
      * @param overrideQueries
-     * @param cache
      */
     constructor(
         host: string,
@@ -33,13 +30,11 @@ export class AxiosClient extends Client implements HttpClient {
         timeout: number,
         retryMap: RetryMap,
         overrideQueries: boolean,
-        cache: KeyValueCache,
     ) {
         super(version, retryMap);
 
         this.host = host;
         this.timeout = timeout;
-        this.cache = cache;
         this.overrideQueries = overrideQueries;
         this.cancelToken = {};
     }

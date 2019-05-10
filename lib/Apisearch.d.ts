@@ -1,4 +1,3 @@
-import { KeyValueCache } from "./Cache/KeyValueCache";
 import { HttpClient } from "./Http/HttpClient";
 import { Coordinate } from "./Model/Coordinate";
 import { ItemUUID } from "./Model/ItemUUID";
@@ -26,7 +25,6 @@ export default class Apisearch {
             api_version?: string;
             timeout?: number;
             override_queries?: boolean;
-            cache?: KeyValueCache;
             http_client?: HttpClient;
         };
     }): HttpRepository;

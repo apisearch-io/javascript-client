@@ -1,4 +1,3 @@
-import { KeyValueCache } from "../Cache/KeyValueCache";
 import { Client } from "./Client";
 import { HttpClient } from "./HttpClient";
 import { Response } from "./Response";
@@ -8,7 +7,6 @@ import { RetryMap } from "./RetryMap";
  */
 export declare class AxiosClient extends Client implements HttpClient {
     private host;
-    private cache;
     private timeout;
     private overrideQueries;
     private cancelToken;
@@ -20,9 +18,8 @@ export declare class AxiosClient extends Client implements HttpClient {
      * @param timeout
      * @param retryMap
      * @param overrideQueries
-     * @param cache
      */
-    constructor(host: string, version: string, timeout: number, retryMap: RetryMap, overrideQueries: boolean, cache: KeyValueCache);
+    constructor(host: string, version: string, timeout: number, retryMap: RetryMap, overrideQueries: boolean);
     /**
      * Get
      *
