@@ -1,8 +1,6 @@
 import Apisearch from "./Apisearch";
 
 export default Apisearch;
-export * from "./Cache/InMemoryCache";
-export * from "./Cache/KeyValueCache";
 
 export * from "./Config/Config";
 export * from "./Config/Synonym";

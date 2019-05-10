@@ -2220,7 +2220,6 @@ function __importDefault(mod) {
 
 exports.__esModule = true;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-var NoCache_1 = __webpack_require__(/*! ./Cache/NoCache */ "./src/Cache/NoCache.ts");
 var AxiosClient_1 = __webpack_require__(/*! ./Http/AxiosClient */ "./src/Http/AxiosClient.ts");
 var RetryMap_1 = __webpack_require__(/*! ./Http/RetryMap */ "./src/Http/RetryMap.ts");
 var Query_1 = __webpack_require__(/*! ./Query/Query */ "./src/Query/Query.ts");
@@ -2246,13 +2245,13 @@ var Apisearch = /** @class */ (function () {
      */
     Apisearch.createRepository = function (config) {
         Apisearch.ensureRepositoryConfigIsValid(config);
-        config.options = tslib_1.__assign({ api_version: "v1", cache: new NoCache_1.NoCache(), timeout: 5000, override_queries: true }, config.options);
+        config.options = tslib_1.__assign({ api_version: "v1", override_queries: true, timeout: 5000 }, config.options);
         /**
          * Client
          */
         var httpClient = typeof config.options.http_client !== "undefined"
             ? config.options.http_client
-            : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries, config.options.cache);
+            : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries);
         return new HttpRepository_1.HttpRepository(httpClient, config.app_id, config.index_id, config.token, new Transformer_1.Transformer());
     };
     /**
@@ -2344,7 +2343,7 @@ var Apisearch = /** @class */ (function () {
      * @return {Result}
      */
     Apisearch.createEmptyResult = function () {
-        return Result_1.Result.create('', 0, 0, new ResultAggregations_1.ResultAggregations(0), [], []);
+        return Result_1.Result.create("", 0, 0, new ResultAggregations_1.ResultAggregations(0), [], []);
     };
     /**
      * Create empty sortby
@@ -2357,133 +2356,6 @@ var Apisearch = /** @class */ (function () {
     return Apisearch;
 }());
 exports["default"] = Apisearch;
-
-
-/***/ }),
-
-/***/ "./src/Cache/InMemoryCache.ts":
-/*!************************************!*\
-  !*** ./src/Cache/InMemoryCache.ts ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-exports.__esModule = true;
-var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/**
- * Cache class
- */
-var InMemoryCache = /** @class */ (function () {
-    /**
-     * Constructor
-     */
-    function InMemoryCache() {
-        this.cache = {};
-        this.size = 0;
-        this.cache = {};
-        this.size = 0;
-    }
-    /**
-     * Set cache element
-     *
-     * @param key
-     * @param value
-     *
-     * @returns {void}
-     */
-    InMemoryCache.prototype.set = function (key, value) {
-        var _a;
-        this.cache = tslib_1.__assign({}, this.cache, (_a = {}, _a[key] = value, _a));
-        this.size = this.size + 1;
-    };
-    /**
-     * Get element from cache
-     *
-     * @param key
-     *
-     * @returns {any}
-     */
-    InMemoryCache.prototype.get = function (key) {
-        return this.cache[key];
-    };
-    /**
-     * Deletes element from cache
-     *
-     * @param key
-     */
-    InMemoryCache.prototype.del = function (key) {
-        delete this.cache[key];
-    };
-    /**
-     * Clear cache
-     */
-    InMemoryCache.prototype.clear = function () {
-        this.cache = {};
-        this.size = 0;
-    };
-    return InMemoryCache;
-}());
-exports.InMemoryCache = InMemoryCache;
-
-
-/***/ }),
-
-/***/ "./src/Cache/NoCache.ts":
-/*!******************************!*\
-  !*** ./src/Cache/NoCache.ts ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-exports.__esModule = true;
-/**
- * Cache class
- */
-var NoCache = /** @class */ (function () {
-    function NoCache() {
-    }
-    /**
-     * Set cache element
-     *
-     * @param key
-     * @param value
-     *
-     * @returns {void}
-     */
-    NoCache.prototype.set = function (key, value) {
-        // Empty
-    };
-    /**
-     * Get element from cache
-     *
-     * @param key
-     *
-     * @returns {any}
-     */
-    NoCache.prototype.get = function (key) {
-        return undefined;
-    };
-    /**
-     * Deletes element from cache
-     *
-     * @param key
-     */
-    NoCache.prototype.del = function (key) {
-        // Empty
-    };
-    /**
-     * Clear cache
-     */
-    NoCache.prototype.clear = function () {
-        // Empty
-    };
-    return NoCache;
-}());
-exports.NoCache = NoCache;
 
 
 /***/ }),
@@ -3519,13 +3391,11 @@ var AxiosClient = /** @class */ (function (_super) {
      * @param timeout
      * @param retryMap
      * @param overrideQueries
-     * @param cache
      */
-    function AxiosClient(host, version, timeout, retryMap, overrideQueries, cache) {
+    function AxiosClient(host, version, timeout, retryMap, overrideQueries) {
         var _this = _super.call(this, version, retryMap) || this;
         _this.host = host;
         _this.timeout = timeout;
-        _this.cache = cache;
         _this.overrideQueries = overrideQueries;
         _this.cancelToken = {};
         return _this;
@@ -8855,7 +8725,6 @@ exports.__esModule = true;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var Apisearch_1 = __webpack_require__(/*! ./Apisearch */ "./src/Apisearch.ts");
 exports["default"] = Apisearch_1["default"];
-tslib_1.__exportStar(__webpack_require__(/*! ./Cache/InMemoryCache */ "./src/Cache/InMemoryCache.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Config/Config */ "./src/Config/Config.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Config/Synonym */ "./src/Config/Synonym.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Error/ConnectionError */ "./src/Error/ConnectionError.ts"), exports);

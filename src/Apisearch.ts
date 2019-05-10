@@ -1,5 +1,3 @@
-import {KeyValueCache} from "./Cache/KeyValueCache";
-import {NoCache} from "./Cache/NoCache";
 import {AxiosClient} from "./Http/AxiosClient";
 import {HttpClient} from "./Http/HttpClient";
 import {RetryMap} from "./Http/RetryMap";
@@ -35,7 +33,6 @@ export default class Apisearch {
             api_version?: string,
             timeout?: number,
             override_queries?: boolean,
-            cache?: KeyValueCache,
             http_client?: HttpClient,
         },
     }): HttpRepository {
@@ -44,9 +41,8 @@ export default class Apisearch {
 
         config.options = {
             api_version: "v1",
-            cache: new NoCache(),
-            timeout: 5000,
             override_queries: true,
+            timeout: 5000,
             ...config.options,
         };
 
@@ -61,7 +57,6 @@ export default class Apisearch {
                 config.options.timeout,
                 new RetryMap(),
                 config.options.override_queries,
-                config.options.cache,
             );
 
         return new HttpRepository(
@@ -179,7 +174,7 @@ export default class Apisearch {
      */
     public static createEmptyResult(): Result {
         return Result.create(
-            '',
+            "",
             0,
             0,
             new ResultAggregations(0),
