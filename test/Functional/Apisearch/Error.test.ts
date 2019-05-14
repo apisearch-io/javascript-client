@@ -1,4 +1,6 @@
+import Axios from "axios";
 import {expect} from "chai";
+import * as sinon from "sinon";
 import Apisearch from "../../../src/Apisearch";
 import {Config} from "../../../src/Config/Config";
 import {ConnectionError} from "../../../src/Error/ConnectionError";
@@ -9,6 +11,10 @@ import {UnknownError} from "../../../src/Error/UnknownError";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Query} from "../../../src/Query/Query";
 import FunctionalTest from "./FunctionalTest";
+
+afterEach(() => {
+    sinon.restore();
+});
 
 /**
  *
@@ -85,6 +91,33 @@ describe("Error", () => {
             expect.fail("Request should have failed");
         } catch (error) {
             expect(error).to.be.an.instanceof(UnknownError);
+        }
+    });
+
+    it("should use retry map if a request fails", async () => {
+        const spy = sinon.spy(Axios, "request");
+        const repository = Apisearch.createRepository({
+            app_id: "",
+            index_id: "",
+            options: {
+                endpoint: "http://xxxxx.yyyyy.zzzzz",
+                retry_map_config: [
+                    {
+                        microseconds_between_retries: 0,
+                        retries: 1,
+                    },
+                ],
+                timeout: 100,
+            },
+            token: "",
+        });
+        try {
+            await repository.query(Query.createMatchAll());
+            expect.fail("Request should have failed");
+        } catch (error) {
+            expect(spy.callCount).to.equal(2);
+        } finally {
+            spy.restore();
         }
     });
 

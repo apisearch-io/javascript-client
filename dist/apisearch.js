@@ -2245,13 +2245,13 @@ var Apisearch = /** @class */ (function () {
      */
     Apisearch.createRepository = function (config) {
         Apisearch.ensureRepositoryConfigIsValid(config);
-        config.options = tslib_1.__assign({ api_version: "v1", override_queries: true, timeout: 5000 }, config.options);
+        config.options = tslib_1.__assign({ api_version: "v1", override_queries: true, retry_map_config: [], timeout: 5000 }, config.options);
         /**
          * Client
          */
         var httpClient = typeof config.options.http_client !== "undefined"
             ? config.options.http_client
-            : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, new RetryMap_1.RetryMap(), config.options.override_queries);
+            : new AxiosClient_1.AxiosClient(config.options.endpoint, config.options.api_version, config.options.timeout, RetryMap_1.RetryMap.createFromArray(config.options.retry_map_config), config.options.override_queries);
         return new HttpRepository_1.HttpRepository(httpClient, config.app_id, config.index_id, config.token, new Transformer_1.Transformer());
     };
     /**
@@ -3415,56 +3415,66 @@ var AxiosClient = /** @class */ (function (_super) {
         if (parameters === void 0) { parameters = {}; }
         if (data === void 0) { data = {}; }
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var that;
+            var headers, axiosRequestConfig, sendRequest, retry, axiosResponse, error_1, response;
             var _this = this;
             return tslib_1.__generator(this, function (_a) {
-                that = this;
-                url = url.replace(/^\/*|\/*$/g, "");
-                url = "/" + (this.version + "/" + url).replace(/^\/*|\/*$/g, "");
-                method = method.toLowerCase();
-                if ("get" === method &&
-                    this.overrideQueries) {
-                    this.abort(url);
-                }
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var headers = "get" === method
+                switch (_a.label) {
+                    case 0:
+                        url = url.replace(/^\/*|\/*$/g, "");
+                        url = "/" + (this.version + "/" + url).replace(/^\/*|\/*$/g, "");
+                        method = method.toLowerCase();
+                        if ("get" === method &&
+                            this.overrideQueries) {
+                            this.abort(url);
+                        }
+                        headers = "get" === method
                             ? {}
                             : {
                                 "Content-Encoding": "gzip",
                                 "Content-Type": "application/json"
                             };
-                        var axiosRequestConfig = {
-                            baseURL: that.host.replace(/\/*$/g, ""),
+                        axiosRequestConfig = {
+                            baseURL: this.host.replace(/\/*$/g, ""),
                             data: data,
                             headers: headers,
                             method: method,
-                            timeout: that.timeout,
+                            timeout: this.timeout,
                             transformRequest: [function (rawData) { return JSON.stringify(rawData); }],
                             url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, parameters, {
                                 token: credentials.token
                             }))
                         };
-                        if (typeof _this.cancelToken[url] !== "undefined") {
-                            axiosRequestConfig.cancelToken = _this.cancelToken[url].token;
+                        if (typeof this.cancelToken[url] !== "undefined") {
+                            axiosRequestConfig.cancelToken = this.cancelToken[url].token;
                         }
-                        axios_1["default"]
-                            .request(axiosRequestConfig)
-                            .then(function (axiosResponse) {
-                            var response = new Response_1.Response(axiosResponse.status, axiosResponse.data);
-                            return resolve(response);
-                        })["catch"](function (error) {
-                            var response;
-                            if (error.response) {
-                                response = new Response_1.Response(error.response.status, error.response.data);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        sendRequest = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () { return tslib_1.__generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, axios_1["default"].request(axiosRequestConfig)];
+                                case 1: return [2 /*return*/, _a.sent()];
                             }
-                            else {
-                                response = new Response_1.Response(__1.ConnectionError.getTransportableHTTPError(), {
-                                    message: "Connection failed or timed out"
-                                });
-                            }
-                            reject(response);
-                        });
-                    })];
+                        }); }); };
+                        retry = this.retryMap.getRetry(axiosRequestConfig.url, axiosRequestConfig.method);
+                        return [4 /*yield*/, this.tryRequest(sendRequest, retry)];
+                    case 2:
+                        axiosResponse = _a.sent();
+                        return [2 /*return*/, new Response_1.Response(axiosResponse.status, axiosResponse.data)];
+                    case 3:
+                        error_1 = _a.sent();
+                        response = void 0;
+                        if (error_1.response) {
+                            response = new Response_1.Response(error_1.response.status, error_1.response.data);
+                        }
+                        else {
+                            response = new Response_1.Response(__1.ConnectionError.getTransportableHTTPError(), {
+                                message: "Connection failed or timed out"
+                            });
+                        }
+                        throw response;
+                    case 4: return [2 /*return*/];
+                }
             });
         });
     };
@@ -3487,6 +3497,52 @@ var AxiosClient = /** @class */ (function (_super) {
      */
     AxiosClient.prototype.generateCancelToken = function (url) {
         this.cancelToken[url] = axios_1["default"].CancelToken.source();
+    };
+    /**
+     * Performs the request and maybe retries in case of failure
+     *
+     * @param sendRequest The function that, when called, will perform the HTTP request
+     * @param retry       If it's an instance of Retry and the request fails it will retry the request
+     *
+     * @return {Promise<AxiosResponse>}
+     */
+    AxiosClient.prototype.tryRequest = function (sendRequest, retry) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var retries, millisecondsBetweenRetries, error_2;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        retries = 0;
+                        millisecondsBetweenRetries = 0;
+                        if (retry instanceof __1.Retry) {
+                            retries = retry.getRetries();
+                            millisecondsBetweenRetries = retry.getMicrosecondsBetweenRetries() / 1000;
+                        }
+                        _a.label = 1;
+                    case 1:
+                        if (false) {}
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 4, , 7]);
+                        return [4 /*yield*/, sendRequest()];
+                    case 3: return [2 /*return*/, _a.sent()];
+                    case 4:
+                        error_2 = _a.sent();
+                        if (retries <= 0) {
+                            throw error_2;
+                        }
+                        retries -= 1;
+                        if (!(millisecondsBetweenRetries > 0)) return [3 /*break*/, 6];
+                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, millisecondsBetweenRetries); })];
+                    case 5:
+                        _a.sent();
+                        _a.label = 6;
+                    case 6: return [3 /*break*/, 7];
+                    case 7: return [3 /*break*/, 1];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
     };
     return AxiosClient;
 }(Client_1.Client));
@@ -3709,20 +3765,23 @@ var RetryMap = /** @class */ (function () {
         this.retries = {};
     }
     /**
+     * Create from array
+     */
+    RetryMap.createFromArray = function (array) {
+        var retryMap = new RetryMap();
+        for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
+            var retryConfig = array_1[_i];
+            retryMap.addRetry(Retry_1.Retry.createFromArray(retryConfig));
+        }
+        return retryMap;
+    };
+    /**
      * Add retry
      *
      * @param retry
      */
     RetryMap.prototype.addRetry = function (retry) {
         this.retries[retry.getUrl() + "~~" + retry.getMethod()] = retry;
-    };
-    /**
-     * Create from array
-     */
-    RetryMap.createFromArray = function (array) {
-        var retryMap = new RetryMap();
-        retryMap.retries = array.map(function (retry) { return Retry_1.Retry.createFromArray(retry); });
-        return retryMap;
     };
     /**
      * Get retry

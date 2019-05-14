@@ -1,8 +1,12 @@
-import { Retry } from "./Retry";
+import { Retry, RetryConfig } from "./Retry";
 /**
  * Http class
  */
 export declare class RetryMap {
+    /**
+     * Create from array
+     */
+    static createFromArray(array: RetryConfig[]): RetryMap;
     private retries;
     /**
      * Add retry
@@ -10,10 +14,6 @@ export declare class RetryMap {
      * @param retry
      */
     addRetry(retry: Retry): void;
-    /**
-     * Create from array
-     */
-    static createFromArray(array: any): RetryMap;
     /**
      * Get retry
      *

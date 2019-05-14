@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "description": "Javascript client for Apisearch.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -37,8 +37,10 @@
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.14.4",
+    "@types/sinon": "^7.0.11",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "sinon": "^7.3.2",
     "ts-loader": "^4.5.0",
     "ts-md5": "^1.2.4",
     "ts-node": "^7.0.1",

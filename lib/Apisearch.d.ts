@@ -1,4 +1,5 @@
 import { HttpClient } from "./Http/HttpClient";
+import { RetryConfig } from "./Http/Retry";
 import { Coordinate } from "./Model/Coordinate";
 import { ItemUUID } from "./Model/ItemUUID";
 import { Query } from "./Query/Query";
@@ -25,6 +26,7 @@ export default class Apisearch {
             api_version?: string;
             timeout?: number;
             override_queries?: boolean;
+            retry_map_config?: RetryConfig[];
             http_client?: HttpClient;
         };
     }): HttpRepository;
