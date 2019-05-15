@@ -1,9 +1,34 @@
 export const DEFAULT_MICROSECONDS_BETWEEN_RETRIES = 1000;
 
+export interface RetryConfig {
+    url?: string;
+    method?: string;
+    retries?: number;
+    microseconds_between_retries?: number;
+}
+
 /**
  * Http class
  */
 export class Retry {
+
+    /**
+     * Create from array
+     *
+     * @param array
+     *
+     * @return {Retry}
+     */
+    public static createFromArray(array: RetryConfig): Retry {
+        return new Retry(
+            array.url ? array.url : "*",
+            array.method ? array.method : "*",
+            array.retries ? array.retries : 0,
+            array.microseconds_between_retries
+                ? array.microseconds_between_retries
+                : DEFAULT_MICROSECONDS_BETWEEN_RETRIES,
+        );
+    }
 
     private url: string;
     private method: string;
@@ -28,24 +53,6 @@ export class Retry {
         this.method = method;
         this.retries = retries;
         this.microsecondsBetweenRetries = microsecondsBetweenRetries;
-    }
-
-    /**
-     * Create from array
-     *
-     * @param array
-     *
-     * @return {Retry}
-     */
-    public static createFromArray(array: any): Retry {
-        return new Retry(
-            array.url ? array.url : "*",
-            array.method ? array.method : "*",
-            array.retries ? array.retries : 0,
-            array.microseconds_between_retries
-                ? array.microseconds_between_retries
-                : DEFAULT_MICROSECONDS_BETWEEN_RETRIES,
-        );
     }
 
     /**

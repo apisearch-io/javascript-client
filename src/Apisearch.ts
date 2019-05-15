@@ -1,5 +1,6 @@
 import {AxiosClient} from "./Http/AxiosClient";
 import {HttpClient} from "./Http/HttpClient";
+import {RetryConfig} from "./Http/Retry";
 import {RetryMap} from "./Http/RetryMap";
 import {Coordinate} from "./Model/Coordinate";
 import {ItemUUID} from "./Model/ItemUUID";
@@ -33,6 +34,7 @@ export default class Apisearch {
             api_version?: string,
             timeout?: number,
             override_queries?: boolean,
+            retry_map_config?: RetryConfig[],
             http_client?: HttpClient,
         },
     }): HttpRepository {
@@ -42,6 +44,7 @@ export default class Apisearch {
         config.options = {
             api_version: "v1",
             override_queries: true,
+            retry_map_config: [],
             timeout: 5000,
             ...config.options,
         };
@@ -55,7 +58,7 @@ export default class Apisearch {
                 config.options.endpoint,
                 config.options.api_version,
                 config.options.timeout,
-                new RetryMap(),
+                RetryMap.createFromArray(config.options.retry_map_config),
                 config.options.override_queries,
             );
 

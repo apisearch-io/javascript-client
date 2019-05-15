@@ -1,5 +1,5 @@
-import Axios from "axios";
-import {ConnectionError} from "..";
+import Axios, {AxiosResponse} from "axios";
+import {ConnectionError, Retry} from "..";
 import {Client} from "./Client";
 import {HttpClient} from "./HttpClient";
 import {Response} from "./Response";
@@ -57,7 +57,6 @@ export class AxiosClient extends Client implements HttpClient {
         parameters: any = {},
         data: any = {},
     ): Promise<Response> {
-        const that = this;
         url = url.replace(/^\/*|\/*$/g, "");
         url = "/" + (this.version + "/" + url).replace(/^\/*|\/*$/g, "");
         method = method.toLowerCase();
@@ -69,63 +68,58 @@ export class AxiosClient extends Client implements HttpClient {
             this.abort(url);
         }
 
-        return new Promise<Response> ((resolve, reject) => {
-
-            const headers = "get" === method
-                ? {}
-                : {
-                    "Content-Encoding": "gzip",
-                    "Content-Type": "application/json",
-                };
-
-            const axiosRequestConfig: any = {
-                baseURL: that.host.replace(/\/*$/g, ""),
-                data,
-                headers,
-                method,
-                timeout: that.timeout,
-                transformRequest: [(rawData) => JSON.stringify(rawData)],
-                url: url + "?" + Client.objectToUrlParameters({
-                    ...parameters,
-                    ...{
-                        token: credentials.token,
-                    },
-                }),
+        const headers = "get" === method
+            ? {}
+            : {
+                "Content-Encoding": "gzip",
+                "Content-Type": "application/json",
             };
 
-            if (typeof this.cancelToken[url] !== "undefined") {
-                axiosRequestConfig.cancelToken = this.cancelToken[url].token;
+        const axiosRequestConfig: any = {
+            baseURL: this.host.replace(/\/*$/g, ""),
+            data,
+            headers,
+            method,
+            timeout: this.timeout,
+            transformRequest: [(rawData) => JSON.stringify(rawData)],
+            url: url + "?" + Client.objectToUrlParameters({
+                ...parameters,
+                ...{
+                    token: credentials.token,
+                },
+            }),
+        };
+
+        if (typeof this.cancelToken[url] !== "undefined") {
+            axiosRequestConfig.cancelToken = this.cancelToken[url].token;
+        }
+
+        try {
+            const sendRequest = async () => await Axios.request(axiosRequestConfig);
+            const retry = this.retryMap.getRetry(axiosRequestConfig.url, axiosRequestConfig.method);
+            const axiosResponse = await this.tryRequest(sendRequest, retry);
+
+            return new Response(
+                axiosResponse.status,
+                axiosResponse.data,
+            );
+        } catch (error) {
+            let response: Response;
+            if (error.response) {
+                response = new Response(
+                    error.response.status,
+                    error.response.data,
+                );
+            } else {
+                response = new Response(
+                  ConnectionError.getTransportableHTTPError(),
+                  {
+                      message: "Connection failed or timed out",
+                  },
+                );
             }
-
-            Axios
-                .request(axiosRequestConfig)
-                .then((axiosResponse) => {
-
-                    const response = new Response(
-                        axiosResponse.status,
-                        axiosResponse.data,
-                    );
-
-                    return resolve(response);
-                })
-                .catch((error) => {
-                    let response: Response;
-                    if (error.response) {
-                        response = new Response(
-                            error.response.status,
-                            error.response.data,
-                        );
-                    } else {
-                        response = new Response(
-                          ConnectionError.getTransportableHTTPError(),
-                          {
-                              message: "Connection failed or timed out",
-                          },
-                        );
-                    }
-                    reject(response);
-                });
-        });
+            throw response;
+        }
     }
 
     /**
@@ -149,5 +143,35 @@ export class AxiosClient extends Client implements HttpClient {
      */
     public generateCancelToken(url: string) {
         this.cancelToken[url] = Axios.CancelToken.source();
+    }
+
+    /**
+     * Performs the request and maybe retries in case of failure
+     *
+     * @param sendRequest The function that, when called, will perform the HTTP request
+     * @param retry       If it's an instance of Retry and the request fails it will retry the request
+     *
+     * @return {Promise<AxiosResponse>}
+     */
+    private async tryRequest(sendRequest: () => Promise<AxiosResponse>, retry?: Retry): Promise<AxiosResponse> {
+        let retries = 0;
+        let millisecondsBetweenRetries = 0;
+        if (retry instanceof Retry) {
+            retries = retry.getRetries();
+            millisecondsBetweenRetries = retry.getMicrosecondsBetweenRetries() / 1000;
+        }
+        while (true) {
+            try {
+                return await sendRequest();
+            } catch (error) {
+                if (retries <= 0) {
+                    throw error;
+                }
+                retries -= 1;
+                if (millisecondsBetweenRetries > 0) {
+                    await new Promise((resolve) => setTimeout(resolve, millisecondsBetweenRetries));
+                }
+            }
+        }
     }
 }

@@ -45,4 +45,13 @@ export declare class AxiosClient extends Client implements HttpClient {
      * @param url
      */
     generateCancelToken(url: string): void;
+    /**
+     * Performs the request and maybe retries in case of failure
+     *
+     * @param sendRequest The function that, when called, will perform the HTTP request
+     * @param retry       If it's an instance of Retry and the request fails it will retry the request
+     *
+     * @return {Promise<AxiosResponse>}
+     */
+    private tryRequest;
 }

@@ -1,9 +1,21 @@
-import {Retry} from "./Retry";
+import {Retry, RetryConfig} from "./Retry";
 
 /**
  * Http class
  */
 export class RetryMap {
+
+    /**
+     * Create from array
+     */
+    public static createFromArray(array: RetryConfig[]): RetryMap {
+        const retryMap = new RetryMap();
+        for (const retryConfig of array) {
+            retryMap.addRetry(Retry.createFromArray(retryConfig));
+        }
+
+        return retryMap;
+    }
 
     private retries: any = {};
 
@@ -14,16 +26,6 @@ export class RetryMap {
      */
     public addRetry(retry: Retry) {
         this.retries[retry.getUrl() + "~~" + retry.getMethod()] = retry;
-    }
-
-    /**
-     * Create from array
-     */
-    public static createFromArray(array: any): RetryMap {
-        const retryMap = new RetryMap();
-        retryMap.retries = array.map((retry) => Retry.createFromArray(retry));
-
-        return retryMap;
     }
 
     /**
