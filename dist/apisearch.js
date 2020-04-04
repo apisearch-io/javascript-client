@@ -123,7 +123,6 @@ var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/
 var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
 var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
 var createError = __webpack_require__(/*! ../core/createError */ "./node_modules/axios/lib/core/createError.js");
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(/*! ./../helpers/btoa */ "./node_modules/axios/lib/helpers/btoa.js");
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -135,22 +134,6 @@ module.exports = function xhrAdapter(config) {
     }
 
     var request = new XMLHttpRequest();
-    var loadEvent = 'onreadystatechange';
-    var xDomain = false;
-
-    // For IE 8/9 CORS support
-    // Only supports POST and GET calls and doesn't returns the response headers.
-    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if ( true &&
-        typeof window !== 'undefined' &&
-        window.XDomainRequest && !('withCredentials' in request) &&
-        !isURLSameOrigin(config.url)) {
-      request = new window.XDomainRequest();
-      loadEvent = 'onload';
-      xDomain = true;
-      request.onprogress = function handleProgress() {};
-      request.ontimeout = function handleTimeout() {};
-    }
 
     // HTTP basic authentication
     if (config.auth) {
@@ -165,8 +148,8 @@ module.exports = function xhrAdapter(config) {
     request.timeout = config.timeout;
 
     // Listen for ready state
-    request[loadEvent] = function handleLoad() {
-      if (!request || (request.readyState !== 4 && !xDomain)) {
+    request.onreadystatechange = function handleLoad() {
+      if (!request || request.readyState !== 4) {
         return;
       }
 
@@ -183,9 +166,8 @@ module.exports = function xhrAdapter(config) {
       var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
       var response = {
         data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
-        status: request.status === 1223 ? 204 : request.status,
-        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        status: request.status,
+        statusText: request.statusText,
         headers: responseHeaders,
         config: config,
         request: request
@@ -998,54 +980,6 @@ module.exports = function bind(fn, thisArg) {
 
 /***/ }),
 
-/***/ "./node_modules/axios/lib/helpers/btoa.js":
-/*!************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/btoa.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
-
-var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-function E() {
-  this.message = 'String contains an invalid character';
-}
-E.prototype = new Error;
-E.prototype.code = 5;
-E.prototype.name = 'InvalidCharacterError';
-
-function btoa(input) {
-  var str = String(input);
-  var output = '';
-  for (
-    // initialize result and counter
-    var block, charCode, idx = 0, map = chars;
-    // if the next str index does not exist:
-    //   change the mapping table to "="
-    //   check if d has no fractional digits
-    str.charAt(idx | 0) || (map = '=', idx % 1);
-    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-  ) {
-    charCode = str.charCodeAt(idx += 3 / 4);
-    if (charCode > 0xFF) {
-      throw new E();
-    }
-    block = block << 8 | charCode;
-  }
-  return output;
-}
-
-module.exports = btoa;
-
-
-/***/ }),
-
 /***/ "./node_modules/axios/lib/helpers/buildURL.js":
 /*!****************************************************!*\
   !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
@@ -1774,23 +1708,13 @@ module.exports = {
 /*!
  * Determine if an object is a Buffer
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */
 
-// The _isBuffer check is for Safari 5-7 support, because it's missing
-// Object.prototype.constructor. Remove this eventually
-module.exports = function (obj) {
-  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
-}
-
-function isBuffer (obj) {
-  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
-}
-
-// For Node v0.10 support. Remove this eventually.
-function isSlowBuffer (obj) {
-  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+module.exports = function isBuffer (obj) {
+  return obj != null && obj.constructor != null &&
+    typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
 }
 
 
@@ -1995,7 +1919,7 @@ process.umask = function() { return 0; };
 /*!*****************************************!*\
   !*** ./node_modules/tslib/tslib.es6.js ***!
   \*****************************************/
-/*! exports provided: __extends, __assign, __rest, __decorate, __param, __metadata, __awaiter, __generator, __exportStar, __values, __read, __spread, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault */
+/*! exports provided: __extends, __assign, __rest, __decorate, __param, __metadata, __awaiter, __generator, __exportStar, __values, __read, __spread, __spreadArrays, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault, __classPrivateFieldGet, __classPrivateFieldSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2012,6 +1936,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__values", function() { return __values; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__read", function() { return __read; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__spread", function() { return __spread; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__spreadArrays", function() { return __spreadArrays; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__await", function() { return __await; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__asyncGenerator", function() { return __asyncGenerator; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__asyncDelegator", function() { return __asyncDelegator; });
@@ -2019,6 +1944,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__makeTemplateObject", function() { return __makeTemplateObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__importStar", function() { return __importStar; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__importDefault", function() { return __importDefault; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldGet", function() { return __classPrivateFieldGet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldSet", function() { return __classPrivateFieldSet; });
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -2064,8 +1991,10 @@ function __rest(s, e) {
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
     if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
-            t[p[i]] = s[p[i]];
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
     return t;
 }
 
@@ -2085,10 +2014,11 @@ function __metadata(metadataKey, metadataValue) {
 }
 
 function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 }
@@ -2126,14 +2056,15 @@ function __exportStar(m, exports) {
 }
 
 function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
-    return {
+    if (o && typeof o.length === "number") return {
         next: function () {
             if (o && i >= o.length) o = void 0;
             return { value: o && o[i++], done: !o };
         }
     };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 }
 
 function __read(o, n) {
@@ -2158,6 +2089,14 @@ function __spread() {
         ar = ar.concat(__read(arguments[i]));
     return ar;
 }
+
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 
 function __await(v) {
     return this instanceof __await ? (this.v = v, this) : new __await(v);
@@ -2204,6 +2143,21 @@ function __importStar(mod) {
 
 function __importDefault(mod) {
     return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
 }
 
 
@@ -2529,7 +2483,7 @@ var Synonym = /** @class */ (function () {
      */
     Synonym.prototype.toArray = function () {
         return {
-            words: this.words
+            words: this.words,
         };
     };
     /**
@@ -3182,7 +3136,7 @@ var LocationRange = /** @class */ (function () {
     LocationRange.prototype.toArray = function () {
         return {
             type: this.getName(),
-            data: this.toFilterObject()
+            data: this.toFilterObject(),
         };
     };
     /**
@@ -3229,7 +3183,7 @@ var CoordinateAndDistance = /** @class */ (function (_super) {
     CoordinateAndDistance.prototype.toFilterObject = function () {
         return {
             coordinate: this.coordinate.toArray(),
-            distance: this.distance
+            distance: this.distance,
         };
     };
     /**
@@ -3282,7 +3236,7 @@ var Polygon = /** @class */ (function (_super) {
             coordinates.push(this.coordinates[i].toArray());
         }
         return {
-            coordinates: coordinates
+            coordinates: coordinates,
         };
     };
     /**
@@ -3335,7 +3289,7 @@ var Square = /** @class */ (function (_super) {
     Square.prototype.toFilterObject = function () {
         return {
             top_left: this.topLeftCoordinate.toArray(),
-            bottom_right: this.bottomRightCoordinate.toArray()
+            bottom_right: this.bottomRightCoordinate.toArray(),
         };
     };
     /**
@@ -3431,7 +3385,7 @@ var AxiosClient = /** @class */ (function (_super) {
                             ? {}
                             : {
                                 "Content-Encoding": "gzip",
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/json",
                             };
                         axiosRequestConfig = {
                             baseURL: this.host.replace(/\/*$/g, ""),
@@ -3440,9 +3394,9 @@ var AxiosClient = /** @class */ (function (_super) {
                             method: method,
                             timeout: this.timeout,
                             transformRequest: [function (rawData) { return JSON.stringify(rawData); }],
-                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign({}, parameters, {
-                                token: credentials.token
-                            }))
+                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign(tslib_1.__assign({}, parameters), {
+                                token: credentials.token,
+                            })),
                         };
                         if (typeof this.cancelToken[url] !== "undefined") {
                             axiosRequestConfig.cancelToken = this.cancelToken[url].token;
@@ -3469,7 +3423,7 @@ var AxiosClient = /** @class */ (function (_super) {
                         }
                         else {
                             response = new Response_1.Response(__1.ConnectionError.getTransportableHTTPError(), {
-                                message: "Connection failed or timed out"
+                                message: "Connection failed or timed out",
                             });
                         }
                         throw response;
@@ -3864,7 +3818,7 @@ var AppUUID = /** @class */ (function () {
      */
     AppUUID.prototype.toArray = function () {
         return {
-            id: this.id
+            id: this.id,
         };
     };
     /**
@@ -3938,7 +3892,7 @@ var Changes = /** @class */ (function () {
         this.changes.push({
             field: field,
             type: type,
-            value: value
+            value: value,
         });
     };
     /**
@@ -3954,7 +3908,7 @@ var Changes = /** @class */ (function () {
             field: field,
             type: type | exports.TYPE_ARRAY_ELEMENT_UPDATE,
             condition: condition,
-            value: value
+            value: value,
         });
     };
     /**
@@ -3968,7 +3922,7 @@ var Changes = /** @class */ (function () {
         this.changes.push({
             field: field,
             type: type | exports.TYPE_ARRAY_ELEMENT_ADD,
-            value: value
+            value: value,
         });
     };
     /**
@@ -3981,7 +3935,7 @@ var Changes = /** @class */ (function () {
         this.changes.push({
             field: field,
             type: exports.TYPE_ARRAY_ELEMENT_DELETE,
-            condition: condition
+            condition: condition,
         });
     };
     /**
@@ -4078,7 +4032,7 @@ var Coordinate = /** @class */ (function () {
     Coordinate.prototype.toArray = function () {
         return {
             lat: this.lat,
-            lon: this.lon
+            lon: this.lon,
         };
     };
     /**
@@ -4266,7 +4220,7 @@ var IndexUUID = /** @class */ (function () {
      */
     IndexUUID.prototype.toArray = function () {
         return {
-            id: this.id
+            id: this.id,
         };
     };
     /**
@@ -4524,7 +4478,7 @@ var Item = /** @class */ (function () {
      * @returns {{}}
      */
     Item.prototype.getAllMetadata = function () {
-        return tslib_1.__assign({}, this.metadata, this.indexedMetadata);
+        return tslib_1.__assign(tslib_1.__assign({}, this.metadata), this.indexedMetadata);
     };
     /**
      * Get
@@ -4599,7 +4553,7 @@ var Item = /** @class */ (function () {
      */
     Item.prototype.toArray = function () {
         var itemAsArray = {
-            uuid: this.uuid.toArray()
+            uuid: this.uuid.toArray(),
         };
         if (this.coordinate instanceof Coordinate_1.Coordinate) {
             itemAsArray.coordinate = this.coordinate.toArray();
@@ -4759,7 +4713,7 @@ var ItemUUID = /** @class */ (function () {
     ItemUUID.prototype.toArray = function () {
         return {
             id: this.id,
-            type: this.type
+            type: this.type,
         };
     };
     /**
@@ -4848,7 +4802,7 @@ var Metadata = /** @class */ (function () {
         if (size == 1) {
             values = {
                 id: lastElement,
-                name: lastElement
+                name: lastElement,
             };
         }
         if (typeof values.id == "undefined") {
@@ -4912,7 +4866,7 @@ var User = /** @class */ (function () {
      */
     User.prototype.toArray = function () {
         var array = {
-            id: this.id
+            id: this.id,
         };
         if (Object.keys(this.attributes).length > 0) {
             array.attributes = this.attributes;
@@ -5070,7 +5024,7 @@ var Aggregation = /** @class */ (function () {
      */
     Aggregation.prototype.toArray = function () {
         var aggregationAsArray = {
-            name: this.name
+            name: this.name,
         };
         if (this.field != "uuid.type") {
             aggregationAsArray.field = this.field;
@@ -5468,7 +5422,7 @@ var Query = /** @class */ (function () {
         var _a;
         var fieldPath = Item_1.Item.getPathByField("type");
         if (values.length > 0) {
-            this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = tslib_1.__assign(tslib_1.__assign({}, this.universeFilters), (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters.type;
@@ -5485,18 +5439,18 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.filterByTypes = function (values, aggregate, aggregationSort) {
+        var _a, _b;
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
-        var _a, _b;
         var fieldPath = Item_1.Item.getPathByField("type");
         if (values.length > 0) {
-            this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = tslib_1.__assign(tslib_1.__assign({}, this.filters), (_a = {}, _a["type"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters.type;
         }
         if (aggregate) {
-            this.aggregations = tslib_1.__assign({}, this.aggregations, (_b = {}, _b["type"] = Aggregation_1.Aggregation.create("type", fieldPath, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort), _b));
+            this.aggregations = tslib_1.__assign(tslib_1.__assign({}, this.aggregations), (_b = {}, _b["type"] = Aggregation_1.Aggregation.create("type", fieldPath, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort), _b));
         }
         return this;
     };
@@ -5511,7 +5465,7 @@ var Query = /** @class */ (function () {
         var _a;
         var fieldPath = Item_1.Item.getPathByField("id");
         if (values.length > 0) {
-            this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = tslib_1.__assign(tslib_1.__assign({}, this.universeFilters), (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters.id;
@@ -5529,7 +5483,7 @@ var Query = /** @class */ (function () {
         var _a;
         var fieldPath = Item_1.Item.getPathByField("id");
         if (values.length > 0) {
-            this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = tslib_1.__assign(tslib_1.__assign({}, this.filters), (_a = {}, _a["id"] = Filter_1.Filter.create(fieldPath, values, Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters.id;
@@ -5546,11 +5500,11 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.filterUniverseBy = function (field, values, applicationType) {
-        if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         var _a;
+        if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
-            this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.universeFilters = tslib_1.__assign(tslib_1.__assign({}, this.universeFilters), (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.universeFilters[field];
@@ -5570,13 +5524,13 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.filterBy = function (filterName, field, values, applicationType, aggregate, aggregationSort) {
+        var _a;
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
-        var _a;
         var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
-            this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
+            this.filters = tslib_1.__assign(tslib_1.__assign({}, this.filters), (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, Filter_2.FILTER_TYPE_FIELD), _a));
         }
         else {
             delete this.filters[filterName];
@@ -5597,12 +5551,12 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.filterUniverseByRange = function (field, values, applicationType, rangeType) {
+        var _a;
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
-        var _a;
         var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length > 0) {
-            this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
+            this.universeFilters = tslib_1.__assign(tslib_1.__assign({}, this.universeFilters), (_a = {}, _a[field] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
         else {
             delete this.universeFilters[field];
@@ -5637,14 +5591,14 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.filterByRange = function (filterName, field, options, values, applicationType, rangeType, aggregate, aggregationSort) {
+        var _a;
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
         if (aggregate === void 0) { aggregate = true; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
-        var _a;
         var fieldPath = Item_1.Item.getPathByField(field);
         if (values.length !== 0) {
-            this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
+            this.filters = tslib_1.__assign(tslib_1.__assign({}, this.filters), (_a = {}, _a[filterName] = Filter_1.Filter.create(fieldPath, values, applicationType, rangeType), _a));
         }
         else {
             delete this.filters[filterName];
@@ -5682,7 +5636,7 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.filterUniverseByLocation = function (locationRange) {
         var _a;
-        this.universeFilters = tslib_1.__assign({}, this.universeFilters, (_a = {}, _a["coordinate"] = Filter_1.Filter.create("coordinate", locationRange.toArray(), Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_GEO), _a));
+        this.universeFilters = tslib_1.__assign(tslib_1.__assign({}, this.universeFilters), (_a = {}, _a["coordinate"] = Filter_1.Filter.create("coordinate", locationRange.toArray(), Filter_2.FILTER_AT_LEAST_ONE, Filter_2.FILTER_TYPE_GEO), _a));
         return this;
     };
     /**
@@ -5733,10 +5687,10 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.aggregateBy = function (filterName, field, applicationType, aggregationSort, limit) {
+        var _a;
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = Aggregation_2.AGGREGATION_NO_LIMIT; }
-        var _a;
-        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
+        this.aggregations = tslib_1.__assign(tslib_1.__assign({}, this.aggregations), (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, Filter_2.FILTER_TYPE_FIELD, [], aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -5753,14 +5707,14 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.aggregateByRange = function (filterName, field, options, applicationType, rangeType, aggregationSort, limit) {
+        var _a;
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = Aggregation_2.AGGREGATION_NO_LIMIT; }
-        var _a;
         if (options.length === 0) {
             return this;
         }
-        this.aggregations = tslib_1.__assign({}, this.aggregations, (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
+        this.aggregations = tslib_1.__assign(tslib_1.__assign({}, this.aggregations), (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
         return this;
     };
     /**
@@ -6058,12 +6012,12 @@ var Query = /** @class */ (function () {
      * @return {Query}
      */
     Query.prototype.excludeUUIDs = function () {
+        var _a;
         var uuids = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             uuids[_i] = arguments[_i];
         }
-        var _a;
-        this.filters = tslib_1.__assign({}, this.filters, (_a = {}, _a["excluded_ids"] = Filter_1.Filter.create("_id", uuids.map(function (uuid) { return uuid.composedUUID(); }), Filter_2.FILTER_EXCLUDE, Filter_2.FILTER_TYPE_FIELD), _a));
+        this.filters = tslib_1.__assign(tslib_1.__assign({}, this.filters), (_a = {}, _a["excluded_ids"] = Filter_1.Filter.create("_id", uuids.map(function (uuid) { return uuid.composedUUID(); }), Filter_2.FILTER_EXCLUDE, Filter_2.FILTER_TYPE_FIELD), _a));
         return this;
     };
     /**
@@ -6517,8 +6471,8 @@ exports.__esModule = true;
 /**
  * Aggregation constants
  */
-exports.RANGE_ZERO = 0;
-exports.RANGE_INFINITE = -1;
+exports.RANGE_MINUS_INFINITE = null;
+exports.RANGE_INFINITE = null;
 exports.RANGE_SEPARATOR = "..";
 /**
  * Filter class
@@ -6537,7 +6491,7 @@ var Range = /** @class */ (function () {
         var parts = string.split(exports.RANGE_SEPARATOR);
         var from = parts[0];
         var to = parts[1];
-        var finalFrom = exports.RANGE_ZERO;
+        var finalFrom = exports.RANGE_MINUS_INFINITE;
         var finalTo = exports.RANGE_INFINITE;
         if (from != "") {
             finalFrom = parseInt(from);
@@ -6556,7 +6510,7 @@ var Range = /** @class */ (function () {
      */
     Range.arrayToString = function (values) {
         var finalValues = ["", ""];
-        if (values[0] != exports.RANGE_ZERO) {
+        if (values[0] != exports.RANGE_MINUS_INFINITE) {
             finalValues[0] = String(values[0]);
         }
         if (values[1] != exports.RANGE_INFINITE) {
@@ -6980,10 +6934,10 @@ exports.SORT_BY_MODE_MIN = "min";
 exports.SORT_BY_MODE_MAX = "max";
 exports.SORT_BY_MODE_MEDIAN = "median";
 exports.SORT_BY_SCORE = {
-    type: exports.SORT_BY_TYPE_SCORE
+    type: exports.SORT_BY_TYPE_SCORE,
 };
 exports.SORT_BY_RANDOM = {
-    type: exports.SORT_BY_TYPE_RANDOM
+    type: exports.SORT_BY_TYPE_RANDOM,
 };
 exports.SORT_BY_AL_TUN_TUN = exports.SORT_BY_RANDOM;
 exports.SORT_BY_ID_ASC = {
@@ -7425,7 +7379,7 @@ var HttpRepository = /** @class */ (function (_super) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
-                                query: JSON.stringify(query.toArray())
+                                query: JSON.stringify(query.toArray()),
                             }, {})];
                     case 1:
                         response = _a.sent();
@@ -7455,9 +7409,9 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query", "post", this.getCredentials(), {}, {
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query", "put", this.getCredentials(), {}, {
                                 changes: changes.toArray(),
-                                query: query.toArray()
+                                query: query.toArray(),
                             })];
                     case 1:
                         _a.sent();
@@ -7537,7 +7491,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/reset", "post", this.getCredentials(), {}, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/reset", "put", this.getCredentials(), {}, {})];
                     case 1:
                         _a.sent();
                         return [3 /*break*/, 3];
@@ -7620,7 +7574,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/configure", "post", this.getCredentials(), {}, config.toArray())];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/configure", "put", this.getCredentials(), {}, config.toArray())];
                     case 1:
                         _a.sent();
                         return [3 /*break*/, 3];
@@ -7640,7 +7594,7 @@ var HttpRepository = /** @class */ (function (_super) {
     HttpRepository.prototype.getCredentials = function () {
         return {
             app_id: this.appId,
-            token: this.token
+            token: this.token,
         };
     };
     /**
@@ -7954,7 +7908,7 @@ var Counter = /** @class */ (function () {
     Counter.prototype.toArray = function () {
         var values = {
             values: this.values,
-            n: this.n
+            n: this.n,
         };
         if (this.used === true) {
             values.used = true;
@@ -8215,7 +8169,7 @@ var Result = /** @class */ (function () {
             aggregations: this.aggregations == null
                 ? null
                 : this.aggregations.toArray(),
-            suggests: this.suggests
+            suggests: this.suggests,
         };
         if (this.subresults instanceof Object &&
             Object.keys(this.subresults).length) {
@@ -8376,7 +8330,7 @@ var ResultAggregation = /** @class */ (function () {
      * @return {{}}
      */
     ResultAggregation.prototype.getAllElements = function () {
-        return tslib_1.__assign({}, this.activeElements, this.counters);
+        return tslib_1.__assign(tslib_1.__assign({}, this.activeElements), this.counters);
     };
     /**
      * Get total elements
@@ -8444,7 +8398,7 @@ var ResultAggregation = /** @class */ (function () {
         var array = {
             name: this.name,
             counters: [],
-            active_elements: []
+            active_elements: [],
         };
         for (var i in this.counters) {
             array.counters.push(this.counters[i].toArray());

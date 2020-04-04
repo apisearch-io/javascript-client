@@ -187,7 +187,7 @@ export class HttpRepository extends Repository {
         try {
             await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/items/update-by-query",
-                "post",
+                "put",
                 this.getCredentials(),
                 {},
                 {
@@ -257,7 +257,7 @@ export class HttpRepository extends Repository {
         try {
             await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/reset",
-                "post",
+                "put",
                 this.getCredentials(),
                 {},
                 {},
@@ -332,7 +332,7 @@ export class HttpRepository extends Repository {
         try {
             await this.httpClient.get(
                 "/" + this.appId + "/indices/" + this.indexId + "/configure",
-                "post",
+                "put",
                 this.getCredentials(),
                 {},
                 config.toArray(),

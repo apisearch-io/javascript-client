@@ -27,7 +27,7 @@ describe("Error", () => {
             index_id: "default",
             options: {
                 api_version: "this is a wrong api version",
-                endpoint: "http://localhost:8200",
+                endpoint: "http://localhost:8000",
             },
             token: "0e4d75ba-c640-44c1-a745-06ee51db4e93",
         });
@@ -44,7 +44,7 @@ describe("Error", () => {
             app_id: "789437438test",
             index_id: "default",
             options: {
-                endpoint: "http://localhost:8200",
+                endpoint: "http://localhost:8000",
             },
             token: "this is a wrong token",
         });
