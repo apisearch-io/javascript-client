@@ -4,7 +4,7 @@ jobs:
         docker:
             - image: circleci/node:latest
 
-            - image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+            - image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
               environment:
                 ES_JAVA_OPTS: "-Xms256m -Xmx256m"
                 discovery.type: single-node
@@ -13,8 +13,11 @@ jobs:
             - image: apisearchio/search-server
               environment:
                 APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
+                APISEARCH_ENABLED_PLUGINS: elasticsearch
+                APISEARCH_EVENTS_EXCHANGE: events
+                APISEARCH_TOKENS_UPDATE_EXCHANGE: tokens_update
+                APISEARCH_ASYNC_EVENTS_ADAPTER: in_memory
                 ELASTICSEARCH_HOST: localhost
-                ELASTICSEARCH_PORT: 9200
                 ELASTICSEARCH_REFRESH_ON_WRITE: 1
 
         steps:
@@ -29,7 +32,7 @@ jobs:
                 command: |
                     sudo apt-get install wait-for-it
                     wait-for-it localhost:9200
-                    wait-for-it localhost:8200
+                    wait-for-it localhost:8000
 
             - run:
                 name: Run test scenarios

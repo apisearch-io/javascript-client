@@ -1,8 +1,8 @@
 /**
  * Aggregation constants
  */
-export declare const RANGE_ZERO = 0;
-export declare const RANGE_INFINITE = -1;
+export declare const RANGE_MINUS_INFINITE: any;
+export declare const RANGE_INFINITE: any;
 export declare const RANGE_SEPARATOR = "..";
 /**
  * Filter class

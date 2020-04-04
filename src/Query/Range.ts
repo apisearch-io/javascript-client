@@ -1,8 +1,8 @@
 /**
  * Aggregation constants
  */
-export const RANGE_ZERO = 0;
-export const RANGE_INFINITE = -1;
+export const RANGE_MINUS_INFINITE = null;
+export const RANGE_INFINITE = null;
 export const RANGE_SEPARATOR = "..";
 
 /**
@@ -21,7 +21,7 @@ export class Range {
         const parts = string.split(RANGE_SEPARATOR);
         const from = parts[0];
         const to = parts[1];
-        let finalFrom: number = RANGE_ZERO;
+        let finalFrom: number = RANGE_MINUS_INFINITE;
         let finalTo: number = RANGE_INFINITE;
 
         if (from != "") {
@@ -45,7 +45,7 @@ export class Range {
      */
     public static arrayToString(values: [number, number]): string {
         const finalValues: [string, string] = ["", ""];
-        if (values[0] != RANGE_ZERO) {
+        if (values[0] != RANGE_MINUS_INFINITE) {
             finalValues[0] = String(values[0]);
         }
 

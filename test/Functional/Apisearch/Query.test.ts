@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import {Query} from "../../../src/Query/Query";
 import {Item} from "../../../src/Model/Item";
 import {ItemUUID} from "../../../src/Model/ItemUUID";
-import {FILTER_MUST_ALL} from "../../../src/Query/Filter";
+import {FILTER_MUST_ALL, FILTER_AT_LEAST_ONE} from "../../../src/Query/Filter";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Config} from "../../../src/Config/Config";
 import FunctionalTest from "./FunctionalTest";
@@ -147,5 +147,43 @@ describe('Apisearch', () => {
                 expect(r2.getFirstItem().getId()).to.be.equal('2');
                 expect(r2.getQueryUUID()).to.not.be.undefined;
             });
-    })
+    });
+
+
+    it('should be able to build ranges', async() => {
+        const items = [
+            Item.create(ItemUUID.createByComposedUUID('1~item'), {}, {'price': 30}),
+            Item.create(ItemUUID.createByComposedUUID('2~item'), {}, {'price': 300}),
+            Item.create(ItemUUID.createByComposedUUID('3~item'), {}, {'price': 500}),
+            Item.create(ItemUUID.createByComposedUUID('4~item'), {}, {'price': 900}),
+            Item.create(ItemUUID.createByComposedUUID('5~item'), {}, {'price': 1000}),
+            Item.create(ItemUUID.createByComposedUUID('6~item'), {}, {'price': 1200})
+        ];
+
+        repository.addItems(items);
+        await repository.flush();
+
+        await repository
+            .query(Query
+                .createMatchAll()
+                .aggregateByRange(
+                    'price',
+                    'price',
+                    ['..100', '100..600', '600..1100', '1100..', '0..', '..2000', '-2000..1000'],
+                    FILTER_AT_LEAST_ONE
+                )
+            )
+            .then(result => {
+                const aggregations = result.getAggregation('price');
+                const counters = aggregations.getCounters();
+
+                expect(counters['..100'].getN()).to.be.equal(1);
+                expect(counters['100..600'].getN()).to.be.equal(2);
+                expect(counters['600..1100'].getN()).to.be.equal(2);
+                expect(counters['1100..'].getN()).to.be.equal(1);
+                expect(counters['0..'].getN()).to.be.equal(6);
+                expect(counters['..2000'].getN()).to.be.equal(6);
+                expect(counters['-2000..1000'].getN()).to.be.equal(4);
+            });
+    });
 });
