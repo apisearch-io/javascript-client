@@ -194,7 +194,7 @@ export declare class Query {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param values
      * @param applicationType
      * @param rangeType
@@ -203,7 +203,7 @@ export declare class Query {
      *
      * @return {Query}
      */
-    filterByRange(filterName: string, field: string, options: string[], values: any[], applicationType?: number, rangeType?: string, aggregate?: boolean, aggregationSort?: string[]): Query;
+    filterByRange(filterName: string, field: string, ranges: string[], values: any[], applicationType?: number, rangeType?: string, aggregate?: boolean, aggregationSort?: string[]): Query;
     /**
      * Filter by date range
      *
@@ -265,7 +265,7 @@ export declare class Query {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param applicationType
      * @param rangeType
      * @param aggregationSort
@@ -273,7 +273,7 @@ export declare class Query {
      *
      * @return {Query}
      */
-    aggregateByRange(filterName: string, field: string, options: string[], applicationType: number, rangeType?: string, aggregationSort?: string[], limit?: number): Query;
+    aggregateByRange(filterName: string, field: string, ranges: string[], applicationType: number, rangeType?: string, aggregationSort?: string[], limit?: number): Query;
     /**
      * Aggregate by date range
      *

@@ -1,6 +1,8 @@
 import {InvalidFormatError} from "../Error/InvalidFormatError";
 import {Coordinate} from "./Coordinate";
 import {ItemUUID} from "./ItemUUID";
+import {AppUUID} from "./AppUUID";
+import {IndexUUID} from "./IndexUUID";
 
 /**
  * Item class
@@ -18,6 +20,8 @@ export class Item {
     private highlights: any = {};
     private promoted: boolean = false;
     private score: number;
+    private appUUID: AppUUID;
+    private indexUUID: IndexUUID;
 
     /**
      * Constructor
@@ -349,6 +353,24 @@ export class Item {
     }
 
     /**
+     * Set appUUID
+     *
+     * @return {AppUUID}
+     */
+     public getAppUUID() : AppUUID {
+        return this.appUUID;
+     }
+
+    /**
+     * Set indexUUID
+     *
+     * @return {IndexUUID}
+     */
+     public getIndexUUID() : IndexUUID {
+        return this.indexUUID;
+     }
+
+    /**
      * To array
      */
     public toArray(): {
@@ -362,7 +384,9 @@ export class Item {
         highlights?: {},
         is_promoted?: boolean,
         distance?: number,
-        score?: number
+        score?: number,
+        app_uuid?: {},
+        index_uuid?: {}
     } {
         const itemAsArray: {
             uuid: {},
@@ -375,7 +399,9 @@ export class Item {
             highlights?: {},
             is_promoted?: boolean,
             distance?: number,
-            score?: number
+            score?: number,
+            app_uuid?: {},
+            index_uuid?: {}
         } = {
             uuid: this.uuid.toArray(),
         };
@@ -418,6 +444,14 @@ export class Item {
 
         if (typeof this.score != "undefined") {
             itemAsArray.score = this.score;
+        }
+
+        if (typeof this.appUUID != "undefined") {
+            itemAsArray.app_uuid = this.appUUID.toArray();
+        }
+
+        if (typeof this.indexUUID != "undefined") {
+            itemAsArray.index_uuid = this.indexUUID.toArray();
         }
 
         return itemAsArray;
@@ -489,6 +523,20 @@ export class Item {
             array.score != null
         ) {
             item.score = array.score;
+        }
+
+        if (
+            typeof array.app_uuid != "undefined" &&
+            array.app_uuid != null
+        ) {
+            item.appUUID = AppUUID.createFromArray(array.app_uuid);
+        }
+
+        if (
+            typeof array.index_uuid != "undefined" &&
+            array.index_uuid != null
+        ) {
+            item.indexUUID = IndexUUID.createFromArray(array.index_uuid);
         }
 
         return item;

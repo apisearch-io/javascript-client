@@ -464,7 +464,7 @@ export class Query {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param values
      * @param applicationType
      * @param rangeType
@@ -475,7 +475,7 @@ export class Query {
      */
     public filterByRange(filterName: string,
                          field: string,
-                         options: string[],
+                         ranges: string[],
                          values: any[],
                          applicationType: number = FILTER_AT_LEAST_ONE,
                          rangeType: string = FILTER_TYPE_RANGE,
@@ -500,7 +500,7 @@ export class Query {
             this.aggregateByRange(
                 filterName,
                 fieldPath,
-                options,
+                ranges,
                 applicationType,
                 rangeType,
                 aggregationSort,
@@ -644,7 +644,7 @@ export class Query {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param applicationType
      * @param rangeType
      * @param aggregationSort
@@ -654,12 +654,12 @@ export class Query {
      */
     public aggregateByRange(filterName: string,
                             field: string,
-                            options: string[],
+                            ranges: string[],
                             applicationType: number,
                             rangeType: string = FILTER_TYPE_RANGE,
                             aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
                             limit: number = AGGREGATION_NO_LIMIT): Query {
-        if (options.length === 0) {
+        if (ranges.length === 0) {
             return this;
         }
 
@@ -670,7 +670,7 @@ export class Query {
                 Item.getPathByField(field),
                 applicationType,
                 rangeType,
-                options,
+                ranges,
                 aggregationSort,
                 limit,
             ),

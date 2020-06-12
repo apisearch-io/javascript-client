@@ -4263,6 +4263,8 @@ var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.j
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 var Coordinate_1 = __webpack_require__(/*! ./Coordinate */ "./src/Model/Coordinate.ts");
 var ItemUUID_1 = __webpack_require__(/*! ./ItemUUID */ "./src/Model/ItemUUID.ts");
+var AppUUID_1 = __webpack_require__(/*! ./AppUUID */ "./src/Model/AppUUID.ts");
+var IndexUUID_1 = __webpack_require__(/*! ./IndexUUID */ "./src/Model/IndexUUID.ts");
 /**
  * Item class
  */
@@ -4549,6 +4551,22 @@ var Item = /** @class */ (function () {
         return this.score;
     };
     /**
+     * Set appUUID
+     *
+     * @return {AppUUID}
+     */
+    Item.prototype.getAppUUID = function () {
+        return this.appUUID;
+    };
+    /**
+     * Set indexUUID
+     *
+     * @return {IndexUUID}
+     */
+    Item.prototype.getIndexUUID = function () {
+        return this.indexUUID;
+    };
+    /**
      * To array
      */
     Item.prototype.toArray = function () {
@@ -4585,6 +4603,12 @@ var Item = /** @class */ (function () {
         if (typeof this.score != "undefined") {
             itemAsArray.score = this.score;
         }
+        if (typeof this.appUUID != "undefined") {
+            itemAsArray.app_uuid = this.appUUID.toArray();
+        }
+        if (typeof this.indexUUID != "undefined") {
+            itemAsArray.index_uuid = this.indexUUID.toArray();
+        }
         return itemAsArray;
     };
     /**
@@ -4620,6 +4644,14 @@ var Item = /** @class */ (function () {
         if (typeof array.score != "undefined" &&
             array.score != null) {
             item.score = array.score;
+        }
+        if (typeof array.app_uuid != "undefined" &&
+            array.app_uuid != null) {
+            item.appUUID = AppUUID_1.AppUUID.createFromArray(array.app_uuid);
+        }
+        if (typeof array.index_uuid != "undefined" &&
+            array.index_uuid != null) {
+            item.indexUUID = IndexUUID_1.IndexUUID.createFromArray(array.index_uuid);
         }
         return item;
     };
@@ -5581,7 +5613,7 @@ var Query = /** @class */ (function () {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param values
      * @param applicationType
      * @param rangeType
@@ -5590,7 +5622,7 @@ var Query = /** @class */ (function () {
      *
      * @return {Query}
      */
-    Query.prototype.filterByRange = function (filterName, field, options, values, applicationType, rangeType, aggregate, aggregationSort) {
+    Query.prototype.filterByRange = function (filterName, field, ranges, values, applicationType, rangeType, aggregate, aggregationSort) {
         var _a;
         if (applicationType === void 0) { applicationType = Filter_2.FILTER_AT_LEAST_ONE; }
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
@@ -5604,7 +5636,7 @@ var Query = /** @class */ (function () {
             delete this.filters[filterName];
         }
         if (aggregate) {
-            this.aggregateByRange(filterName, fieldPath, options, applicationType, rangeType, aggregationSort);
+            this.aggregateByRange(filterName, fieldPath, ranges, applicationType, rangeType, aggregationSort);
         }
         return this;
     };
@@ -5698,7 +5730,7 @@ var Query = /** @class */ (function () {
      *
      * @param filterName
      * @param field
-     * @param options
+     * @param ranges
      * @param applicationType
      * @param rangeType
      * @param aggregationSort
@@ -5706,15 +5738,15 @@ var Query = /** @class */ (function () {
      *
      * @return {Query}
      */
-    Query.prototype.aggregateByRange = function (filterName, field, options, applicationType, rangeType, aggregationSort, limit) {
+    Query.prototype.aggregateByRange = function (filterName, field, ranges, applicationType, rangeType, aggregationSort, limit) {
         var _a;
         if (rangeType === void 0) { rangeType = Filter_2.FILTER_TYPE_RANGE; }
         if (aggregationSort === void 0) { aggregationSort = Aggregation_2.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = Aggregation_2.AGGREGATION_NO_LIMIT; }
-        if (options.length === 0) {
+        if (ranges.length === 0) {
             return this;
         }
-        this.aggregations = tslib_1.__assign(tslib_1.__assign({}, this.aggregations), (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, rangeType, options, aggregationSort, limit), _a));
+        this.aggregations = tslib_1.__assign(tslib_1.__assign({}, this.aggregations), (_a = {}, _a[filterName] = Aggregation_1.Aggregation.create(filterName, Item_1.Item.getPathByField(field), applicationType, rangeType, ranges, aggregationSort, limit), _a));
         return this;
     };
     /**
