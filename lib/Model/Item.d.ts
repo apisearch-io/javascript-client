@@ -1,5 +1,7 @@
 import { Coordinate } from "./Coordinate";
 import { ItemUUID } from "./ItemUUID";
+import { AppUUID } from "./AppUUID";
+import { IndexUUID } from "./IndexUUID";
 /**
  * Item class
  */
@@ -15,6 +17,8 @@ export declare class Item {
     private highlights;
     private promoted;
     private score;
+    private appUUID;
+    private indexUUID;
     /**
      * Constructor
      *
@@ -212,6 +216,18 @@ export declare class Item {
      */
     getScore(): number;
     /**
+     * Set appUUID
+     *
+     * @return {AppUUID}
+     */
+    getAppUUID(): AppUUID;
+    /**
+     * Set indexUUID
+     *
+     * @return {IndexUUID}
+     */
+    getIndexUUID(): IndexUUID;
+    /**
      * To array
      */
     toArray(): {
@@ -226,6 +242,8 @@ export declare class Item {
         is_promoted?: boolean;
         distance?: number;
         score?: number;
+        app_uuid?: {};
+        index_uuid?: {};
     };
     /**
      * Create from array

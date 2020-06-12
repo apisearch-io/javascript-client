@@ -1,6 +1,8 @@
 import { expect } from 'chai';
 import {Item} from "../../src/Model/Item";
 import {ItemUUID} from "../../src/Model/ItemUUID";
+import {AppUUID} from "../../src/Model/AppUUID";
+import {IndexUUID} from "../../src/Model/IndexUUID";
 import {Coordinate} from "../../src/Model/Coordinate";
 
 describe('Model/', () => {
@@ -204,34 +206,57 @@ describe('Model/', () => {
             expect(Item.createFromArray(itemAsArray).toArray()).to.be.deep.equal(itemAsArray);
         });
 
-        describe('-> Test score', () => {
-            it('should work properly', () => {
-                let item = Item.createFromArray({
-                    'uuid': {
-                        'id': '1',
-                        'type': 'product'
-                    }
-                });
-                expect(item.getScore()).to.be.equals(undefined);
-                expect(item.toArray().score).to.be.equals(undefined);
-
-                item = Item.createFromArray({
-                    'uuid': {
-                        'id': '1',
-                        'type': 'product'
-                    },
-                    'score': 2.4
-                });
-                expect(item.getScore()).to.be.equals(2.4);
-                expect(item.toArray().score).to.be.equals(2.4);
-                expect(item.setScore(3.3).getScore()).to.be.equals(3.3);
-
+        describe('-> Test score should work properly', () => {
+            let item = Item.createFromArray({
+                'uuid': {
+                    'id': '1',
+                    'type': 'product'
+                }
             });
+            expect(item.getScore()).to.be.equals(undefined);
+            expect(item.toArray().score).to.be.equals(undefined);
+
+            item = Item.createFromArray({
+                'uuid': {
+                    'id': '1',
+                    'type': 'product'
+                },
+                'score': 2.4
+            });
+            expect(item.getScore()).to.be.equals(2.4);
+            expect(item.toArray().score).to.be.equals(2.4);
+            expect(item.setScore(3.3).getScore()).to.be.equals(3.3);
         });
 
         describe('.composedUUID() should work', () => {
             let composedId = '1~product';
             expect(Item.create(ItemUUID.createByComposedUUID(composedId)).composeUUID())
+        });
+
+        describe('.appUUID and .indexUUID should work', () => {
+            let item = Item.createFromArray({
+                'uuid': {
+                    'id': '1',
+                    'type': 'product'
+                }
+            });
+            expect(item.getAppUUID()).to.be.equals(undefined);
+            expect(item.getIndexUUID()).to.be.equals(undefined);
+            item = Item.createFromArray(item.toArray());
+            expect(item.getAppUUID()).to.be.equals(undefined);
+            expect(item.getIndexUUID()).to.be.equals(undefined);
+
+            let appUUID = AppUUID.createById('app1');
+            let indexUUID = IndexUUID.createById('index1');
+            let itemAsArray = item.toArray();
+            itemAsArray.app_uuid = appUUID.toArray();
+            itemAsArray.index_uuid = indexUUID.toArray();
+            item = Item.createFromArray(itemAsArray);
+            expect(item.getAppUUID().toArray()).to.be.deep.equals(appUUID.toArray());
+            expect(item.getIndexUUID().toArray()).to.be.deep.equals(indexUUID.toArray());
+            item = Item.createFromArray(item.toArray());
+            expect(item.getAppUUID().toArray()).to.be.deep.equals(appUUID.toArray());
+            expect(item.getIndexUUID().toArray()).to.be.deep.equals(indexUUID.toArray());
         });
     });
 });
