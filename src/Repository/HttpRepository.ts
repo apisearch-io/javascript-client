@@ -343,6 +343,36 @@ export class HttpRepository extends Repository {
     }
 
     /**
+     * Click
+     *
+     * @param {Item} item
+     * @param {string} user_id
+     *
+     * @return {Promise<void>}
+     */
+     public async click(
+        item: Item,
+        user_id?: string
+        ): Promise<void> {
+        var parameters = <any>{};
+        if (typeof user_id != "undefined") {
+            parameters.user_id = user_id;
+        }
+
+        try {
+             await this.httpClient.get(
+                 "/" + item.getAppUUID().composedUUID() + "/indices/" + item.getIndexUUID().composedUUID() + "/items/" + item.getUUID().composedUUID() + '/click',
+                 "post",
+                 this.getCredentials(),
+                 parameters,
+                 {}
+             );
+         } catch (response) {
+             throw this.createErrorFromResponse(response);
+         }
+     }
+
+    /**
      * Get query values
      *
      * @returns any

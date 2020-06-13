@@ -213,8 +213,8 @@ describe('Model/', () => {
                     'type': 'product'
                 }
             });
-            expect(item.getScore()).to.be.equals(undefined);
-            expect(item.toArray().score).to.be.equals(undefined);
+            expect(item.getScore()).to.be.undefined;
+            expect(item.toArray().score).to.be.undefined;
 
             item = Item.createFromArray({
                 'uuid': {
@@ -240,11 +240,11 @@ describe('Model/', () => {
                     'type': 'product'
                 }
             });
-            expect(item.getAppUUID()).to.be.equals(undefined);
-            expect(item.getIndexUUID()).to.be.equals(undefined);
+            expect(item.getAppUUID()).to.be.undefined;
+            expect(item.getIndexUUID()).to.be.undefined;
             item = Item.createFromArray(item.toArray());
-            expect(item.getAppUUID()).to.be.equals(undefined);
-            expect(item.getIndexUUID()).to.be.equals(undefined);
+            expect(item.getAppUUID()).to.be.undefined;
+            expect(item.getIndexUUID()).to.be.undefined;
 
             let appUUID = AppUUID.createById('app1');
             let indexUUID = IndexUUID.createById('index1');
