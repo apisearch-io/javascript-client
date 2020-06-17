@@ -26,8 +26,10 @@ describe('Click', () => {
         await repository.flush();
         const result = await repository.query(Query.createMatchAll());
         const items = result.getItems();
+        const nItem0 = items[0];
+        const nItem1 = items[1];
 
-        await repository.click(items[0], 'user1234');
-        await repository.click(items[1], 'user5678');
+        await repository.click(nItem0.getAppUUID().composedUUID(), nItem0.getIndexUUID().composedUUID(), nItem0.getUUID().composedUUID(), 'user1234');
+        await repository.click(nItem1.getAppUUID().composedUUID(), nItem1.getIndexUUID().composedUUID(), nItem1.getUUID().composedUUID(), 'user5678');
     });
 });
