@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.2.25",
+  "version": "0.2.26",
   "description": "Javascript client for Apisearch.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

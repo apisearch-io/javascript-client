@@ -129,6 +129,15 @@ export declare class HttpRepository extends Repository {
      */
     configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
     /**
+     * Click
+     *
+     * @param {Item} item
+     * @param {string} user_id
+     *
+     * @return {Promise<void>}
+     */
+    click(item: Item, user_id?: string): Promise<void>;
+    /**
      * Get query values
      *
      * @returns any
