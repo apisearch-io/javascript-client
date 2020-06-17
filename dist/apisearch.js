@@ -7621,12 +7621,14 @@ var HttpRepository = /** @class */ (function (_super) {
     /**
      * Click
      *
-     * @param {Item} item
+     * @param {string} app_id
+     * @param {string} index_id
+     * @param {string} item_id
      * @param {string} user_id
      *
      * @return {Promise<void>}
      */
-    HttpRepository.prototype.click = function (item, user_id) {
+    HttpRepository.prototype.click = function (app_id, index_id, item_id, user_id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var parameters, response_11;
             return tslib_1.__generator(this, function (_a) {
@@ -7639,7 +7641,9 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, this.httpClient.get("/" + item.getAppUUID().composedUUID() + "/indices/" + item.getIndexUUID().composedUUID() + "/items/" + item.getUUID().composedUUID() + '/click', "post", this.getCredentials(), parameters, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + app_id + "/indices/" + index_id + "/items/" + item_id + '/click', "post", {
+                                token: this.token
+                            }, parameters, {})];
                     case 2:
                         _a.sent();
                         return [3 /*break*/, 4];

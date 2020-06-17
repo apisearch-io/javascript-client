@@ -131,12 +131,14 @@ export declare class HttpRepository extends Repository {
     /**
      * Click
      *
-     * @param {Item} item
+     * @param {string} app_id
+     * @param {string} index_id
+     * @param {string} item_id
      * @param {string} user_id
      *
      * @return {Promise<void>}
      */
-    click(item: Item, user_id?: string): Promise<void>;
+    click(app_id: string, index_id: string, item_id: string, user_id?: string): Promise<void>;
     /**
      * Get query values
      *
