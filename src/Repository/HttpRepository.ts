@@ -345,13 +345,17 @@ export class HttpRepository extends Repository {
     /**
      * Click
      *
-     * @param {Item} item
+     * @param {string} app_id
+     * @param {string} index_id
+     * @param {string} item_id
      * @param {string} user_id
      *
      * @return {Promise<void>}
      */
      public async click(
-        item: Item,
+        app_id: string,
+        index_id: string,
+        item_id: string,
         user_id?: string
         ): Promise<void> {
         var parameters = <any>{};
@@ -361,9 +365,11 @@ export class HttpRepository extends Repository {
 
         try {
              await this.httpClient.get(
-                 "/" + item.getAppUUID().composedUUID() + "/indices/" + item.getIndexUUID().composedUUID() + "/items/" + item.getUUID().composedUUID() + '/click',
+                 "/" + app_id + "/indices/" + index_id + "/items/" + item_id + '/click',
                  "post",
-                 this.getCredentials(),
+                 {
+                    token: this.token
+                 },
                  parameters,
                  {}
              );
