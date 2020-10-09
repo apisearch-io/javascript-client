@@ -1350,7 +1350,7 @@ export class Query {
         }
 
         if (this.highlightsEnabled === true) {
-            array.highlights_enabled = true;
+            array.highlight_enabled = true;
         }
 
         if (this.aggregationsEnabled === false) {
@@ -1519,8 +1519,8 @@ export class Query {
             ? array.aggregations_enabled
             : true;
 
-        query.highlightsEnabled = typeof array.highlights_enabled === "boolean"
-            ? array.highlights_enabled
+        query.highlightsEnabled = typeof array.highlight_enabled === "boolean"
+            ? array.highlight_enabled
             : false;
 
         query.fuzziness = array.fuzziness;
