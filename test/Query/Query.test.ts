@@ -623,15 +623,18 @@ describe('Query()', () => {
         it('should set and unset suggestions properly', () => {
             query.enableSuggestions();
             expect(query.areSuggestionsEnabled()).to.be.true;
+            expect(query.toArray().suggestions_enabled).to.be.true;
             query.disableSuggestions();
             expect(query.areSuggestionsEnabled()).to.be.false;
+            expect(query.toArray().suggestions_enabled).to.be.undefined;
         });
 
         it('should set and unset highlights properly', () => {
             query.enableHighlights();
             expect(query.areHighlightsEnabled()).to.be.true;
+            expect(query.toArray().highlight_enabled).to.be.true;
             query.disableHighlights();
-            expect(query.areHighlightsEnabled()).to.be.false;
+            expect(query.toArray().highlight_enabled).to.be.undefined;
         });
     });
 
