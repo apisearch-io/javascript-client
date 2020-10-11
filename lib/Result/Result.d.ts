@@ -7,7 +7,7 @@ import { ResultAggregations } from "./ResultAggregations";
 export declare class Result {
     private queryUUID;
     private items;
-    private suggests;
+    private suggestions;
     private aggregations;
     private totalItems;
     private totalHits;
@@ -28,12 +28,12 @@ export declare class Result {
      * @param totalItems
      * @param totalHits
      * @param aggregations
-     * @param suggests
+     * @param suggestions
      * @param items
      *
      * @returns {Result}
      */
-    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggests: string[], items: Item[]): Result;
+    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggestions: string[], items: Item[]): Result;
     /**
      * Create multi results
      *
@@ -109,17 +109,11 @@ export declare class Result {
      */
     hasNotEmptyAggregation(name: string): boolean;
     /**
-     * Add suggest
-     *
-     * @param suggest
-     */
-    addSuggest(suggest: string): void;
-    /**
-     * Get suggests
+     * Get suggestions
      *
      * @return {string[]}
      */
-    getSuggests(): string[];
+    getSuggestions(): string[];
     /**
      * Get query uuid
      *
@@ -147,7 +141,7 @@ export declare class Result {
     /**
      * to array
      *
-     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggests: string[]}}
+     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggestions: string[]}}
      */
     toArray(): any;
     /**

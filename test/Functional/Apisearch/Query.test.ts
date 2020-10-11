@@ -186,4 +186,45 @@ describe('Apisearch', () => {
                 expect(counters['-2000..1000'].getN()).to.be.equal(4);
             });
     });
+
+    it('should be able to work with suggestions', async() => {
+        const items = [
+            Item.create(ItemUUID.createByComposedUUID('1~item'), {}, {}, {}, [], ['sug1']),
+        ];
+
+        repository.addItems(items);
+        await repository.flush();
+
+        await repository
+            .query(Query
+                .create('su')
+                .enableSuggestions()
+            )
+            .then(result => {
+                expect(result.getSuggestions()).to.be.deep.equal(['sug1']);
+            });
+    });
+
+    it('should be able to work with highlights', async() => {
+        const items = [
+            Item.create(ItemUUID.createByComposedUUID('1~item'), {
+                'name': "item result"
+            }, {}, {
+                'name': 'item result'
+            }),
+        ];
+
+        repository.addItems(items);
+        await repository.flush();
+
+        await repository
+            .query(Query
+                .create('it')
+                .enableHighlights()
+            )
+            .then(result => {
+                expect(result.getFirstItem().getHighlights().name).to.be.equal('<em>item</em> result');
+            });
+    });
+
 });

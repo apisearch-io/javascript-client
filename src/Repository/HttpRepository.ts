@@ -413,7 +413,7 @@ export class HttpRepository extends Repository {
             result.getTotalItems(),
             result.getTotalHits(),
             result.getAggregations(),
-            result.getSuggests(),
+            result.getSuggestions(),
             this
                 .transformer
                 .fromItems(result.getItems()),

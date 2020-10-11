@@ -25,7 +25,7 @@ describe('Result/', () => {
                 expect(resultAsArray.total_items).to.be.equal(2);
                 expect(result.getItems().length).to.be.equal(0);
                 expect(result.getFirstItem()).to.be.null;
-                expect(result.getSuggests().length).to.be.equal(0);
+                expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
 
                 result = HttpHelper.emulateHttpTransport(result);
@@ -34,7 +34,7 @@ describe('Result/', () => {
                 expect(result.getTotalItems()).to.be.equal(2);
                 expect(result.getItems().length).to.be.equal(0);
                 expect(result.getFirstItem()).to.be.null;
-                expect(result.getSuggests().length).to.be.equal(0);
+                expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
             });
         });
@@ -91,15 +91,15 @@ describe('Result/', () => {
         });
 
         describe('Test suggests', () => {
-            let result = new Result(
+            let result = Result.create(
                 '123',
-                2, 1
+                0, 0, new ResultAggregations(0), ['hola'], []
             );
-            result.addSuggest('hola');
+
             let resultAsArray = result.toArray();
 
             it('Should work properly', () => {
-                expect(result.getSuggests()).to.be.deep.equal(['hola']);
+                expect(result.getSuggestions()).to.be.deep.equal(['hola']);
                 expect(resultAsArray.suggests).to.be.deep.equal(['hola']);
             });
         });
@@ -188,7 +188,7 @@ describe('Result/', () => {
             expect(result.getTotalItems()).to.be.equal(10);
             expect(result.getTotalHits()).to.be.equal(20);
             expect(result.getAggregation('gogo').getName()).to.be.equal('hola');
-            expect(result.getSuggests()).to.be.deep.equal(['sug1', 'sug2']);
+            expect(result.getSuggestions()).to.be.deep.equal(['sug1', 'sug2']);
             expect(result.getItems().length).to.be.equal(2);
             expect(result.getFirstItem().getType()).to.be.equal('product');
             result = HttpHelper.emulateHttpTransport(result);
@@ -196,7 +196,7 @@ describe('Result/', () => {
             expect(result.getTotalItems()).to.be.equal(10);
             expect(result.getTotalHits()).to.be.equal(20);
             expect(result.getAggregation('gogo').getName()).to.be.equal('hola');
-            expect(result.getSuggests()).to.be.deep.equal(['sug1', 'sug2']);
+            expect(result.getSuggestions()).to.be.deep.equal(['sug1', 'sug2']);
             expect(result.getItems().length).to.be.equal(2);
             expect(result.getFirstItem().getType()).to.be.equal('product');
         });
