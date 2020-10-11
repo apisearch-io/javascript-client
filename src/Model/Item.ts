@@ -506,7 +506,7 @@ export class Item {
 
         if (
             typeof array.highlights == "object" &&
-            array.distance != null
+            array.highlights != null
         ) {
             item.highlights = array.highlights;
         }

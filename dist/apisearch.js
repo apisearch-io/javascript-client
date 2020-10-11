@@ -4634,7 +4634,7 @@ var Item = /** @class */ (function () {
             item.distance = array.distance;
         }
         if (typeof array.highlights == "object" &&
-            array.distance != null) {
+            array.highlights != null) {
             item.highlights = array.highlights;
         }
         if (typeof array.is_promoted != "undefined" &&
@@ -7681,7 +7681,7 @@ var HttpRepository = /** @class */ (function (_super) {
             }.bind(this));
             return Result_1.Result.createMultiresults(subresults);
         }
-        return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggests(), this
+        return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggestions(), this
             .transformer
             .fromItems(result.getItems()));
     };
@@ -8029,7 +8029,7 @@ var Result = /** @class */ (function () {
      */
     function Result(queryUUID, totalItems, totalHits) {
         this.items = [];
-        this.suggests = [];
+        this.suggestions = [];
         this.subresults = {};
         this.queryUUID = queryUUID;
         this.totalItems = totalItems;
@@ -8042,15 +8042,15 @@ var Result = /** @class */ (function () {
      * @param totalItems
      * @param totalHits
      * @param aggregations
-     * @param suggests
+     * @param suggestions
      * @param items
      *
      * @returns {Result}
      */
-    Result.create = function (queryUUID, totalItems, totalHits, aggregations, suggests, items) {
+    Result.create = function (queryUUID, totalItems, totalHits, aggregations, suggestions, items) {
         var result = new Result(queryUUID, totalItems, totalHits);
         result.aggregations = aggregations;
-        result.suggests = suggests;
+        result.suggestions = suggestions;
         result.items = items;
         return result;
     };
@@ -8177,20 +8177,12 @@ var Result = /** @class */ (function () {
             : this.aggregations.hasNotEmptyAggregation(name);
     };
     /**
-     * Add suggest
-     *
-     * @param suggest
-     */
-    Result.prototype.addSuggest = function (suggest) {
-        this.suggests.push(suggest);
-    };
-    /**
-     * Get suggests
+     * Get suggestions
      *
      * @return {string[]}
      */
-    Result.prototype.getSuggests = function () {
-        return this.suggests;
+    Result.prototype.getSuggestions = function () {
+        return this.suggestions;
     };
     /**
      * Get query uuid
@@ -8227,7 +8219,7 @@ var Result = /** @class */ (function () {
     /**
      * to array
      *
-     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggests: string[]}}
+     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggestions: string[]}}
      */
     Result.prototype.toArray = function () {
         var array = {
@@ -8238,7 +8230,7 @@ var Result = /** @class */ (function () {
             aggregations: this.aggregations == null
                 ? null
                 : this.aggregations.toArray(),
-            suggests: this.suggests,
+            suggests: this.suggestions,
         };
         if (this.subresults instanceof Object &&
             Object.keys(this.subresults).length) {
@@ -8268,7 +8260,7 @@ var Result = /** @class */ (function () {
             ? ResultAggregations_1.ResultAggregations.createFromArray(array.aggregations)
             : null, array.suggests
             ? array.suggests
-            : null, array.items instanceof Array
+            : [], array.items instanceof Array
             ? array.items.map(function (itemAsArray) { return Item_1.Item.createFromArray(itemAsArray); })
             : []);
         /**

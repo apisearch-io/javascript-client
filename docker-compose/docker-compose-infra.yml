@@ -5,6 +5,8 @@ services:
     elasticsearch:
         image: "docker.elastic.co/elasticsearch/elasticsearch:7.6.0"
         networks: [apisearch]
+        ports:
+            - 9200:9200
         environment:
             - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
             - "discovery.type=single-node"
@@ -18,9 +20,6 @@ services:
         environment:
             APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
             APISEARCH_ENABLED_PLUGINS: elasticsearch
-            APISEARCH_EVENTS_EXCHANGE: events
-            APISEARCH_TOKENS_UPDATE_EXCHANGE: tokens_update
-            APISEARCH_ASYNC_EVENTS_ADAPTER: in_memory
             ELASTICSEARCH_HOST: elasticsearch
             ELASTICSEARCH_REFRESH_ON_WRITE: 1
 

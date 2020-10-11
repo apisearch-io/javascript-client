@@ -8,7 +8,7 @@ export class Result {
 
     private queryUUID: string;
     private items: Item[] = [];
-    private suggests: string[] = [];
+    private suggestions: string[] = [];
     private aggregations: ResultAggregations;
     private totalItems: number;
     private totalHits: number;
@@ -39,7 +39,7 @@ export class Result {
      * @param totalItems
      * @param totalHits
      * @param aggregations
-     * @param suggests
+     * @param suggestions
      * @param items
      *
      * @returns {Result}
@@ -49,7 +49,7 @@ export class Result {
         totalItems: number,
         totalHits: number,
         aggregations: ResultAggregations,
-        suggests: string[],
+        suggestions: string[],
         items: Item[],
     ): Result {
         const result = new Result(
@@ -59,7 +59,7 @@ export class Result {
         );
 
         result.aggregations = aggregations;
-        result.suggests = suggests;
+        result.suggestions = suggestions;
         result.items = items;
 
         return result;
@@ -208,21 +208,12 @@ export class Result {
     }
 
     /**
-     * Add suggest
-     *
-     * @param suggest
-     */
-    public addSuggest(suggest: string) {
-        this.suggests.push(suggest);
-    }
-
-    /**
-     * Get suggests
+     * Get suggestions
      *
      * @return {string[]}
      */
-    public getSuggests(): string[] {
-        return this.suggests;
+    public getSuggestions(): string[] {
+        return this.suggestions;
     }
 
     /**
@@ -264,7 +255,7 @@ export class Result {
     /**
      * to array
      *
-     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggests: string[]}}
+     * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggestions: string[]}}
      */
     public toArray(): any {
         const array: any = {
@@ -275,7 +266,7 @@ export class Result {
             aggregations: this.aggregations == null
                 ? null
                 : this.aggregations.toArray(),
-            suggests: this.suggests,
+            suggests: this.suggestions,
         };
 
         if (
@@ -315,7 +306,7 @@ export class Result {
                 : null,
             array.suggests
                 ? array.suggests
-                : null,
+                : [],
             array.items instanceof Array
                 ? array.items.map((itemAsArray) => Item.createFromArray(itemAsArray))
                 : [],
