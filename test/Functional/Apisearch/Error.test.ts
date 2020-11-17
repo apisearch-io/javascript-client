@@ -2,15 +2,16 @@ import Axios from "axios";
 import {expect} from "chai";
 import * as sinon from "sinon";
 import Apisearch from "../../../src/Apisearch";
-import {Config} from "../../../src/Config/Config";
-import {ConnectionError} from "../../../src/Error/ConnectionError";
-import {InvalidTokenError} from "../../../src/Error/InvalidTokenError";
-import {ResourceExistsError} from "../../../src/Error/ResourceExistsError";
-import {ResourceNotAvailableError} from "../../../src/Error/ResourceNotAvailableError";
 import {UnknownError} from "../../../src/Error/UnknownError";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
-import {Query} from "../../../src/Query/Query";
 import FunctionalTest from "./FunctionalTest";
+import {
+    Config,
+    ConnectionError,
+    InvalidTokenError,
+    Query, ResourceExistsError,
+    ResourceNotAvailableError
+} from "../../../src";
 
 afterEach(() => {
     sinon.restore();

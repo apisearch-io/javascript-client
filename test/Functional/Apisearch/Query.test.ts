@@ -227,4 +227,25 @@ describe('Apisearch', () => {
             });
     });
 
+
+    it('should be able to work with strange characters', async() => {
+        const items = [
+            Item.create(ItemUUID.createByComposedUUID('1~item'), {
+                'name': "strange # character"
+            }, {}, {
+                'name': 'strange # character'
+            }),
+        ];
+
+        repository.addItems(items);
+        await repository.flush();
+
+        await repository
+            .query(Query
+                .create('strange # char')
+            )
+            .then(result => {
+                expect(result.getFirstItem().getUUID().getId()).to.be.equal("1");
+            });
+    });
 });
