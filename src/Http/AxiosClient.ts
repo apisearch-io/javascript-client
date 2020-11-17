@@ -87,7 +87,7 @@ export class AxiosClient extends Client implements HttpClient {
                 ...{
                     token: credentials.token,
                 },
-            }),
+            }).replace(/#/g, '%23'),
         };
 
         if (typeof this.cancelToken[url] !== "undefined") {
