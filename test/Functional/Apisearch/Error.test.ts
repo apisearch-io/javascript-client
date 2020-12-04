@@ -5,13 +5,12 @@ import Apisearch from "../../../src/Apisearch";
 import {UnknownError} from "../../../src/Error/UnknownError";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import FunctionalTest from "./FunctionalTest";
-import {
-    Config,
-    ConnectionError,
-    InvalidTokenError,
-    Query, ResourceExistsError,
-    ResourceNotAvailableError
-} from "../../../src";
+import {Config} from "../../../src/Config/Config";
+import {ConnectionError} from "../../../src/Error/ConnectionError";
+import {InvalidTokenError} from "../../../src/Error/InvalidTokenError";
+import {Query} from "../../../src/Query/Query";
+import {ResourceExistsError} from "../../../src/Error/ResourceExistsError";
+import {ResourceNotAvailableError} from "../../../src/Error/ResourceNotAvailableError";
 
 afterEach(() => {
     sinon.restore();

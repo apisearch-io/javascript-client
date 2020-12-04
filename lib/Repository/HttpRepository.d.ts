@@ -72,6 +72,24 @@ export declare class HttpRepository extends Repository {
      */
     query(query: Query): Promise<Result>;
     /**
+     * Get similar items
+     *
+     * @param {Query} query
+     * @param {ItemUUID[]} itemUUIDs
+     * @param {number} similarity
+     *
+     * @return {Promise<Result>}
+     */
+    getSimilarItems(query: Query, itemUUIDs: ItemUUID[], similarity: number): Promise<Result>;
+    /**
+     * Get recommended items
+     *
+     * @param {Query} query
+     *
+     * @return {Promise<Result>}
+     */
+    getRecommendedItems(query: Query): Promise<Result>;
+    /**
      * Update items
      *
      * @param {Query} query

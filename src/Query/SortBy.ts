@@ -1,4 +1,6 @@
-import {Item} from "../Model/Item";
+import {Item, Coordinate} from "..";
+import {Filter} from "./Filter";
+
 /**
  export * Sort by constants
  */
@@ -47,9 +49,6 @@ export const SORT_BY_LOCATION_MI_ASC = {
     type: SORT_BY_TYPE_DISTANCE,
     unit: "mi"
 };
-
-import {Coordinate} from "../Model/Coordinate";
-import {Filter} from "./Filter";
 
 /**
  * ScoreStrategy
@@ -252,6 +251,36 @@ export class SortBy {
         }
 
         return false;
+    }
+
+    /**
+     * get first sort value as string
+     *
+     * @return {string}
+     */
+    public getFirstSortAsString() : string {
+        if (this.sortsBy[0] === undefined) {
+            return 'score';
+        }
+
+        const firstSortBy = this.sortsBy[0];
+        if (firstSortBy.type === SORT_BY_TYPE_RANDOM) {
+            return 'random';
+        }
+
+        if (firstSortBy.type === SORT_BY_TYPE_DISTANCE) {
+            return firstSortBy.type + ':' + firstSortBy.unit;
+        }
+
+        if (firstSortBy.type === SORT_BY_TYPE_SCORE) {
+            return 'score';
+        }
+
+        const field = firstSortBy.field;
+        const order = firstSortBy.order;
+        const fieldParts = field.split('.');
+
+        return fieldParts[1] + ':' + order;
     }
 
     /**

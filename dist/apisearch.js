@@ -6948,7 +6948,8 @@ exports.ScoreStrategy = ScoreStrategy;
 "use strict";
 
 exports.__esModule = true;
-var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
+var __1 = __webpack_require__(/*! .. */ "./src/index.ts");
+var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
  export * Sort by constants
  */
@@ -6996,8 +6997,6 @@ exports.SORT_BY_LOCATION_MI_ASC = {
     type: exports.SORT_BY_TYPE_DISTANCE,
     unit: "mi"
 };
-var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
-var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
  * ScoreStrategy
  */
@@ -7067,7 +7066,7 @@ var SortBy = /** @class */ (function () {
     SortBy.prototype.byFieldValue = function (field, order) {
         this.sortsBy.push({
             type: exports.SORT_BY_TYPE_FIELD,
-            field: Item_1.Item.getPathByField(field),
+            field: __1.Item.getPathByField(field),
             order: order
         });
         return this;
@@ -7103,7 +7102,7 @@ var SortBy = /** @class */ (function () {
      */
     SortBy.prototype.byNestedFieldAndFilter = function (field, order, filter, mode) {
         if (mode === void 0) { mode = exports.SORT_BY_MODE_AVG; }
-        var fieldPath = Item_1.Item.getPathByField(filter.getField());
+        var fieldPath = __1.Item.getPathByField(filter.getField());
         var filterAsArray = filter.toArray();
         filterAsArray.field = fieldPath;
         filter = Filter_1.Filter.createFromArray(filterAsArray);
@@ -7174,6 +7173,30 @@ var SortBy = /** @class */ (function () {
         return false;
     };
     /**
+     * get first sort value as string
+     *
+     * @return {string}
+     */
+    SortBy.prototype.getFirstSortAsString = function () {
+        if (this.sortsBy[0] === undefined) {
+            return 'score';
+        }
+        var firstSortBy = this.sortsBy[0];
+        if (firstSortBy.type === exports.SORT_BY_TYPE_RANDOM) {
+            return 'random';
+        }
+        if (firstSortBy.type === exports.SORT_BY_TYPE_DISTANCE) {
+            return firstSortBy.type + ':' + firstSortBy.unit;
+        }
+        if (firstSortBy.type === exports.SORT_BY_TYPE_SCORE) {
+            return 'score';
+        }
+        var field = firstSortBy.field;
+        var order = firstSortBy.order;
+        var fieldParts = field.split('.');
+        return fieldParts[1] + ':' + order;
+    };
+    /**
      * To array
      *
      * @return {[]}
@@ -7187,7 +7210,7 @@ var SortBy = /** @class */ (function () {
                 sortsByAsArray[i].filter = sortsByAsArray[i].filter.toArray();
             }
             if (sortsByAsArray[i].coordinate !== null &&
-                sortsByAsArray[i].coordinate instanceof Coordinate_1.Coordinate) {
+                sortsByAsArray[i].coordinate instanceof __1.Coordinate) {
                 sortsByAsArray[i].coordinate = sortsByAsArray[i].coordinate.toArray();
             }
         }
@@ -7214,7 +7237,7 @@ var SortBy = /** @class */ (function () {
             }
             if (element.coordinate != null &&
                 typeof element.coordinate === typeof {}) {
-                element.coordinate = Coordinate_1.Coordinate.createFromArray(element.coordinate);
+                element.coordinate = __1.Coordinate.createFromArray(element.coordinate);
             }
             sortBy.sortsBy.push(element);
         }
@@ -7236,7 +7259,7 @@ var SortBy = /** @class */ (function () {
             }
             if (sortBy.coordinate != null &&
                 typeof sortBy.coordinate == typeof {}) {
-                sortByAsArray.coordinate = Coordinate_1.Coordinate.createFromArray(sortBy.coordinate.toArray());
+                sortByAsArray.coordinate = __1.Coordinate.createFromArray(sortBy.coordinate.toArray());
             }
             newSortBy.sortsBy.push(sortByAsArray);
         }
@@ -7427,6 +7450,70 @@ var HttpRepository = /** @class */ (function (_super) {
         });
     };
     /**
+     * Get similar items
+     *
+     * @param {Query} query
+     * @param {ItemUUID[]} itemUUIDs
+     * @param {number} similarity
+     *
+     * @return {Promise<Result>}
+     */
+    HttpRepository.prototype.getSimilarItems = function (query, itemUUIDs, similarity) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response, response_4, result;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + '/similar-items', "get", this.getCredentials(), {}, {
+                                query: query.toArray(),
+                                items_uuid: itemUUIDs.map(function (itemUUID) {
+                                    return itemUUID.toArray();
+                                }),
+                                similarity: similarity
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_4 = _a.sent();
+                        throw this.createErrorFromResponse(response_4);
+                    case 3:
+                        result = Result_1.Result.createFromArray(response.getBody());
+                        return [2 /*return*/, this.applyTransformersToResult(result)];
+                }
+            });
+        });
+    };
+    /**
+     * Get recommended items
+     *
+     * @param {Query} query
+     *
+     * @return {Promise<Result>}
+     */
+    HttpRepository.prototype.getRecommendedItems = function (query) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var response, response_5, result;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + '/recommended-items', "get", this.getCredentials(), {}, query.toArray())];
+                    case 1:
+                        response = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        response_5 = _a.sent();
+                        throw this.createErrorFromResponse(response_5);
+                    case 3:
+                        result = Result_1.Result.createFromArray(response.getBody());
+                        return [2 /*return*/, this.applyTransformersToResult(result)];
+                }
+            });
+        });
+    };
+    /**
      * Update items
      *
      * @param {Query} query
@@ -7436,7 +7523,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.updateItems = function (query, changes) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response_4;
+            var response_6;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7449,8 +7536,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_4 = _a.sent();
-                        throw this.createErrorFromResponse(response_4);
+                        response_6 = _a.sent();
+                        throw this.createErrorFromResponse(response_6);
                     case 3: return [2 /*return*/];
                 }
             });
@@ -7466,7 +7553,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.createIndex = function (indexUUID, config) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response_5;
+            var response_7;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7476,8 +7563,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_5 = _a.sent();
-                        throw this.createErrorFromResponse(response_5);
+                        response_7 = _a.sent();
+                        throw this.createErrorFromResponse(response_7);
                     case 3: return [2 /*return*/];
                 }
             });
@@ -7492,7 +7579,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.deleteIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response_6;
+            var response_8;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7502,8 +7589,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_6 = _a.sent();
-                        throw this.createErrorFromResponse(response_6);
+                        response_8 = _a.sent();
+                        throw this.createErrorFromResponse(response_8);
                     case 3: return [2 /*return*/];
                 }
             });
@@ -7518,7 +7605,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.resetIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response_7;
+            var response_9;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7528,8 +7615,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_7 = _a.sent();
-                        throw this.createErrorFromResponse(response_7);
+                        response_9 = _a.sent();
+                        throw this.createErrorFromResponse(response_9);
                     case 3: return [2 /*return*/];
                 }
             });
@@ -7544,7 +7631,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.checkIndex = function (indexUUID) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response, response_8;
+            var response, response_10;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7554,8 +7641,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         response = _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_8 = _a.sent();
-                        throw this.createErrorFromResponse(response_8);
+                        response_10 = _a.sent();
+                        throw this.createErrorFromResponse(response_10);
                     case 3: return [2 /*return*/, response.getCode() === 200];
                 }
             });
@@ -7568,7 +7655,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.getIndices = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response, response_9, result, _i, _a, indexAsArray;
+            var response, response_11, result, _i, _a, indexAsArray;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -7578,8 +7665,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         response = _b.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_9 = _b.sent();
-                        throw this.createErrorFromResponse(response_9);
+                        response_11 = _b.sent();
+                        throw this.createErrorFromResponse(response_11);
                     case 3:
                         result = [];
                         for (_i = 0, _a = response.getBody(); _i < _a.length; _i++) {
@@ -7601,7 +7688,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.configureIndex = function (indexUUID, config) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response_10;
+            var response_12;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7611,8 +7698,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_10 = _a.sent();
-                        throw this.createErrorFromResponse(response_10);
+                        response_12 = _a.sent();
+                        throw this.createErrorFromResponse(response_12);
                     case 3: return [2 /*return*/];
                 }
             });
@@ -7630,7 +7717,7 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.click = function (app_id, index_id, item_id, user_id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var parameters, response_11;
+            var parameters, response_13;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7648,8 +7735,8 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        response_11 = _a.sent();
-                        throw this.createErrorFromResponse(response_11);
+                        response_13 = _a.sent();
+                        throw this.createErrorFromResponse(response_13);
                     case 4: return [2 /*return*/];
                 }
             });

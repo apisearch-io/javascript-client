@@ -241,9 +241,11 @@ describe('Repository/', () => {
             await repository.resetIndex(IndexUUID.createById('x')).then(_ => counter++);
             await repository.checkIndex(IndexUUID.createById('x')).then(_ => counter++);
             await repository.configureIndex(IndexUUID.createById('x'), new Config()).then(_ => counter++);
+            await repository.getSimilarItems(Query.createMatchAll(), [ItemUUID.createByComposedUUID('1~type')], 1).then(_ => counter++);
+            await repository.getRecommendedItems(Query.createMatchAll()).then(_ => counter++);
 
-            expect(client.calls.length).to.be.equal(7);
-            expect(counter).to.be.equal(7);
+            expect(client.calls.length).to.be.equal(9);
+            expect(counter).to.be.equal(9);
         });
     });
 });
