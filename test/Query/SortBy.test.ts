@@ -232,5 +232,42 @@ describe('Query/', () => {
                 expect(SortBy.create().byValue(SORT_BY_RANDOM).hasRandomSort()).to.be.equal(true);
             });
         });
+
+        describe('should return first sort by value properly', () => {
+            it('Sorted by random', () => {
+                const sortBy = SortBy.create().byValue(SORT_BY_RANDOM);
+                expect(sortBy.getFirstSortAsString()).to.be.equal('random');
+            });
+
+            it('Sorted by distance mi', () => {
+                const sortBy = SortBy.create().byValue(SORT_BY_LOCATION_MI_ASC);
+                expect(sortBy.getFirstSortAsString()).to.be.equal('distance:mi');
+            });
+
+            it('Sorted by distance km', () => {
+                const sortBy = SortBy.create().byValue(SORT_BY_LOCATION_KM_ASC);
+                expect(sortBy.getFirstSortAsString()).to.be.equal('distance:km');
+            });
+
+            it('Sorted by score', () => {
+                const sortBy = SortBy.create().byValue(SORT_BY_SCORE);
+                expect(sortBy.getFirstSortAsString()).to.be.equal('score');
+            });
+
+            it('Sorted empty', () => {
+                const sortBy = SortBy.create();
+                expect(sortBy.getFirstSortAsString()).to.be.equal('score');
+            });
+
+            it('Sorted by field asc', () => {
+                const sortBy = SortBy.create().byFieldValue('a', 'asc');
+                expect(sortBy.getFirstSortAsString()).to.be.equal('a:asc');
+            });
+
+            it('Sorted by field desc', () => {
+                const sortBy = SortBy.create().byFieldValue('a', 'desc');
+                expect(sortBy.getFirstSortAsString()).to.be.equal('a:desc');
+            });
+        })
     });
 });

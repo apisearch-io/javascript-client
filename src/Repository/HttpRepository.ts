@@ -173,6 +173,70 @@ export class HttpRepository extends Repository {
     }
 
     /**
+     * Get similar items
+     *
+     * @param {Query} query
+     * @param {ItemUUID[]} itemUUIDs
+     * @param {number} similarity
+     *
+     * @return {Promise<Result>}
+     */
+    public async getSimilarItems(
+        query: Query,
+        itemUUIDs: ItemUUID[],
+        similarity: number
+    )
+    {
+        let response: Response;
+        try {
+            response = await this.httpClient.get(
+                "/" + this.appId + "/indices/" + this.indexId + '/similar-items',
+                "get",
+                this.getCredentials(),
+                {},
+                {
+                    query: query.toArray(),
+                    items_uuid: itemUUIDs.map((itemUUID) => {
+                        return itemUUID.toArray();
+                    }),
+                    similarity: similarity
+                },
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
+        const result = Result.createFromArray(response.getBody());
+
+        return this.applyTransformersToResult(result);
+    }
+
+    /**
+     * Get recommended items
+     *
+     * @param {Query} query
+     *
+     * @return {Promise<Result>}
+     */
+    public async getRecommendedItems(query: Query)
+    {
+        let response: Response;
+        try {
+            response = await this.httpClient.get(
+                "/" + this.appId + "/indices/" + this.indexId + '/recommended-items',
+                "get",
+                this.getCredentials(),
+                {},
+                query.toArray(),
+            );
+        } catch (response) {
+            throw this.createErrorFromResponse(response);
+        }
+        const result = Result.createFromArray(response.getBody());
+
+        return this.applyTransformersToResult(result);
+    }
+
+    /**
      * Update items
      *
      * @param {Query} query

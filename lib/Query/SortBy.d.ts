@@ -1,3 +1,5 @@
+import { Coordinate } from "..";
+import { Filter } from "./Filter";
 /**
  export * Sort by constants
  */
@@ -47,8 +49,6 @@ export declare const SORT_BY_LOCATION_MI_ASC: {
     type: string;
     unit: string;
 };
-import { Coordinate } from "../Model/Coordinate";
-import { Filter } from "./Filter";
 /**
  * ScoreStrategy
  */
@@ -141,6 +141,12 @@ export declare class SortBy {
      * @return {boolean}
      */
     hasRandomSort(): boolean;
+    /**
+     * get first sort value as string
+     *
+     * @return {string}
+     */
+    getFirstSortAsString(): string;
     /**
      * To array
      *

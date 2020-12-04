@@ -13,7 +13,7 @@ services:
             - "action.auto_create_index=-apisearch*,+*"
 
     search-server:
-        image: apisearchio/search-server:latest
+        image: "apisearchio/search-server:commit-447d5c6"
         networks: [apisearch]
         ports:
             - 8000:8000

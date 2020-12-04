@@ -10,13 +10,10 @@ jobs:
                 discovery.type: single-node
                 action.auto_create_index: "-apisearch*,+*"
 
-            - image: apisearchio/search-server
+            - image: apisearchio/search-server:commit-447d5c6
               environment:
                 APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
                 APISEARCH_ENABLED_PLUGINS: elasticsearch
-                APISEARCH_EVENTS_EXCHANGE: events
-                APISEARCH_TOKENS_UPDATE_EXCHANGE: tokens_update
-                APISEARCH_ASYNC_EVENTS_ADAPTER: in_memory
                 ELASTICSEARCH_HOST: localhost
                 ELASTICSEARCH_REFRESH_ON_WRITE: 1
 
