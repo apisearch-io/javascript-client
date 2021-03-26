@@ -148,7 +148,7 @@ describe('Result/', () => {
         });
 
         describe('.toArray() all values', () => {
-            let aggregation = new ResultAggregation('name', FILTER_MUST_ALL, 100, ['1']);
+            let aggregation = new ResultAggregation('name', FILTER_MUST_ALL, 100, ['1'], {'1': 'LOL'});
             aggregation.addCounter('1', 10);
             aggregation.addCounter('2', 10);
 
@@ -161,7 +161,8 @@ describe('Result/', () => {
                     ],
                     'application_type': FILTER_MUST_ALL,
                     'active_elements': ['1'],
-                    'total_elements': 100
+                    'total_elements': 100,
+                    'metadata': {'1': 'LOL'}
                 });
             });
         });
@@ -188,7 +189,8 @@ describe('Result/', () => {
                 ],
                 'application_type': FILTER_MUST_ALL,
                 'active_elements': ['1'],
-                'total_elements': 100
+                'total_elements': 100,
+                'metadata': {'1': 'LOL'}
             });
 
             it('Should work properly', () => {
@@ -196,20 +198,8 @@ describe('Result/', () => {
                 expect(Object.keys(aggregation.getCounters()).length).to.be.equal(2);
                 expect(aggregation.getTotalElements()).to.be.equal(100);
                 expect(Object.keys(aggregation.getActiveElements()).length).to.be.equal(1);
+                expect(aggregation.getMetadata()).to.be.deep.equal({'1': 'LOL'})
             });
         });
-
-        describe('createFromArray() should compute all the needed values', () => {
-            let aggregation = ResultAggregation.createFromArray({
-                'name': 'agg1',
-                'counters': [
-                    Counter.createByActiveElements('1', 10, ['1']).toArray(),
-                    Counter.createByActiveElements('2', 10, ['1']).toArray(),
-                ],
-                'application_type': FILTER_MUST_ALL,
-                'active_elements': ['1'],
-                'total_elements': 100
-            });
-        })
     });
 });
