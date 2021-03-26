@@ -9,15 +9,15 @@ export declare class ResultAggregation {
     private totalElements;
     private activeElements;
     private highestActiveElement;
+    private metadata;
     /**
-     * Constructor
-     *
      * @param name
      * @param applicationType
      * @param totalElements
      * @param activeElements
+     * @param metadata
      */
-    constructor(name: string, applicationType: number, totalElements: number, activeElements: any[]);
+    constructor(name: string, applicationType: number, totalElements: number, activeElements: any[], metadata?: any);
     /**
      * Add counter
      *
@@ -37,6 +37,10 @@ export declare class ResultAggregation {
      * @return {any}
      */
     getCounters(): any;
+    /**
+     *
+     */
+    getMetadata(): any;
     /**
      * Return if the aggregation belongs to a filter.
      *

@@ -15,25 +15,27 @@ export class ResultAggregation {
     private totalElements: number;
     private activeElements: any;
     private highestActiveElement: number = 0;
+    private metadata: any;
 
     /**
-     * Constructor
-     *
      * @param name
      * @param applicationType
      * @param totalElements
      * @param activeElements
+     * @param metadata
      */
     constructor(
         name: string,
         applicationType: number,
         totalElements: number,
         activeElements: any[],
+        metadata: any = {}
     ) {
         this.name = name;
         this.applicationType = applicationType;
         this.totalElements = totalElements;
         this.activeElements = {};
+        this.metadata = metadata;
         for (const i in activeElements) {
             const activeElement = activeElements[i];
             this.activeElements[activeElement] = activeElement;
@@ -97,6 +99,13 @@ export class ResultAggregation {
      */
     public getCounters(): any {
         return this.counters;
+    }
+
+    /**
+     *
+     */
+    public getMetadata(): any {
+        return this.metadata;
     }
 
     /**
@@ -216,6 +225,7 @@ export class ResultAggregation {
             name: this.name,
             counters: [],
             active_elements: [],
+            metadata: this.metadata
         };
 
         for (const i in this.counters) {
@@ -249,6 +259,10 @@ export class ResultAggregation {
 
         if (array.active_elements.length === 0) {
             delete array.active_elements;
+        }
+
+        if (Object.keys(array.metadata).length === 0) {
+            delete array.metadata;
         }
 
         return array;
@@ -295,6 +309,10 @@ export class ResultAggregation {
         aggregation.highestActiveElement = typeof array.highest_active_level === "number"
             ? array.highest_active_level
             : 0;
+
+        aggregation.metadata = typeof array.metadata === typeof {}
+            ? array.metadata
+            : {};
 
         return aggregation;
     }

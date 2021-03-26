@@ -8622,20 +8622,21 @@ var Counter_1 = __webpack_require__(/*! ./Counter */ "./src/Result/Counter.ts");
  */
 var ResultAggregation = /** @class */ (function () {
     /**
-     * Constructor
-     *
      * @param name
      * @param applicationType
      * @param totalElements
      * @param activeElements
+     * @param metadata
      */
-    function ResultAggregation(name, applicationType, totalElements, activeElements) {
+    function ResultAggregation(name, applicationType, totalElements, activeElements, metadata) {
+        if (metadata === void 0) { metadata = {}; }
         this.counters = {};
         this.highestActiveElement = 0;
         this.name = name;
         this.applicationType = applicationType;
         this.totalElements = totalElements;
         this.activeElements = {};
+        this.metadata = metadata;
         for (var i in activeElements) {
             var activeElement = activeElements[i];
             this.activeElements[activeElement] = activeElement;
@@ -8679,6 +8680,12 @@ var ResultAggregation = /** @class */ (function () {
      */
     ResultAggregation.prototype.getCounters = function () {
         return this.counters;
+    };
+    /**
+     *
+     */
+    ResultAggregation.prototype.getMetadata = function () {
+        return this.metadata;
     };
     /**
      * Return if the aggregation belongs to a filter.
@@ -8783,6 +8790,7 @@ var ResultAggregation = /** @class */ (function () {
             name: this.name,
             counters: [],
             active_elements: [],
+            metadata: this.metadata
         };
         for (var i in this.counters) {
             array.counters.push(this.counters[i].toArray());
@@ -8807,6 +8815,9 @@ var ResultAggregation = /** @class */ (function () {
         }
         if (array.active_elements.length === 0) {
             delete array.active_elements;
+        }
+        if (Object.keys(array.metadata).length === 0) {
+            delete array.metadata;
         }
         return array;
     };
@@ -8840,6 +8851,9 @@ var ResultAggregation = /** @class */ (function () {
         aggregation.highestActiveElement = typeof array.highest_active_level === "number"
             ? array.highest_active_level
             : 0;
+        aggregation.metadata = typeof array.metadata === typeof {}
+            ? array.metadata
+            : {};
         return aggregation;
     };
     return ResultAggregation;
