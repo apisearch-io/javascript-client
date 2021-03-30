@@ -9471,6 +9471,7 @@ tslib_1.__exportStar(__webpack_require__(/*! ./Http/AxiosClient */ "./src/Http/A
 tslib_1.__exportStar(__webpack_require__(/*! ./Http/Client */ "./src/Http/Client.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Http/HttpClient */ "./src/Http/HttpClient.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Http/Response */ "./src/Http/Response.ts"), exports);
+tslib_1.__exportStar(__webpack_require__(/*! ./Http/CacheClient */ "./src/Http/CacheClient.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Model/Changes */ "./src/Model/Changes.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Model/Coordinate */ "./src/Model/Coordinate.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Model/Item */ "./src/Model/Item.ts"), exports);
