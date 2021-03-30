@@ -20,6 +20,7 @@ export * from "./Http/AxiosClient";
 export * from "./Http/Client";
 export * from "./Http/HttpClient";
 export * from "./Http/Response";
+export * from "./Http/CacheClient";
 
 export * from "./Model/Changes";
 export * from "./Model/Coordinate";
