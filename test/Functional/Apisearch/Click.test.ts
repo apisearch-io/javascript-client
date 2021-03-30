@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import {Query} from "../../../src/Query/Query";
 import {Item} from "../../../src/Model/Item";
 import {ItemUUID} from "../../../src/Model/ItemUUID";

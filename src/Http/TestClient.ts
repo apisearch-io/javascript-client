@@ -3,9 +3,6 @@ import {Result} from "../Result/Result";
 import {HttpClient} from "./HttpClient";
 import {Response} from "./Response";
 
-/**
- * AxiosClient
- */
 export class TestClient implements HttpClient {
 
     public calls: any[] = [];

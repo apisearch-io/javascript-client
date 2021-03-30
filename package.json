@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "description": "Javascript client for Apisearch.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -42,7 +42,6 @@
     "mocha": "^7.1.1",
     "sinon": "^7.3.2",
     "ts-loader": "^4.5.0",
-    "ts-md5": "^1.2.4",
     "ts-node": "^8.4.1",
     "tslint": "^5.14.0",
     "typescript": "^3.6.3",
@@ -51,6 +50,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "axios": ">=0.21.1"
+    "axios": ">=0.21.1",
+    "ts-md5": "^1.2.4"
   }
 }

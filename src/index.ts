@@ -20,8 +20,6 @@ export * from "./Http/AxiosClient";
 export * from "./Http/Client";
 export * from "./Http/HttpClient";
 export * from "./Http/Response";
-export * from "./Http/Retry";
-export * from "./Http/RetryMap";
 
 export * from "./Model/Changes";
 export * from "./Model/Coordinate";

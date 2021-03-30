@@ -93,32 +93,4 @@ describe("Error", () => {
             expect(error).to.be.an.instanceof(UnknownError);
         }
     });
-
-    it("should use retry map if a request fails", async () => {
-        const spy = sinon.spy(Axios, "request");
-        const repository = Apisearch.createRepository({
-            app_id: "",
-            index_id: "",
-            options: {
-                endpoint: "http://xxxxx.yyyyy.zzzzz",
-                retry_map_config: [
-                    {
-                        microseconds_between_retries: 0,
-                        retries: 1,
-                    },
-                ],
-                timeout: 100,
-            },
-            token: "",
-        });
-        try {
-            await repository.query(Query.createMatchAll());
-            expect.fail("Request should have failed");
-        } catch (error) {
-            expect(spy.callCount).to.equal(2);
-        } finally {
-            spy.restore();
-        }
-    });
-
 });

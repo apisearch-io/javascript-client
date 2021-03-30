@@ -1,23 +1,15 @@
-import {RetryMap} from "./RetryMap";
-
 /**
  * Client
  */
 export abstract class Client {
     protected version: string;
-    protected retryMap: RetryMap;
 
     /**
      * Constructor
      *
      * @param version
-     * @param retryMap
      */
-    constructor(
-        version: string,
-        retryMap: RetryMap,
-    ) {
-        this.retryMap = retryMap;
+    constructor(version: string) {
         this.version = version.replace(/^\/*|\/*$/g, "");
     }
 

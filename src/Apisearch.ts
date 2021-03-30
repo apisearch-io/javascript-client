@@ -1,7 +1,5 @@
 import {AxiosClient} from "./Http/AxiosClient";
 import {HttpClient} from "./Http/HttpClient";
-import {RetryConfig} from "./Http/Retry";
-import {RetryMap} from "./Http/RetryMap";
 import {Coordinate} from "./Model/Coordinate";
 import {ItemUUID} from "./Model/ItemUUID";
 import {QUERY_DEFAULT_PAGE} from "./Query/Query";
@@ -12,6 +10,7 @@ import {HttpRepository} from "./Repository/HttpRepository";
 import {Result} from "./Result/Result";
 import {ResultAggregations} from "./Result/ResultAggregations";
 import {Transformer} from "./Transformer/Transformer";
+import {CacheClient} from "./Http/CacheClient";
 
 /**
  * Apisearch class
@@ -34,8 +33,8 @@ export default class Apisearch {
             api_version?: string,
             timeout?: number,
             override_queries?: boolean,
-            retry_map_config?: RetryConfig[],
             http_client?: HttpClient,
+            use_cache?: boolean,
         },
     }): HttpRepository {
 
@@ -44,7 +43,6 @@ export default class Apisearch {
         config.options = {
             api_version: "v1",
             override_queries: true,
-            retry_map_config: [],
             timeout: 5000,
             ...config.options,
         };
@@ -52,15 +50,18 @@ export default class Apisearch {
         /**
          * Client
          */
-        const httpClient = typeof config.options.http_client !== "undefined"
+        let httpClient = typeof config.options.http_client !== "undefined"
             ? config.options.http_client
             : new AxiosClient(
                 config.options.endpoint,
                 config.options.api_version,
                 config.options.timeout,
-                RetryMap.createFromArray(config.options.retry_map_config),
                 config.options.override_queries,
             );
+
+        if (config.options.use_cache) {
+            httpClient = new CacheClient(httpClient);
+        }
 
         return new HttpRepository(
             httpClient,

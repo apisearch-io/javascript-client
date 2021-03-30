@@ -6,11 +6,12 @@ import {FILTER_MUST_ALL, FILTER_AT_LEAST_ONE} from "../../../src/Query/Filter";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Config} from "../../../src/Config/Config";
 import FunctionalTest from "./FunctionalTest";
+import {CacheClient} from "../../../src/Http/CacheClient";
 
 /**
  *
  */
-describe('Apisearch', () => {
+describe('Queries without cache', () => {
     const repository = FunctionalTest.createRepository();
     const indexUUID = IndexUUID.createById('default');
 
@@ -26,7 +27,6 @@ describe('Apisearch', () => {
                 expect(result.getTotalItems()).to.be.equal(0);
             })
             .catch(error => {
-                console.log(error);
                 expect.fail();
             });
     });
@@ -247,5 +247,144 @@ describe('Apisearch', () => {
             .then(result => {
                 expect(result.getFirstItem().getUUID().getId()).to.be.equal("1");
             });
+    });
+});
+
+/**
+ *
+ */
+describe('Queries with cache', () => {
+    const repository = FunctionalTest.createCachedRepository();
+    const cachedClient = repository.getHttpClient();
+    const indexUUID = IndexUUID.createById('default');
+
+    it('should properly make a query twice with the same result', async () => {
+
+        if (!(cachedClient instanceof CacheClient)) {
+            expect.fail('Cache should be enabled');
+        }
+
+        try {
+            await repository.deleteIndex(indexUUID);
+        } catch (e) {
+        }
+
+        await repository.createIndex(indexUUID, Config.createFromArray({}));
+        repository.addItem(Item.create(ItemUUID.createByComposedUUID('1~item'), {}, {}, {'title': "Hello"}));
+        repository.addItem(Item.create(ItemUUID.createByComposedUUID('2~item'), {}, {}, {'title': "Hello"}));
+        repository.addItem(Item.create(ItemUUID.createByComposedUUID('3~item')));
+        repository.addItems([
+            Item.create(ItemUUID.createByComposedUUID('3~item')),
+            Item.create(ItemUUID.createByComposedUUID('4~item')),
+            Item.create(ItemUUID.createByComposedUUID('5~item'))
+        ]);
+
+        await repository.flush();
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(0);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(1);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(2);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(3);
+        cachedClient.flushCache();
+        expect(cachedClient.size()).to.be.equal(0);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(3);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(3);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(1);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(4);
+
+        await repository
+            .query(Query.create('Hello'))
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(2);
+            });
+
+        expect(cachedClient.size()).to.be.equal(2);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(4);
+
+        await repository
+            .query(Query.createMatchAll())
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(5);
+            });
+
+        expect(cachedClient.size()).to.be.equal(2);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(5);
+
+        await repository
+            .query(Query.create('Hello'))
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(2);
+            });
+
+        expect(cachedClient.size()).to.be.equal(2);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(6);
+
+        await repository
+            .query(Query.create('Bye'))
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(0);
+            });
+
+        expect(cachedClient.size()).to.be.equal(3);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(6);
+
+        await repository
+            .query(Query.create('Bye'))
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(0);
+            });
+
+        expect(cachedClient.size()).to.be.equal(3);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(7);
+        cachedClient.flushCache();
+        expect(cachedClient.size()).to.be.equal(0);
+        expect(cachedClient.getNumberOfHits()).to.be.equal(7);
     });
 });

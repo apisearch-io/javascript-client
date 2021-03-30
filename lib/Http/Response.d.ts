@@ -2,8 +2,8 @@
  * Response
  */
 export declare class Response {
-    private code;
-    private body;
+    code: number;
+    body: any;
     /**
      * Constructor
      *
