@@ -26,7 +26,6 @@ describe('Apisearch recommendations', () => {
                 expect(result.getTotalItems()).to.be.equal(0);
             })
             .catch(error => {
-                console.log(error);
                 expect.fail();
             });
     });

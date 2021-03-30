@@ -158,6 +158,10 @@ export declare class HttpRepository extends Repository {
      */
     click(app_id: string, index_id: string, item_id: string, user_id?: string): Promise<void>;
     /**
+     *
+     */
+    getHttpClient(): HttpClient;
+    /**
      * Get query values
      *
      * @returns any
@@ -172,9 +176,8 @@ export declare class HttpRepository extends Repository {
      */
     private applyTransformersToResult;
     /**
-     * Create exception to match an error response
-     *
-     * @param any response
+     * @param response
+     * @private
      */
-    private createErrorFromResponse;
+    private static createErrorFromResponse;
 }

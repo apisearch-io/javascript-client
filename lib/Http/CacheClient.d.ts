@@ -1,7 +1,16 @@
 import { HttpClient } from "./HttpClient";
 import { Response } from "./Response";
-export declare class TestClient implements HttpClient {
-    calls: any[];
+/**
+ * AxiosClient
+ */
+export declare class CacheClient implements HttpClient {
+    private cache;
+    private httpClient;
+    private hits;
+    constructor(httpClient: HttpClient);
+    flushCache(): void;
+    size(): number;
+    getNumberOfHits(): number;
     /**
      * Get
      *

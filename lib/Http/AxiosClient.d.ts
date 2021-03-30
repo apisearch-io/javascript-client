@@ -1,7 +1,6 @@
 import { Client } from "./Client";
 import { HttpClient } from "./HttpClient";
 import { Response } from "./Response";
-import { RetryMap } from "./RetryMap";
 /**
  * AxiosClient
  */
@@ -16,10 +15,9 @@ export declare class AxiosClient extends Client implements HttpClient {
      * @param host
      * @param version
      * @param timeout
-     * @param retryMap
      * @param overrideQueries
      */
-    constructor(host: string, version: string, timeout: number, retryMap: RetryMap, overrideQueries: boolean);
+    constructor(host: string, version: string, timeout: number, overrideQueries: boolean);
     /**
      * Get
      *
@@ -45,13 +43,4 @@ export declare class AxiosClient extends Client implements HttpClient {
      * @param url
      */
     generateCancelToken(url: string): void;
-    /**
-     * Performs the request and maybe retries in case of failure
-     *
-     * @param sendRequest The function that, when called, will perform the HTTP request
-     * @param retry       If it's an instance of Retry and the request fails it will retry the request
-     *
-     * @return {Promise<AxiosResponse>}
-     */
-    private tryRequest;
 }

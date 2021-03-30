@@ -3,8 +3,8 @@
  */
 export class Response {
 
-    private code: number;
-    private body: any;
+    code: number;
+    body: any;
 
     /**
      * Constructor

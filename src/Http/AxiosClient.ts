@@ -1,9 +1,8 @@
-import Axios, {AxiosResponse} from "axios";
-import {ConnectionError, Retry} from "..";
+import Axios from "axios";
+import {ConnectionError} from "..";
 import {Client} from "./Client";
 import {HttpClient} from "./HttpClient";
 import {Response} from "./Response";
-import {RetryMap} from "./RetryMap";
 
 /**
  * AxiosClient
@@ -21,17 +20,15 @@ export class AxiosClient extends Client implements HttpClient {
      * @param host
      * @param version
      * @param timeout
-     * @param retryMap
      * @param overrideQueries
      */
     constructor(
         host: string,
         version: string,
         timeout: number,
-        retryMap: RetryMap,
         overrideQueries: boolean,
     ) {
-        super(version, retryMap);
+        super(version);
 
         this.host = host;
         this.timeout = timeout;
@@ -96,8 +93,7 @@ export class AxiosClient extends Client implements HttpClient {
 
         try {
             const sendRequest = async () => await Axios.request(axiosRequestConfig);
-            const retry = this.retryMap.getRetry(axiosRequestConfig.url, axiosRequestConfig.method);
-            const axiosResponse = await this.tryRequest(sendRequest, retry);
+            const axiosResponse = await sendRequest();
 
             return new Response(
                 axiosResponse.status,
@@ -143,35 +139,5 @@ export class AxiosClient extends Client implements HttpClient {
      */
     public generateCancelToken(url: string) {
         this.cancelToken[url] = Axios.CancelToken.source();
-    }
-
-    /**
-     * Performs the request and maybe retries in case of failure
-     *
-     * @param sendRequest The function that, when called, will perform the HTTP request
-     * @param retry       If it's an instance of Retry and the request fails it will retry the request
-     *
-     * @return {Promise<AxiosResponse>}
-     */
-    private async tryRequest(sendRequest: () => Promise<AxiosResponse>, retry?: Retry): Promise<AxiosResponse> {
-        let retries = 0;
-        let millisecondsBetweenRetries = 0;
-        if (retry instanceof Retry) {
-            retries = retry.getRetries();
-            millisecondsBetweenRetries = retry.getMicrosecondsBetweenRetries() / 1000;
-        }
-        while (true) {
-            try {
-                return await sendRequest();
-            } catch (error) {
-                if (retries <= 0) {
-                    throw error;
-                }
-                retries -= 1;
-                if (millisecondsBetweenRetries > 0) {
-                    await new Promise((resolve) => setTimeout(resolve, millisecondsBetweenRetries));
-                }
-            }
-        }
     }
 }

@@ -113,7 +113,7 @@ export class HttpRepository extends Repository {
                 }),
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -141,7 +141,7 @@ export class HttpRepository extends Repository {
                 }),
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -165,7 +165,7 @@ export class HttpRepository extends Repository {
                 {},
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
         const result = Result.createFromArray(response.getBody());
 
@@ -203,7 +203,7 @@ export class HttpRepository extends Repository {
                 },
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
         const result = Result.createFromArray(response.getBody());
 
@@ -229,7 +229,7 @@ export class HttpRepository extends Repository {
                 query.toArray(),
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
         const result = Result.createFromArray(response.getBody());
 
@@ -260,7 +260,7 @@ export class HttpRepository extends Repository {
                 },
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -285,7 +285,7 @@ export class HttpRepository extends Repository {
                 config.toArray(),
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -306,7 +306,7 @@ export class HttpRepository extends Repository {
                 {},
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -327,7 +327,7 @@ export class HttpRepository extends Repository {
                 {},
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -349,7 +349,7 @@ export class HttpRepository extends Repository {
                 {},
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
 
         return response.getCode() === 200;
@@ -371,7 +371,7 @@ export class HttpRepository extends Repository {
                 {},
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
         const result: Index[] = [];
         for (const indexAsArray of response.getBody()) {
@@ -402,7 +402,7 @@ export class HttpRepository extends Repository {
                 config.toArray(),
             );
         } catch (response) {
-            throw this.createErrorFromResponse(response);
+            throw HttpRepository.createErrorFromResponse(response);
         }
     }
 
@@ -438,9 +438,16 @@ export class HttpRepository extends Repository {
                  {}
              );
          } catch (response) {
-             throw this.createErrorFromResponse(response);
+             throw HttpRepository.createErrorFromResponse(response);
          }
      }
+
+    /**
+     *
+     */
+    public getHttpClient(): HttpClient {
+        return this.httpClient;
+    }
 
     /**
      * Get query values
@@ -485,11 +492,10 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * Create exception to match an error response
-     *
-     * @param any response
+     * @param response
+     * @private
      */
-    private createErrorFromResponse(response: any) {
+    private static createErrorFromResponse(response: any) {
 
         let error;
         if (response instanceof Response) {
