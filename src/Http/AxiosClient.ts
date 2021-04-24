@@ -72,8 +72,6 @@ export class AxiosClient extends Client implements HttpClient {
                 "Content-Type": "application/json",
             };
 
-        headers['APISEARCH-TOKEN-ID'] = credentials.token;
-
         const axiosRequestConfig: any = {
             baseURL: this.host.replace(/\/*$/g, ""),
             data,
@@ -81,10 +79,13 @@ export class AxiosClient extends Client implements HttpClient {
             method,
             timeout: this.timeout,
             transformRequest: [(rawData) => JSON.stringify(rawData)],
-            url: url + "?" + Client
-                .objectToUrlParameters(parameters)
-                .replace(/#/g, '%23'),
-        };
+            url: url + "?" + Client.objectToUrlParameters({
+                ...parameters,
+                ...{
+                    token: credentials.token,
+                },
+            }).replace(/#/g, '%23'),
+    };
 
         if (typeof this.cancelToken[url] !== "undefined") {
             axiosRequestConfig.cancelToken = this.cancelToken[url].token;
