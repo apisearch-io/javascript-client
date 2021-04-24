@@ -2959,6 +2959,14 @@ var Apisearch = /** @class */ (function () {
     Apisearch.createEmptySortBy = function () {
         return SortBy_1.SortBy.create();
     };
+    /**
+     * Create empty sortby
+     *
+     * @return {SortBy}
+     */
+    Apisearch.createEmptyScoreStrategy = function () {
+        return SortBy_1.SortBy.create();
+    };
     return Apisearch;
 }());
 exports["default"] = Apisearch;
@@ -4038,6 +4046,7 @@ var AxiosClient = /** @class */ (function (_super) {
                                 "Content-Encoding": "gzip",
                                 "Content-Type": "application/json",
                             };
+                        headers['APISEARCH-TOKEN-ID'] = credentials.token;
                         axiosRequestConfig = {
                             baseURL: this.host.replace(/\/*$/g, ""),
                             data: data,
@@ -4045,9 +4054,9 @@ var AxiosClient = /** @class */ (function (_super) {
                             method: method,
                             timeout: this.timeout,
                             transformRequest: [function (rawData) { return JSON.stringify(rawData); }],
-                            url: url + "?" + Client_1.Client.objectToUrlParameters(tslib_1.__assign(tslib_1.__assign({}, parameters), {
-                                token: credentials.token,
-                            })).replace(/#/g, '%23'),
+                            url: url + "?" + Client_1.Client
+                                .objectToUrlParameters(parameters)
+                                .replace(/#/g, '%23'),
                         };
                         if (typeof this.cancelToken[url] !== "undefined") {
                             axiosRequestConfig.cancelToken = this.cancelToken[url].token;
@@ -7983,9 +7992,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
-                                query: JSON.stringify(query.toArray()),
-                            }, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {}, query.toArray())];
                     case 1:
                         response = _a.sent();
                         return [3 /*break*/, 3];

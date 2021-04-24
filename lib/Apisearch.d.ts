@@ -97,4 +97,10 @@ export default class Apisearch {
      * @return {SortBy}
      */
     static createEmptySortBy(): SortBy;
+    /**
+     * Create empty sortby
+     *
+     * @return {SortBy}
+     */
+    static createEmptyScoreStrategy(): SortBy;
 }

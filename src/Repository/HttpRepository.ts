@@ -159,10 +159,8 @@ export class HttpRepository extends Repository {
                 "/" + this.appId + "/indices/" + this.indexId,
                 "get",
                 this.getCredentials(),
-                {
-                    query: JSON.stringify(query.toArray()),
-                },
                 {},
+                query.toArray(),
             );
         } catch (response) {
             throw HttpRepository.createErrorFromResponse(response);

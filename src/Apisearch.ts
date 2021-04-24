@@ -195,4 +195,13 @@ export default class Apisearch {
     public static createEmptySortBy(): SortBy {
         return SortBy.create();
     }
+
+    /**
+     * Create empty sortby
+     *
+     * @return {SortBy}
+     */
+    public static createEmptyScoreStrategy(): SortBy {
+        return SortBy.create();
+    }
 }
