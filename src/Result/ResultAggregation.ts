@@ -303,7 +303,7 @@ export class ResultAggregation {
         for (const i in countersAsArray) {
             const counterAsArray = countersAsArray[i];
             const counter = Counter.createFromArray(counterAsArray);
-            aggregation.counters[counter.getId()] = counter;
+            aggregation.counters['_' + counter.getId()] = counter;
         }
 
         aggregation.highestActiveElement = typeof array.highest_active_level === "number"
