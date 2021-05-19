@@ -201,5 +201,41 @@ describe('Result/', () => {
                 expect(aggregation.getMetadata()).to.be.deep.equal({'1': 'LOL'})
             });
         });
+
+        describe('.createFromArray() with a value as integer', () => {
+            let aggregation = ResultAggregation.createFromArray({
+                'name': 'agg1',
+                'counters': [
+                    Counter.createByActiveElements('element1', 10, []).toArray(),
+                    Counter.createByActiveElements('2', 10, []).toArray(),
+                ],
+                'application_type': FILTER_MUST_ALL,
+                'active_elements': [],
+                'total_elements': 100
+            });
+
+            let aggregation2 = ResultAggregation.createFromArray({
+                'name': 'agg1',
+                'counters': [
+                    Counter.createByActiveElements('element1', 10, []).toArray(),
+                    Counter.createByActiveElements('2text', 10, []).toArray(),
+                ],
+                'application_type': FILTER_MUST_ALL,
+                'active_elements': [],
+                'total_elements': 100
+            });
+
+            it('Should work properly with an integer as key', () => {
+                const counters = aggregation.getCounters();
+                expect(Object.keys(counters)[0]).to.be.equal('_element1');
+                expect(Object.keys(counters)[1]).to.be.equal('_2');
+            });
+
+            it('Should work properly without an integer as key', () => {
+                const counters = aggregation2.getCounters();
+                expect(Object.keys(counters)[0]).to.be.equal('_element1');
+                expect(Object.keys(counters)[1]).to.be.equal('_2text');
+            });
+        });
     });
 });

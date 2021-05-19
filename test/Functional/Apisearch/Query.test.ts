@@ -177,13 +177,13 @@ describe('Queries without cache', () => {
                 const aggregations = result.getAggregation('price');
                 const counters = aggregations.getCounters();
 
-                expect(counters['..100'].getN()).to.be.equal(1);
-                expect(counters['100..600'].getN()).to.be.equal(2);
-                expect(counters['600..1100'].getN()).to.be.equal(2);
-                expect(counters['1100..'].getN()).to.be.equal(1);
-                expect(counters['0..'].getN()).to.be.equal(6);
-                expect(counters['..2000'].getN()).to.be.equal(6);
-                expect(counters['-2000..1000'].getN()).to.be.equal(4);
+                expect(counters['_..100'].getN()).to.be.equal(1);
+                expect(counters['_100..600'].getN()).to.be.equal(2);
+                expect(counters['_600..1100'].getN()).to.be.equal(2);
+                expect(counters['_1100..'].getN()).to.be.equal(1);
+                expect(counters['_0..'].getN()).to.be.equal(6);
+                expect(counters['_..2000'].getN()).to.be.equal(6);
+                expect(counters['_-2000..1000'].getN()).to.be.equal(4);
             });
     });
 

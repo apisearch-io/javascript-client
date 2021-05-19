@@ -2568,7 +2568,7 @@ if (Md5.hashStr('hello') !== '5d41402abc4b2a76b9719d911017c592') {
 /*!*****************************************!*\
   !*** ./node_modules/tslib/tslib.es6.js ***!
   \*****************************************/
-/*! exports provided: __extends, __assign, __rest, __decorate, __param, __metadata, __awaiter, __generator, __exportStar, __values, __read, __spread, __spreadArrays, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault, __classPrivateFieldGet, __classPrivateFieldSet */
+/*! exports provided: __extends, __assign, __rest, __decorate, __param, __metadata, __awaiter, __generator, __createBinding, __exportStar, __values, __read, __spread, __spreadArrays, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault, __classPrivateFieldGet, __classPrivateFieldSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2581,6 +2581,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__metadata", function() { return __metadata; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__awaiter", function() { return __awaiter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__generator", function() { return __generator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__createBinding", function() { return __createBinding; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__exportStar", function() { return __exportStar; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__values", function() { return __values; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__read", function() { return __read; });
@@ -2596,18 +2597,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldGet", function() { return __classPrivateFieldGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldSet", function() { return __classPrivateFieldSet; });
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
@@ -2700,8 +2701,13 @@ function __generator(thisArg, body) {
     }
 }
 
+function __createBinding(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}
+
 function __exportStar(m, exports) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 
 function __values(o) {
@@ -2984,6 +2990,7 @@ exports["default"] = Apisearch;
 "use strict";
 
 exports.__esModule = true;
+exports.Config = exports.DEFAULT_REPLICAS = exports.DEFAULT_SHARDS = void 0;
 var Synonym_1 = __webpack_require__(/*! ./Synonym */ "./src/Config/Synonym.ts");
 exports.DEFAULT_SHARDS = 1;
 exports.DEFAULT_REPLICAS = 0;
@@ -3106,6 +3113,7 @@ exports.Config = Config;
 "use strict";
 
 exports.__esModule = true;
+exports.Synonym = void 0;
 /**
  * Result class
  */
@@ -3183,6 +3191,7 @@ exports.Synonym = Synonym;
 "use strict";
 
 exports.__esModule = true;
+exports.ConnectionError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3218,6 +3227,7 @@ exports.ConnectionError = ConnectionError;
 "use strict";
 
 exports.__esModule = true;
+exports.ErrorWithMessage = void 0;
 /**
  * ConnectError
  */
@@ -3247,6 +3257,7 @@ exports.ErrorWithMessage = ErrorWithMessage;
 "use strict";
 
 exports.__esModule = true;
+exports.EventError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3282,6 +3293,7 @@ exports.EventError = EventError;
 "use strict";
 
 exports.__esModule = true;
+exports.ForbiddenError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3341,6 +3353,7 @@ exports.ForbiddenError = ForbiddenError;
 "use strict";
 
 exports.__esModule = true;
+exports.InvalidFormatError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3504,6 +3517,7 @@ exports.InvalidFormatError = InvalidFormatError;
 "use strict";
 
 exports.__esModule = true;
+exports.InvalidTokenError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3560,6 +3574,7 @@ exports.InvalidTokenError = InvalidTokenError;
 "use strict";
 
 exports.__esModule = true;
+exports.ResourceExistsError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3619,6 +3634,7 @@ exports.ResourceExistsError = ResourceExistsError;
 "use strict";
 
 exports.__esModule = true;
+exports.ResourceNotAvailableError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3694,6 +3710,7 @@ exports.ResourceNotAvailableError = ResourceNotAvailableError;
 "use strict";
 
 exports.__esModule = true;
+exports.UnknownError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3729,6 +3746,7 @@ exports.UnknownError = UnknownError;
 "use strict";
 
 exports.__esModule = true;
+exports.UnsupportedContentTypeError = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ErrorWithMessage_1 = __webpack_require__(/*! ./ErrorWithMessage */ "./src/Error/ErrorWithMessage.ts");
 /**
@@ -3772,6 +3790,7 @@ exports.UnsupportedContentTypeError = UnsupportedContentTypeError;
 "use strict";
 
 exports.__esModule = true;
+exports.Square = exports.Polygon = exports.CoordinateAndDistance = exports.LocationRange = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
 /**
@@ -3987,6 +4006,7 @@ exports.Square = Square;
 "use strict";
 
 exports.__esModule = true;
+exports.AxiosClient = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 var __1 = __webpack_require__(/*! .. */ "./src/index.ts");
@@ -4127,6 +4147,7 @@ exports.AxiosClient = AxiosClient;
 "use strict";
 
 exports.__esModule = true;
+exports.CacheClient = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ts_md5_1 = __webpack_require__(/*! ts-md5 */ "./node_modules/ts-md5/dist/md5.js");
 /**
@@ -4222,6 +4243,7 @@ exports.CacheClient = CacheClient;
 "use strict";
 
 exports.__esModule = true;
+exports.Client = void 0;
 /**
  * Client
  */
@@ -4265,6 +4287,7 @@ exports.Client = Client;
 "use strict";
 
 exports.__esModule = true;
+exports.HttpClient = void 0;
 /**
  * Http class
  */
@@ -4288,6 +4311,7 @@ exports.HttpClient = HttpClient;
 "use strict";
 
 exports.__esModule = true;
+exports.Response = void 0;
 /**
  * Response
  */
@@ -4335,6 +4359,7 @@ exports.Response = Response;
 "use strict";
 
 exports.__esModule = true;
+exports.AppUUID = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * AppUUID class
@@ -4415,6 +4440,7 @@ exports.AppUUID = AppUUID;
 "use strict";
 
 exports.__esModule = true;
+exports.Changes = exports.TYPE_ARRAY = exports.TYPE_ARRAY_EXPECTS_ELEMENT = exports.TYPE_ARRAY_ELEMENT_DELETE = exports.TYPE_ARRAY_ELEMENT_ADD = exports.TYPE_ARRAY_ELEMENT_UPDATE = exports.TYPE_LITERAL = exports.TYPE_VALUE = void 0;
 /**
  * filter constants
  */
@@ -4550,6 +4576,7 @@ exports.Changes = Changes;
 "use strict";
 
 exports.__esModule = true;
+exports.Coordinate = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * Coordinate Type cast
@@ -4626,6 +4653,7 @@ exports.Coordinate = Coordinate;
 "use strict";
 
 exports.__esModule = true;
+exports.Index = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 var IndexUUID_1 = __webpack_require__(/*! ./IndexUUID */ "./src/Model/IndexUUID.ts");
 var AppUUID_1 = __webpack_require__(/*! ./AppUUID */ "./src/Model/AppUUID.ts");
@@ -4737,6 +4765,7 @@ exports.Index = Index;
 "use strict";
 
 exports.__esModule = true;
+exports.IndexUUID = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * IndexUUID class
@@ -4817,6 +4846,7 @@ exports.IndexUUID = IndexUUID;
 "use strict";
 
 exports.__esModule = true;
+exports.Item = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 var Coordinate_1 = __webpack_require__(/*! ./Coordinate */ "./src/Model/Coordinate.ts");
@@ -5250,6 +5280,7 @@ exports.Item = Item;
 "use strict";
 
 exports.__esModule = true;
+exports.ItemUUID = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * ItemUUID class
@@ -5342,6 +5373,7 @@ exports.ItemUUID = ItemUUID;
 "use strict";
 
 exports.__esModule = true;
+exports.Metadata = void 0;
 /**
  * User class
  */
@@ -5417,6 +5449,7 @@ exports.Metadata = Metadata;
 "use strict";
 
 exports.__esModule = true;
+exports.User = void 0;
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
 /**
  * User class
@@ -5498,6 +5531,7 @@ exports.User = User;
 "use strict";
 
 exports.__esModule = true;
+exports.Aggregation = exports.AGGREGATION_NO_LIMIT = exports.AGGREGATION_SORT_BY_NAME_DESC = exports.AGGREGATION_SORT_BY_NAME_ASC = exports.AGGREGATION_SORT_BY_COUNT_DESC = exports.AGGREGATION_SORT_BY_COUNT_ASC = void 0;
 var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
  * Aggregation constants
@@ -5682,6 +5716,7 @@ exports.Aggregation = Aggregation;
 "use strict";
 
 exports.__esModule = true;
+exports.Filter = exports.FILTER_TYPE_QUERY = exports.FILTER_TYPE_GEO = exports.FILTER_TYPE_DATE_RANGE = exports.FILTER_TYPE_RANGE = exports.FILTER_TYPE_FIELD = exports.FILTER_PROMOTE = exports.FILTER_EXCLUDE = exports.FILTER_AT_LEAST_ONE = exports.FILTER_MUST_ALL_WITH_LEVELS = exports.FILTER_MUST_ALL = void 0;
 /**
  * filter constants
  */
@@ -5848,6 +5883,7 @@ exports.Filter = Filter;
 "use strict";
 
 exports.__esModule = true;
+exports.Query = exports.NO_MIN_SCORE = exports.QUERY_DEFAULT_SIZE = exports.QUERY_DEFAULT_PAGE = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var Coordinate_1 = __webpack_require__(/*! ../Model/Coordinate */ "./src/Model/Coordinate.ts");
 var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
@@ -7058,6 +7094,7 @@ exports.Query = Query;
 "use strict";
 
 exports.__esModule = true;
+exports.Range = exports.RANGE_SEPARATOR = exports.RANGE_INFINITE = exports.RANGE_MINUS_INFINITE = void 0;
 /**
  * Aggregation constants
  */
@@ -7142,6 +7179,7 @@ exports.Range = Range;
 "use strict";
 
 exports.__esModule = true;
+exports.ScoreStrategies = exports.MIN = exports.MAX = exports.AVG = exports.SUM = exports.MULTIPLY = void 0;
 var ScoreStrategy_1 = __webpack_require__(/*! ./ScoreStrategy */ "./src/Query/ScoreStrategy.ts");
 /**
  * ScoreStrategies constants
@@ -7253,6 +7291,7 @@ exports.ScoreStrategies = ScoreStrategies;
 "use strict";
 
 exports.__esModule = true;
+exports.ScoreStrategy = exports.DEFAULT_FACTOR = exports.DEFAULT_MISSING = exports.SCORE_MODE_MIN = exports.SCORE_MODE_MAX = exports.SCORE_MODE_AVG = exports.SCORE_MODE_SUM = exports.SCORE_MODE_NONE = exports.MODIFIER_SQUARE = exports.MODIFIER_LN = exports.MODIFIER_LOG = exports.MODIFIER_SQRT = exports.MODIFIER_NONE = exports.DECAY_GAUSS = exports.DECAY_EXP = exports.DECAY_LINEAR = exports.DECAY = exports.CUSTOM_FUNCTION = exports.BOOSTING_FIELD_VALUE = exports.DEFAULT_WEIGHT = exports.DEFAULT_TYPE = void 0;
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
@@ -7506,6 +7545,7 @@ exports.ScoreStrategy = ScoreStrategy;
 "use strict";
 
 exports.__esModule = true;
+exports.SortBy = exports.SORT_BY_LOCATION_MI_ASC = exports.SORT_BY_LOCATION_KM_ASC = exports.SORT_BY_TYPE_DESC = exports.SORT_BY_TYPE_ASC = exports.SORT_BY_ID_DESC = exports.SORT_BY_ID_ASC = exports.SORT_BY_AL_TUN_TUN = exports.SORT_BY_RANDOM = exports.SORT_BY_SCORE = exports.SORT_BY_MODE_MEDIAN = exports.SORT_BY_MODE_MAX = exports.SORT_BY_MODE_MIN = exports.SORT_BY_MODE_SUM = exports.SORT_BY_MODE_AVG = exports.SORT_BY_DESC = exports.SORT_BY_ASC = exports.SORT_BY_TYPE_RANDOM = exports.SORT_BY_TYPE_FUNCTION = exports.SORT_BY_TYPE_DISTANCE = exports.SORT_BY_TYPE_SCORE = exports.SORT_BY_TYPE_NESTED = exports.SORT_BY_TYPE_FIELD = void 0;
 var __1 = __webpack_require__(/*! .. */ "./src/index.ts");
 var Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Query/Filter.ts");
 /**
@@ -7840,6 +7880,7 @@ exports.SortBy = SortBy;
 "use strict";
 
 exports.__esModule = true;
+exports.HttpRepository = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var ConnectionError_1 = __webpack_require__(/*! ../Error/ConnectionError */ "./src/Error/ConnectionError.ts");
 var InvalidFormatError_1 = __webpack_require__(/*! ../Error/InvalidFormatError */ "./src/Error/InvalidFormatError.ts");
@@ -8382,6 +8423,7 @@ exports.HttpRepository = HttpRepository;
 "use strict";
 
 exports.__esModule = true;
+exports.Repository = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /**
  * Aggregation class
@@ -8517,6 +8559,7 @@ exports.Repository = Repository;
 "use strict";
 
 exports.__esModule = true;
+exports.Counter = void 0;
 var Metadata_1 = __webpack_require__(/*! ../Model/Metadata */ "./src/Model/Metadata.ts");
 /**
  * Aggregation class
@@ -8664,6 +8707,7 @@ exports.Counter = Counter;
 "use strict";
 
 exports.__esModule = true;
+exports.Result = void 0;
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var ResultAggregations_1 = __webpack_require__(/*! ./ResultAggregations */ "./src/Result/ResultAggregations.ts");
 /**
@@ -8941,6 +8985,7 @@ exports.Result = Result;
 "use strict";
 
 exports.__esModule = true;
+exports.ResultAggregation = void 0;
 var tslib_1 = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 var Filter_1 = __webpack_require__(/*! ../Query/Filter */ "./src/Query/Filter.ts");
 var Counter_1 = __webpack_require__(/*! ./Counter */ "./src/Result/Counter.ts");
@@ -9173,7 +9218,7 @@ var ResultAggregation = /** @class */ (function () {
         for (var i in countersAsArray) {
             var counterAsArray = countersAsArray[i];
             var counter = Counter_1.Counter.createFromArray(counterAsArray);
-            aggregation.counters[counter.getId()] = counter;
+            aggregation.counters['_' + counter.getId()] = counter;
         }
         aggregation.highestActiveElement = typeof array.highest_active_level === "number"
             ? array.highest_active_level
@@ -9200,6 +9245,7 @@ exports.ResultAggregation = ResultAggregation;
 "use strict";
 
 exports.__esModule = true;
+exports.ResultAggregations = void 0;
 var ResultAggregation_1 = __webpack_require__(/*! ./ResultAggregation */ "./src/Result/ResultAggregation.ts");
 /**
  * ResultAggregation class
@@ -9307,6 +9353,20 @@ exports.ResultAggregations = ResultAggregations;
 
 /***/ }),
 
+/***/ "./src/Transformer/ReadTransformer.ts":
+/*!********************************************!*\
+  !*** ./src/Transformer/ReadTransformer.ts ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+
+
+/***/ }),
+
 /***/ "./src/Transformer/Transformer.ts":
 /*!****************************************!*\
   !*** ./src/Transformer/Transformer.ts ***!
@@ -9317,6 +9377,7 @@ exports.ResultAggregations = ResultAggregations;
 "use strict";
 
 exports.__esModule = true;
+exports.Transformer = void 0;
 var Item_1 = __webpack_require__(/*! ../Model/Item */ "./src/Model/Item.ts");
 var ItemUUID_1 = __webpack_require__(/*! ../Model/ItemUUID */ "./src/Model/ItemUUID.ts");
 /**
@@ -9450,6 +9511,20 @@ exports.Transformer = Transformer;
 
 /***/ }),
 
+/***/ "./src/Transformer/WriteTransformer.ts":
+/*!*********************************************!*\
+  !*** ./src/Transformer/WriteTransformer.ts ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -9499,7 +9574,9 @@ tslib_1.__exportStar(__webpack_require__(/*! ./Result/ResultAggregation */ "./sr
 tslib_1.__exportStar(__webpack_require__(/*! ./Result/ResultAggregations */ "./src/Result/ResultAggregations.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Result/Counter */ "./src/Result/Counter.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Result/Result */ "./src/Result/Result.ts"), exports);
+tslib_1.__exportStar(__webpack_require__(/*! ./Transformer/ReadTransformer */ "./src/Transformer/ReadTransformer.ts"), exports);
 tslib_1.__exportStar(__webpack_require__(/*! ./Transformer/Transformer */ "./src/Transformer/Transformer.ts"), exports);
+tslib_1.__exportStar(__webpack_require__(/*! ./Transformer/WriteTransformer */ "./src/Transformer/WriteTransformer.ts"), exports);
 
 
 /***/ })
