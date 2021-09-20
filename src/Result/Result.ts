@@ -8,6 +8,7 @@ export class Result {
 
     private queryUUID: string;
     private items: Item[] = [];
+    private autocomplete: string|null = null;
     private suggestions: string[] = [];
     private aggregations: ResultAggregations;
     private totalItems: number;
@@ -41,6 +42,7 @@ export class Result {
      * @param aggregations
      * @param suggestions
      * @param items
+     * @param autocomplete
      *
      * @returns {Result}
      */
@@ -51,16 +53,18 @@ export class Result {
         aggregations: ResultAggregations,
         suggestions: string[],
         items: Item[],
+        autocomplete: string|null = null,
     ): Result {
         const result = new Result(
             queryUUID,
             totalItems,
-            totalHits
+            totalHits,
         );
 
         result.aggregations = aggregations;
         result.suggestions = suggestions;
         result.items = items;
+        result.autocomplete = autocomplete;
 
         return result;
     }
@@ -217,6 +221,15 @@ export class Result {
     }
 
     /**
+     * Get autocomplete
+     *
+     * @return {string|null}
+     */
+    public getAutocomplete(): string|null {
+        return this.autocomplete;
+    }
+
+    /**
      * Get query uuid
      *
      * @return {string}
@@ -267,6 +280,9 @@ export class Result {
                 ? null
                 : this.aggregations.toArray(),
             suggests: this.suggestions,
+            autocomplete: this.autocomplete === null
+                ? undefined
+                : this.autocomplete,
         };
 
         if (
@@ -310,6 +326,9 @@ export class Result {
             array.items instanceof Array
                 ? array.items.map((itemAsArray) => Item.createFromArray(itemAsArray))
                 : [],
+            array.autocomplete === undefined
+                ? null
+                : array.autocomplete,
         );
 
         /**

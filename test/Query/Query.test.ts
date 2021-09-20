@@ -23,7 +23,7 @@ describe('Query()', () => {
         let query = Query.create('');
         it('should have default values', () => {
             expect(query.getFields()).to.be.deep.equals([]);
-            expect(query.areSuggestionsEnabled()).to.be.false;
+            expect(query.getNumberOfSuggestions()).to.be.equals(0);
             expect(query.areAggregationsEnabled()).to.be.true;
             expect(query.getQueryText()).to.be.equals('');
             expect(query.getPage()).to.be.equals(QUERY_DEFAULT_PAGE);
@@ -37,7 +37,7 @@ describe('Query()', () => {
 
             query = HttpHelper.emulateHttpTransport(query);
             expect(query.getFields()).to.be.deep.equals([]);
-            expect(query.areSuggestionsEnabled()).to.be.false;
+            expect(query.getNumberOfSuggestions()).to.be.equals(0);
             expect(query.areAggregationsEnabled()).to.be.true;
             expect(query.getQueryText()).to.be.equals('');
             expect(query.getPage()).to.be.equals(QUERY_DEFAULT_PAGE);
@@ -621,12 +621,12 @@ describe('Query()', () => {
         });
 
         it('should set and unset suggestions properly', () => {
-            query.enableSuggestions();
-            expect(query.areSuggestionsEnabled()).to.be.true;
-            expect(query.toArray().suggestions_enabled).to.be.true;
+            query.setNumberOfSuggestions(10);
+            expect(query.getNumberOfSuggestions()).to.be.equals(10);
+            expect(query.toArray().number_of_suggestions).to.be.equals(10);
             query.disableSuggestions();
-            expect(query.areSuggestionsEnabled()).to.be.false;
-            expect(query.toArray().suggestions_enabled).to.be.undefined;
+            expect(query.getNumberOfSuggestions()).to.be.equals(0);
+            expect(query.toArray().number_of_suggestions).to.be.undefined;
         });
 
         it('should set and unset highlights properly', () => {

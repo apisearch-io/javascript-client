@@ -7,6 +7,7 @@ import { ResultAggregations } from "./ResultAggregations";
 export declare class Result {
     private queryUUID;
     private items;
+    private autocomplete;
     private suggestions;
     private aggregations;
     private totalItems;
@@ -30,10 +31,11 @@ export declare class Result {
      * @param aggregations
      * @param suggestions
      * @param items
+     * @param autocomplete
      *
      * @returns {Result}
      */
-    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggestions: string[], items: Item[]): Result;
+    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggestions: string[], items: Item[], autocomplete?: string | null): Result;
     /**
      * Create multi results
      *
@@ -114,6 +116,12 @@ export declare class Result {
      * @return {string[]}
      */
     getSuggestions(): string[];
+    /**
+     * Get autocomplete
+     *
+     * @return {string|null}
+     */
+    getAutocomplete(): string | null;
     /**
      * Get query uuid
      *

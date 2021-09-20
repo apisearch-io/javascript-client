@@ -30,7 +30,7 @@ export declare class Query {
     private size;
     private resultsEnabled;
     private aggregationsEnabled;
-    private suggestionsEnabled;
+    private numberOfSuggestions;
     private highlightsEnabled;
     private searchableFields;
     private scoreStrategies;
@@ -404,11 +404,13 @@ export declare class Query {
      */
     areAggregationsEnabled(): boolean;
     /**
-     * Enable suggestions
+     * Set number of suggestions
+     *
+     * @param numberOfSuggestions
      *
      * @return {Query}
      */
-    enableSuggestions(): Query;
+    setNumberOfSuggestions(numberOfSuggestions: number): Query;
     /**
      * Disable suggestions
      *
@@ -416,11 +418,11 @@ export declare class Query {
      */
     disableSuggestions(): Query;
     /**
-     * Are suggestions enabled
+     * Get number of suggestions
      *
-     * @return {boolean}
+     * @return {number}
      */
-    areSuggestionsEnabled(): boolean;
+    getNumberOfSuggestions(): number;
     /**
      * Enable highlights
      *

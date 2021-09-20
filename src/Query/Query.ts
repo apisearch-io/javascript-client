@@ -51,7 +51,7 @@ export class Query {
     private size: number;
     private resultsEnabled: boolean = true;
     private aggregationsEnabled: boolean = true;
-    private suggestionsEnabled: boolean = false;
+    private numberOfSuggestions: number = 0;
     private highlightsEnabled: boolean = false;
     private searchableFields: string[] = [];
     private scoreStrategies: ScoreStrategies;
@@ -903,12 +903,14 @@ export class Query {
     }
 
     /**
-     * Enable suggestions
+     * Set number of suggestions
+     *
+     * @param numberOfSuggestions
      *
      * @return {Query}
      */
-    public enableSuggestions(): Query {
-        this.suggestionsEnabled = true;
+    public setNumberOfSuggestions(numberOfSuggestions: number): Query {
+        this.numberOfSuggestions = numberOfSuggestions;
 
         return this;
     }
@@ -919,18 +921,18 @@ export class Query {
      * @return {Query}
      */
     public disableSuggestions(): Query {
-        this.suggestionsEnabled = false;
+        this.numberOfSuggestions = 0;
 
         return this;
     }
 
     /**
-     * Are suggestions enabled
+     * Get number of suggestions
      *
-     * @return {boolean}
+     * @return {number}
      */
-    public areSuggestionsEnabled(): boolean {
-        return this.suggestionsEnabled;
+    public getNumberOfSuggestions(): number {
+        return this.numberOfSuggestions;
     }
 
     /**
@@ -1345,8 +1347,8 @@ export class Query {
             array.results_enabled = false;
         }
 
-        if (this.suggestionsEnabled === true) {
-            array.suggestions_enabled = true;
+        if (this.numberOfSuggestions !== 0) {
+            array.number_of_suggestions = this.numberOfSuggestions;
         }
 
         if (this.highlightsEnabled === true) {
@@ -1449,7 +1451,7 @@ export class Query {
                 array.size ? array.size : QUERY_DEFAULT_SIZE,
             );
 
-        query.UUID = typeof array.UUID === typeof ''
+        query.UUID = typeof array.UUID === typeof ""
             ? array.UUID
             : undefined;
 
@@ -1511,9 +1513,9 @@ export class Query {
             ? array.results_enabled
             : true;
 
-        query.suggestionsEnabled = typeof array.suggestions_enabled === "boolean"
-            ? array.suggestions_enabled
-            : false;
+        query.numberOfSuggestions = typeof array.number_of_suggestions === "number"
+            ? array.number_of_suggestions
+            : 0;
 
         query.aggregationsEnabled = typeof array.aggregations_enabled === "boolean"
             ? array.aggregations_enabled
