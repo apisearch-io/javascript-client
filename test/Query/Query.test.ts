@@ -636,6 +636,14 @@ describe('Query()', () => {
             query.disableHighlights();
             expect(query.toArray().highlight_enabled).to.be.undefined;
         });
+
+        it('should set and unset autocomplete properly', () => {
+            query.enableAutocomplete();
+            expect(query.areAutocompleteEnabled()).to.be.true;
+            expect(query.toArray().autocomplete_enabled).to.be.true;
+            query.disableAutocomplete();
+            expect(query.toArray().autocomplete_enabled).to.be.undefined;
+        });
     });
 
     describe('-> When setting/unsetting a User on query', () => {
