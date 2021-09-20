@@ -5137,6 +5137,7 @@ var Query = /** @class */ (function () {
         this.aggregationsEnabled = true;
         this.numberOfSuggestions = 0;
         this.highlightsEnabled = false;
+        this.autocompleteEnabled = false;
         this.searchableFields = [];
         this.minScore = exports.NO_MIN_SCORE;
         this.metadata = {};
@@ -5774,6 +5775,32 @@ var Query = /** @class */ (function () {
         return this.numberOfSuggestions;
     };
     /**
+     * Enable autocomplete
+     *
+     * @return {Query}
+     */
+    Query.prototype.enableAutocomplete = function () {
+        this.autocompleteEnabled = true;
+        return this;
+    };
+    /**
+     * Disable autocomplete
+     *
+     * @return {Query}
+     */
+    Query.prototype.disableAutocomplete = function () {
+        this.autocompleteEnabled = false;
+        return this;
+    };
+    /**
+     * Are autocomplete enabled
+     *
+     * @return {boolean}
+     */
+    Query.prototype.areAutocompleteEnabled = function () {
+        return this.autocompleteEnabled;
+    };
+    /**
      * Enable highlights
      *
      * @return {Query}
@@ -6114,6 +6141,9 @@ var Query = /** @class */ (function () {
         if (this.resultsEnabled === false) {
             array.results_enabled = false;
         }
+        if (this.autocompleteEnabled === true) {
+            array.autocomplete_enabled = true;
+        }
         if (this.numberOfSuggestions !== 0) {
             array.number_of_suggestions = this.numberOfSuggestions;
         }
@@ -6245,6 +6275,9 @@ var Query = /** @class */ (function () {
         query.numberOfSuggestions = typeof array.number_of_suggestions === "number"
             ? array.number_of_suggestions
             : 0;
+        query.autocompleteEnabled = typeof array.autocomplete_enabled === "boolean"
+            ? array.autocomplete_enabled
+            : false;
         query.aggregationsEnabled = typeof array.aggregations_enabled === "boolean"
             ? array.aggregations_enabled
             : true;

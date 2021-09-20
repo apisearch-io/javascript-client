@@ -53,6 +53,7 @@ export class Query {
     private aggregationsEnabled: boolean = true;
     private numberOfSuggestions: number = 0;
     private highlightsEnabled: boolean = false;
+    private autocompleteEnabled: boolean = false;
     private searchableFields: string[] = [];
     private scoreStrategies: ScoreStrategies;
     private fuzziness: any;
@@ -936,6 +937,37 @@ export class Query {
     }
 
     /**
+     * Enable autocomplete
+     *
+     * @return {Query}
+     */
+    public enableAutocomplete(): Query {
+        this.autocompleteEnabled = true;
+
+        return this;
+    }
+
+    /**
+     * Disable autocomplete
+     *
+     * @return {Query}
+     */
+    public disableAutocomplete(): Query {
+        this.autocompleteEnabled = false;
+
+        return this;
+    }
+
+    /**
+     * Are autocomplete enabled
+     *
+     * @return {boolean}
+     */
+    public areAutocompleteEnabled(): boolean {
+        return this.autocompleteEnabled;
+    }
+
+    /**
      * Enable highlights
      *
      * @return {Query}
@@ -1347,6 +1379,10 @@ export class Query {
             array.results_enabled = false;
         }
 
+        if (this.autocompleteEnabled === true) {
+            array.autocomplete_enabled = true;
+        }
+
         if (this.numberOfSuggestions !== 0) {
             array.number_of_suggestions = this.numberOfSuggestions;
         }
@@ -1516,6 +1552,10 @@ export class Query {
         query.numberOfSuggestions = typeof array.number_of_suggestions === "number"
             ? array.number_of_suggestions
             : 0;
+
+        query.autocompleteEnabled = typeof array.autocomplete_enabled === "boolean"
+            ? array.autocomplete_enabled
+            : false;
 
         query.aggregationsEnabled = typeof array.aggregations_enabled === "boolean"
             ? array.aggregations_enabled

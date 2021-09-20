@@ -32,6 +32,7 @@ export declare class Query {
     private aggregationsEnabled;
     private numberOfSuggestions;
     private highlightsEnabled;
+    private autocompleteEnabled;
     private searchableFields;
     private scoreStrategies;
     private fuzziness;
@@ -423,6 +424,24 @@ export declare class Query {
      * @return {number}
      */
     getNumberOfSuggestions(): number;
+    /**
+     * Enable autocomplete
+     *
+     * @return {Query}
+     */
+    enableAutocomplete(): Query;
+    /**
+     * Disable autocomplete
+     *
+     * @return {Query}
+     */
+    disableAutocomplete(): Query;
+    /**
+     * Are autocomplete enabled
+     *
+     * @return {boolean}
+     */
+    areAutocompleteEnabled(): boolean;
     /**
      * Enable highlights
      *
