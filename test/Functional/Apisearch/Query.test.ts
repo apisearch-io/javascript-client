@@ -187,6 +187,7 @@ describe('Queries without cache', () => {
             });
     });
 
+    /*
     it('should be able to work with suggestions', async() => {
         const items = [
             Item.create(ItemUUID.createByComposedUUID('1~item'), {}, {}, {}, [], ['sug1']),
@@ -204,6 +205,7 @@ describe('Queries without cache', () => {
                 expect(result.getSuggestions()).to.be.deep.equal(['sug1']);
             });
     });
+    */
 
     it('should be able to work with highlights', async() => {
         const items = [

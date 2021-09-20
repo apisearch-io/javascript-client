@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import {Counter} from "../../src/Result/Counter";
-import {Query} from "../../src/Query/Query";
 import {Result} from "../../src/Result/Result";
 import {ItemUUID} from "../../src/Model/ItemUUID";
 import {Item} from "../../src/Model/Item";
@@ -27,6 +26,7 @@ describe('Result/', () => {
                 expect(result.getFirstItem()).to.be.null;
                 expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
+                expect(result.getAutocomplete()).to.be.null;
 
                 result = HttpHelper.emulateHttpTransport(result);
                 expect(result.getQueryUUID()).to.be.equal('123');
@@ -36,6 +36,7 @@ describe('Result/', () => {
                 expect(result.getFirstItem()).to.be.null;
                 expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
+                expect(result.getAutocomplete()).to.be.null;
             });
         });
 
@@ -90,7 +91,7 @@ describe('Result/', () => {
             });
         });
 
-        describe('Test suggests', () => {
+        describe('Test suggestions', () => {
             let result = Result.create(
                 '123',
                 0, 0, new ResultAggregations(0), ['hola'], []
@@ -101,6 +102,32 @@ describe('Result/', () => {
             it('Should work properly', () => {
                 expect(result.getSuggestions()).to.be.deep.equal(['hola']);
                 expect(resultAsArray.suggests).to.be.deep.equal(['hola']);
+            });
+        });
+
+        describe('Test autocomplete', () => {
+            let result = Result.create(
+                '123',
+                0, 0, new ResultAggregations(0), [], [], 'lolazo'
+            );
+
+            let resultAsArray = result.toArray();
+
+            it('Should work properly', () => {
+                expect(result.getAutocomplete()).to.be.equal('lolazo');
+                expect(resultAsArray.autocomplete).to.be.equal('lolazo');
+            });
+
+            let result2 = Result.create(
+                '123',
+                0, 0, new ResultAggregations(0), [], [], null
+            );
+
+            let resultAsArray2 = result2.toArray();
+
+            it('Should work properly', () => {
+                expect(result2.getAutocomplete()).to.be.null;
+                expect(resultAsArray2.autocomplete).to.be.undefined;
             });
         });
 
