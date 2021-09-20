@@ -469,6 +469,11 @@ export class HttpRepository extends Repository {
      * @return {Result}
      */
     private applyTransformersToResult(result: Result): Result {
+
+        if (!this.transformer.hasReadTransformers()) {
+            return result;
+        }
+
         const subresults = result.getSubresults();
 
         if (Object.keys(subresults).length > 0) {
@@ -488,6 +493,7 @@ export class HttpRepository extends Repository {
             this
                 .transformer
                 .fromItems(result.getItems()),
+            result.getAutocomplete(),
         );
     }
 
