@@ -22,6 +22,13 @@ export class Transformer {
     }
 
     /**
+     * @return {boolean}
+     */
+    public hasReadTransformers(): boolean {
+        return this.readTransformers.length > 0;
+    }
+
+    /**
      * Add write transformer
      *
      * @param writeTransformer

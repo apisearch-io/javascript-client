@@ -7610,6 +7610,9 @@ var HttpRepository = /** @class */ (function (_super) {
      * @return {Result}
      */
     HttpRepository.prototype.applyTransformersToResult = function (result) {
+        if (!this.transformer.hasReadTransformers()) {
+            return result;
+        }
         var subresults = result.getSubresults();
         if (Object.keys(subresults).length > 0) {
             Object.keys(subresults).map(function (key) {
@@ -7619,7 +7622,7 @@ var HttpRepository = /** @class */ (function (_super) {
         }
         return Result_1.Result.create(result.getQueryUUID(), result.getTotalItems(), result.getTotalHits(), result.getAggregations(), result.getSuggestions(), this
             .transformer
-            .fromItems(result.getItems()));
+            .fromItems(result.getItems()), result.getAutocomplete());
     };
     /**
      * @param response
@@ -8651,6 +8654,12 @@ var Transformer = /** @class */ (function () {
         this
             .readTransformers
             .push(readTransformer);
+    };
+    /**
+     * @return {boolean}
+     */
+    Transformer.prototype.hasReadTransformers = function () {
+        return this.readTransformers.length > 0;
     };
     /**
      * Add write transformer

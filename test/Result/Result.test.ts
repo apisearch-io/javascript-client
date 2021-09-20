@@ -112,10 +112,12 @@ describe('Result/', () => {
             );
 
             let resultAsArray = result.toArray();
+            let resultObject = Result.createFromArray(resultAsArray);
 
             it('Should work properly', () => {
                 expect(result.getAutocomplete()).to.be.equal('lolazo');
                 expect(resultAsArray.autocomplete).to.be.equal('lolazo');
+                expect(resultObject.getAutocomplete()).to.be.equal('lolazo');
             });
 
             let result2 = Result.create(
@@ -124,10 +126,12 @@ describe('Result/', () => {
             );
 
             let resultAsArray2 = result2.toArray();
+            let resultObject2 = Result.createFromArray(resultAsArray2);
 
             it('Should work properly', () => {
                 expect(result2.getAutocomplete()).to.be.null;
                 expect(resultAsArray2.autocomplete).to.be.undefined;
+                expect(resultObject2.getAutocomplete()).to.be.null;
             });
         });
 

@@ -15,6 +15,10 @@ export declare class Transformer {
      */
     addReadTransformer(readTransformer: ReadTransformer): void;
     /**
+     * @return {boolean}
+     */
+    hasReadTransformers(): boolean;
+    /**
      * Add write transformer
      *
      * @param writeTransformer
