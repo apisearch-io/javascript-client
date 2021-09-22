@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import {Query} from "../../../src/Query/Query";
 import {Item} from "../../../src/Model/Item";
 import {ItemUUID} from "../../../src/Model/ItemUUID";
-import {FILTER_MUST_ALL, FILTER_AT_LEAST_ONE} from "../../../src/Query/Filter";
 import {IndexUUID} from "../../../src/Model/IndexUUID";
 import {Config} from "../../../src/Config/Config";
 import FunctionalTest from "./FunctionalTest";

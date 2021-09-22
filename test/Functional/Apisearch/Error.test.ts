@@ -1,4 +1,3 @@
-import Axios from "axios";
 import {expect} from "chai";
 import * as sinon from "sinon";
 import Apisearch from "../../../src/Apisearch";

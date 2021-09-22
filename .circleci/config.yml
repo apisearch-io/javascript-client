@@ -10,7 +10,7 @@ jobs:
                 discovery.type: single-node
                 action.auto_create_index: "-apisearch*,+*"
 
-            - image: apisearchio/search-server:commit-447d5c6
+            - image: apisearchio/search-server:commit-43ca95f
               environment:
                 APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
                 APISEARCH_ENABLED_PLUGINS: elasticsearch
