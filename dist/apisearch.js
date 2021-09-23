@@ -5128,6 +5128,7 @@ var Query = /** @class */ (function () {
      * @param queryText
      */
     function Query(queryText) {
+        this.UUID = null;
         this.fields = [];
         this.universeFilters = {};
         this.filters = {};
@@ -5139,6 +5140,7 @@ var Query = /** @class */ (function () {
         this.highlightsEnabled = false;
         this.autocompleteEnabled = false;
         this.searchableFields = [];
+        this.fuzziness = null;
         this.minScore = exports.NO_MIN_SCORE;
         this.metadata = {};
         this.subqueries = {};
@@ -6074,7 +6076,9 @@ var Query = /** @class */ (function () {
      */
     Query.prototype.toArray = function () {
         var array = {};
-        array.UUID = this.UUID;
+        if (this.UUID !== null) {
+            array.UUID = this.UUID;
+        }
         if (this.getQueryText() !== "") {
             array.q = this.getQueryText();
         }
@@ -6103,12 +6107,15 @@ var Query = /** @class */ (function () {
          */
         if (this.filters instanceof Object &&
             Object.keys(this.filters).length) {
-            array.filters = {};
+            var filters = {};
             for (var i in this.filters) {
                 var filter = this.filters[i];
                 if (filter.getFilterType() !== Filter_3.FILTER_TYPE_QUERY) {
-                    array.filters[i] = filter.toArray();
+                    filters[i] = filter.toArray();
                 }
+            }
+            if (Object.keys(filters).length > 0) {
+                array.filters = filters;
             }
         }
         /**
@@ -6193,7 +6200,9 @@ var Query = /** @class */ (function () {
         if (this.user instanceof User_1.User) {
             array.user = this.user.toArray();
         }
-        array.metadata = this.metadata;
+        if (Object.keys(this.metadata).length > 0) {
+            array.metadata = this.metadata;
+        }
         if (this.subqueries instanceof Object &&
             Object.keys(this.subqueries).length) {
             array.subqueries = {};
@@ -6216,7 +6225,7 @@ var Query = /** @class */ (function () {
                     .push(this.itemsPromoted[i].toArray());
             }
         }
-        if (this.queryOperator !== "or") {
+        if (this.queryOperator !== "or" && this.queryOperator !== null) {
             array.query_operator = this.queryOperator;
         }
         return array;
@@ -6295,7 +6304,7 @@ var Query = /** @class */ (function () {
         query.highlightsEnabled = typeof array.highlight_enabled === "boolean"
             ? array.highlight_enabled
             : false;
-        query.fuzziness = array.fuzziness;
+        query.fuzziness = array.fuzziness ? array.fuzziness : null;
         query.minScore = array.min_score ? array.min_score : exports.NO_MIN_SCORE;
         /**
          * Items promoted

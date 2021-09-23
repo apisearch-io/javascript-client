@@ -608,7 +608,7 @@ export declare class Query {
      *
      * @return {string|null}
      */
-    getUUID(): string;
+    getUUID(): string | null;
     /**
      * Force Index UUID.
      *
