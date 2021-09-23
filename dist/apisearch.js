@@ -5142,6 +5142,7 @@ var Query = /** @class */ (function () {
         this.minScore = exports.NO_MIN_SCORE;
         this.metadata = {};
         this.subqueries = {};
+        this.queryOperator = null;
         this.sortByInstance = SortBy_1.SortBy.create();
         this.filters._query = Filter_1.Filter.create("", [queryText], 0, Filter_3.FILTER_TYPE_QUERY);
     }
@@ -6059,6 +6060,13 @@ var Query = /** @class */ (function () {
     Query.prototype.getIndexUUID = function () {
         return this.indexUUID;
     };
+    Query.prototype.setQueryOperator = function (queryOperator) {
+        this.queryOperator = queryOperator;
+        return this;
+    };
+    Query.prototype.getQueryOperator = function () {
+        return this.queryOperator;
+    };
     /**
      * To array
      *
@@ -6208,6 +6216,9 @@ var Query = /** @class */ (function () {
                     .push(this.itemsPromoted[i].toArray());
             }
         }
+        if (this.queryOperator !== "or") {
+            array.query_operator = this.queryOperator;
+        }
         return array;
     };
     /**
@@ -6324,6 +6335,9 @@ var Query = /** @class */ (function () {
         query.indexUUID = array.index_uuid instanceof Object
             ? IndexUUID_1.IndexUUID.createFromArray(array.index_uuid)
             : undefined;
+        query.queryOperator = typeof array.query_operator === "string"
+            ? array.query_operator
+            : "or";
         return query;
     };
     return Query;

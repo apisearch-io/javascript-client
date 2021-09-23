@@ -187,7 +187,6 @@ describe('Queries without cache', () => {
             });
     });
 
-    /*
     it('should be able to work with suggestions', async() => {
         const items = [
             Item.create(ItemUUID.createByComposedUUID('1~item'), {}, {}, {}, [], ['sug1']),
@@ -195,17 +194,15 @@ describe('Queries without cache', () => {
 
         repository.addItems(items);
         await repository.flush();
-
         await repository
             .query(Query
-                .create('su')
-                .enableSuggestions()
+                .create('sug')
+                .setNumberOfSuggestions(10)
             )
             .then(result => {
-                expect(result.getSuggestions()).to.be.deep.equal(['sug1']);
+                expect(result.getSuggestions()).to.be.deep.equal(['<em>Sug1</em>']);
             });
     });
-    */
 
     it('should be able to work with highlights', async() => {
         const items = [

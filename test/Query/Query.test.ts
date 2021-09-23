@@ -31,7 +31,7 @@ describe('Query()', () => {
             expect(query.getScoreStrategies()).to.be.undefined;
             expect(query.getUser()).to.be.undefined;
             expect(query.getMinScore()).to.be.equals(NO_MIN_SCORE);
-            expect(query.getUUID()).to.be.undefined;
+            expect(query.getUUID()).to.be.null;
             expect(query.getIndexUUID()).to.be.undefined;
             expect(query.getSearchableFields()).to.be.deep.equals([]);
 
@@ -670,13 +670,13 @@ describe('Query()', () => {
     describe('-> Test fuzziness', () => {
         it('should work properly', () => {
             let query = Query.createMatchAll();
-            expect(query.getFuzziness()).to.be.undefined;
+            expect(query.getFuzziness()).to.be.null;
             expect(query.toArray().fuzziness).to.be.undefined;
             query.setFuzziness(1.0);
             expect(query.getFuzziness()).to.be.equals(1.0);
             expect(query.toArray().fuzziness).to.be.equals(1.0);
             expect(Query.createFromArray({fuzziness: 1.0}).getFuzziness()).to.be.equals(1.0);
-            expect(Query.createFromArray({}).getFuzziness()).to.be.undefined;
+            expect(Query.createFromArray({}).getFuzziness()).to.be.null;
             expect(query.setFuzziness('1..3')).to.be.instanceOf(Query);
             expect(Query.createMatchAll().setAutoFuzziness().getFuzziness()).to.be.equals('AUTO');
             expect(query.setAutoFuzziness()).to.be.instanceOf(Query);
@@ -803,6 +803,20 @@ describe('Query()', () => {
             expect(query.getIndexUUID().composedUUID()).to.be.equal('i');
             query = HttpHelper.emulateHttpTransport(query);
             expect(query.getIndexUUID().composedUUID()).to.be.equal('i');
+        });
+    });
+
+    describe('-> Test query operator', () => {
+        it('should work properly', () => {
+            let query = Query.createMatchAll().setQueryOperator("and");
+            query = HttpHelper.emulateHttpTransport(query);
+            expect(query.getQueryOperator()).to.be.equal("and");
+            expect(query.toArray()["query_operator"]).to.be.equal('and');
+
+            query = Query.createMatchAll().setQueryOperator("or");
+            query = HttpHelper.emulateHttpTransport(query);
+            expect(query.getQueryOperator()).to.be.equal("or");
+            expect(query.toArray()["query_operator"]).to.be.undefined;
         });
     });
 });

@@ -41,6 +41,7 @@ export declare class Query {
     private metadata;
     private subqueries;
     private indexUUID;
+    private queryOperator;
     /**
      * Constructor
      *
@@ -622,6 +623,8 @@ export declare class Query {
      * @return {IndexUUID|null}
      */
     getIndexUUID(): IndexUUID;
+    setQueryOperator(queryOperator: string): Query;
+    getQueryOperator(): string | null;
     /**
      * To array
      *

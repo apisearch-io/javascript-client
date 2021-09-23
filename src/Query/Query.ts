@@ -38,7 +38,7 @@ export const NO_MIN_SCORE = 0.0;
  */
 export class Query {
 
-    private UUID: string;
+    private UUID: string|null = null;
     private coordinate: Coordinate;
     private fields: string[] = [];
     private universeFilters: any = {};
@@ -56,12 +56,13 @@ export class Query {
     private autocompleteEnabled: boolean = false;
     private searchableFields: string[] = [];
     private scoreStrategies: ScoreStrategies;
-    private fuzziness: any;
+    private fuzziness: any = null;
     private minScore: number = NO_MIN_SCORE;
     private user: User;
     private metadata: any = {};
     private subqueries: any = {};
     private indexUUID: IndexUUID;
+    private queryOperator: string|null = null;
 
     /**
      * Constructor
@@ -1250,7 +1251,7 @@ export class Query {
      *
      * @return {string|null}
      */
-    public getUUID() : string
+    public getUUID() : string|null
     {
         return this.UUID;
     }
@@ -1280,6 +1281,18 @@ export class Query {
         return this.indexUUID;
     }
 
+    public setQueryOperator(queryOperator: string) : Query
+    {
+        this.queryOperator = queryOperator;
+
+        return this;
+    }
+
+    public getQueryOperator() : string|null
+    {
+        return this.queryOperator;
+    }
+
     /**
      * To array
      *
@@ -1288,7 +1301,10 @@ export class Query {
     public toArray(): any {
         const array: any = {};
 
-        array.UUID = this.UUID;
+        if (this.UUID !== null) {
+            array.UUID = this.UUID;
+        }
+
         if (this.getQueryText() !== "") {
             array.q = this.getQueryText();
         }
@@ -1325,12 +1341,16 @@ export class Query {
             this.filters instanceof Object &&
             Object.keys(this.filters).length
         ) {
-            array.filters = {};
+            const filters = {};
             for (const i in this.filters) {
                 const filter = this.filters[i];
                 if (filter.getFilterType() !== FILTER_TYPE_QUERY) {
-                    array.filters[i] = filter.toArray();
+                    filters[i] = filter.toArray();
                 }
+            }
+
+            if (Object.keys(filters).length > 0) {
+                array.filters = filters;
             }
         }
 
@@ -1434,7 +1454,9 @@ export class Query {
             array.user = this.user.toArray();
         }
 
-        array.metadata = this.metadata;
+        if (Object.keys(this.metadata).length > 0) {
+            array.metadata = this.metadata;
+        }
 
         if (
             this.subqueries instanceof Object &&
@@ -1461,6 +1483,10 @@ export class Query {
                     .items_promoted
                     .push(this.itemsPromoted[i].toArray());
             }
+        }
+
+        if (this.queryOperator !== "or" && this.queryOperator !== null) {
+            array.query_operator = this.queryOperator;
         }
 
         return array;
@@ -1565,7 +1591,7 @@ export class Query {
             ? array.highlight_enabled
             : false;
 
-        query.fuzziness = array.fuzziness;
+        query.fuzziness = array.fuzziness ? array.fuzziness : null;
         query.minScore = array.min_score ? array.min_score : NO_MIN_SCORE;
 
         /**
@@ -1614,6 +1640,10 @@ export class Query {
         query.indexUUID = array.index_uuid instanceof Object
             ? IndexUUID.createFromArray(array.index_uuid)
             : undefined;
+
+        query.queryOperator = typeof array.query_operator === "string"
+            ? array.query_operator
+            : "or";
 
         return query;
     }
