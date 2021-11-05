@@ -43,7 +43,7 @@ export default class Apisearch {
         config.options = {
             api_version: "v1",
             override_queries: true,
-            timeout: 30000,
+            timeout: 5000,
             ...config.options,
         };
 

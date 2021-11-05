@@ -34,7 +34,7 @@ export default class FunctionalTest {
             token: "0e4d75ba-c640-44c1-a745-06ee51db4e93",
             options: {
                 endpoint: "http://localhost:8000",
-                use_cache: true
+                use_cache: true,
             },
         });
     }
