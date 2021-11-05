@@ -1,4 +1,5 @@
 import Axios from "axios";
+import axiosRetry from "axios-retry";
 import {ConnectionError} from "..";
 import {Client} from "./Client";
 import {HttpClient} from "./HttpClient";
@@ -92,6 +93,7 @@ export class AxiosClient extends Client implements HttpClient {
         }
 
         try {
+            axiosRetry(Axios, {retries: 3});
             const sendRequest = async () => await Axios.request(axiosRequestConfig);
             const axiosResponse = await sendRequest();
 
