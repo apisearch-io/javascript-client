@@ -93,7 +93,11 @@ export class AxiosClient extends Client implements HttpClient {
         }
 
         try {
-            axiosRetry(Axios, {retries: 3});
+            axiosRetry(Axios, {
+                retries: 3,
+                shouldResetTimeout: true
+            });
+
             const sendRequest = async () => await Axios.request(axiosRequestConfig);
             const axiosResponse = await sendRequest();
 
@@ -112,7 +116,7 @@ export class AxiosClient extends Client implements HttpClient {
                 response = new Response(
                   ConnectionError.getTransportableHTTPError(),
                   {
-                      message: "Connection failed or timed out",
+                      message: error.message,
                   },
                 );
             }

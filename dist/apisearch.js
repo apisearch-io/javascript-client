@@ -3058,7 +3058,7 @@ var Apisearch = /** @class */ (function () {
      */
     Apisearch.createRepository = function (config) {
         Apisearch.ensureRepositoryConfigIsValid(config);
-        config.options = tslib_1.__assign({ api_version: "v1", override_queries: true, timeout: 30000 }, config.options);
+        config.options = tslib_1.__assign({ api_version: "v1", override_queries: true, timeout: 5000 }, config.options);
         /**
          * Client
          */
@@ -4274,7 +4274,10 @@ var AxiosClient = /** @class */ (function (_super) {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        axios_retry_1["default"](axios_1["default"], { retries: 3 });
+                        axios_retry_1["default"](axios_1["default"], {
+                            retries: 3,
+                            shouldResetTimeout: true
+                        });
                         sendRequest = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () { return tslib_1.__generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0: return [4 /*yield*/, axios_1["default"].request(axiosRequestConfig)];
@@ -4293,7 +4296,7 @@ var AxiosClient = /** @class */ (function (_super) {
                         }
                         else {
                             response = new Response_1.Response(__1.ConnectionError.getTransportableHTTPError(), {
-                                message: "Connection failed or timed out",
+                                message: error_1.message,
                             });
                         }
                         throw response;
