@@ -95,7 +95,12 @@ export class AxiosClient extends Client implements HttpClient {
         try {
             axiosRetry(Axios, {
                 retries: 3,
-                shouldResetTimeout: true
+                shouldResetTimeout: true,
+                retryCondition: (error) => {
+                    return axiosRetry.isNetworkOrIdempotentRequestError(error)
+                        || error.code === "ECONNABORTED"
+                        || error.message === "Network Error";
+                },
             });
 
             const sendRequest = async () => await Axios.request(axiosRequestConfig);
