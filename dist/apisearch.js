@@ -4276,7 +4276,12 @@ var AxiosClient = /** @class */ (function (_super) {
                         _a.trys.push([1, 3, , 4]);
                         axios_retry_1["default"](axios_1["default"], {
                             retries: 3,
-                            shouldResetTimeout: true
+                            shouldResetTimeout: true,
+                            retryCondition: function (error) {
+                                return axios_retry_1["default"].isNetworkOrIdempotentRequestError(error)
+                                    || error.code === "ECONNABORTED"
+                                    || error.message === "Network Error";
+                            },
                         });
                         sendRequest = function () { return tslib_1.__awaiter(_this, void 0, void 0, function () { return tslib_1.__generator(this, function (_a) {
                             switch (_a.label) {

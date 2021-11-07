@@ -7,8 +7,8 @@ import FunctionalTest from "./FunctionalTest";
 import {Config} from "../../../src/Config/Config";
 import {ConnectionError} from "../../../src/Error/ConnectionError";
 import {InvalidTokenError} from "../../../src/Error/InvalidTokenError";
+import {InvalidFormatError} from "../../../src/Error/InvalidFormatError";
 import {Query} from "../../../src/Query/Query";
-import {ResourceExistsError} from "../../../src/Error/ResourceExistsError";
 import {ResourceNotAvailableError} from "../../../src/Error/ResourceNotAvailableError";
 
 afterEach(() => {
@@ -45,7 +45,7 @@ describe("Error", () => {
             options: {
                 endpoint: "http://localhost:8000",
             },
-            token: "this is a wrong token",
+            token: "invalid-token",
         });
         try {
             await repository.query(Query.createMatchAll());
@@ -61,8 +61,9 @@ describe("Error", () => {
             const indexUUID = IndexUUID.createById("IndexUUIDWithErrorsBecauseItHasUpperCaseCharacters");
             const config = Config.createFromArray({});
             await repository.createIndex(indexUUID, config);
+            expect.fail("Request should have failed");
         } catch (error) {
-            expect(error).to.be.an.instanceof(ResourceExistsError);
+            expect(error).to.be.an.instanceof(InvalidFormatError);
         }
     });
 
