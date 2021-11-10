@@ -43,4 +43,10 @@ export declare class AxiosClient extends Client implements HttpClient {
      * @param url
      */
     generateCancelToken(url: string): void;
+    /**
+     * @param url
+     * @param options
+     * @param retries
+     */
+    fetch(url: string, options: {}, retries: number): any;
 }
