@@ -7332,7 +7332,8 @@ var HttpRepository = /** @class */ (function (_super) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
-                                query: JSON.stringify(query.toArray()),
+                                query: JSON.stringify(query.toArray())
+                                    .replace(/&/g, "%26"),
                             }, {})];
                     case 1:
                         response = _a.sent();
