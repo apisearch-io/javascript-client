@@ -247,6 +247,22 @@ describe('Queries without cache', () => {
                 expect(result.getFirstItem().getUUID().getId()).to.be.equal("1");
             });
     });
+
+    it('should be able to work with ampersands in query', async() => {
+
+        repository.addItem(Item.create(
+            ItemUUID.createByComposedUUID('1~item'), {}, {},
+            {'name': 'Hit & Run'},
+        ));
+
+        await repository.flush();
+
+        await repository
+            .query(Query.create("Hit & Run"))
+            .then(result => {
+                expect(result.getTotalHits()).to.be.equal(1);
+            });
+    });
 });
 
 /**
