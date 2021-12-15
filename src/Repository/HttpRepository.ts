@@ -408,40 +408,68 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * Click
-     *
-     * @param {string} app_id
-     * @param {string} index_id
-     * @param {string} item_id
-     * @param {string} user_id
+     * @param {string} appId
+     * @param {string} indexId
+     * @param {string} itemId
+     * @param {string} userId
      *
      * @return {Promise<void>}
      */
      public async click(
-        app_id: string,
-        index_id: string,
-        item_id: string,
-        user_id?: string
-        ): Promise<void> {
-        var parameters = <any>{};
-        if (typeof user_id != "undefined") {
-            parameters.user_id = user_id;
-        }
+        appId: string,
+        indexId: string,
+        itemId: string,
+        userId: string,
+    ): Promise<void> {
+        const parameters = {
+            user_id: userId,
+        };
 
         try {
              await this.httpClient.get(
-                 "/" + app_id + "/indices/" + index_id + "/items/" + item_id + '/click',
+                 "/" + appId + "/indices/" + indexId + "/items/" + itemId + "/click",
                  "post",
                  {
-                    token: this.token
+                    token: this.token,
                  },
                  parameters,
-                 {}
+                 {},
              );
          } catch (response) {
              throw HttpRepository.createErrorFromResponse(response);
          }
      }
+
+    /**
+     * @param {string} appId
+     * @param {string} indexId
+     * @param {string} userId
+     *
+     * @return {Promise<void>}
+     */
+    public async purchase(
+        appId: string,
+        indexId: string,
+        userId: string,
+    ): Promise<void> {
+        const parameters = {
+            user_id: userId,
+        };
+
+        try {
+            await this.httpClient.get(
+                "/" + appId + "/indices/" + indexId + "/purchase",
+                "post",
+                {
+                    token: this.token,
+                },
+                parameters,
+                {},
+            );
+        } catch (response) {
+            throw HttpRepository.createErrorFromResponse(response);
+        }
+    }
 
     /**
      *

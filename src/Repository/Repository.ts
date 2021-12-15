@@ -209,7 +209,7 @@ export abstract class Repository {
      */
     public abstract async createIndex(
         indexUUID: IndexUUID,
-        config: Config
+        config: Config,
     ): Promise<void>;
 
     /**
@@ -256,6 +256,6 @@ export abstract class Repository {
      */
     public abstract async configureIndex(
         indexUUID: IndexUUID,
-        config: Config
+        config: Config,
     ): Promise<void>;
 }
