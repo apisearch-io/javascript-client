@@ -258,4 +258,34 @@ export abstract class Repository {
         indexUUID: IndexUUID,
         config: Config,
     ): Promise<void>;
+
+    /**
+     * @param {IndexUUID} indexUUID
+     * @param {ItemUUID} itemUUID
+     * @param {string} userId
+     * @param {string} interaction
+     * @param {string} queryString
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async pushInteraction(
+        indexUUID: IndexUUID,
+        itemUUID: ItemUUID,
+        userId: string,
+        queryString: string,
+        interaction: string,
+    ): Promise<void>;
+
+    /**
+     * @param {IndexUUID} indexUUID
+     * @param {string} userId
+     * @param {ItemUUID[]} itemUUIDs
+     *
+     * @return {Promise<void>}
+     */
+    public abstract async purchase(
+        indexUUID: IndexUUID,
+        userId: string,
+        itemUUIDs: ItemUUID[],
+    ): Promise<void>;
 }

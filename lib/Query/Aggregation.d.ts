@@ -17,6 +17,7 @@ export declare class Aggregation {
     private subgroup;
     private sort;
     private limit;
+    private promoted;
     /**
      * Construct
      *
@@ -27,6 +28,7 @@ export declare class Aggregation {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      */
     private constructor();
     /**
@@ -72,6 +74,12 @@ export declare class Aggregation {
      */
     getLimit(): number;
     /**
+     * Get promoted
+     *
+     * @return {[]}
+     */
+    getPromoted(): string[];
+    /**
      * Create
      *
      * @param name
@@ -81,10 +89,11 @@ export declare class Aggregation {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      *
      * @returns {Aggregation}
      */
-    static create(name: string, field: string, applicationType: number, filterType: string, subgroup?: string[], sort?: string[], limit?: number): Aggregation;
+    static create(name: string, field: string, applicationType: number, filterType: string, subgroup?: string[], sort?: string[], limit?: number, promoted?: string[]): Aggregation;
     /**
      * To array
      *

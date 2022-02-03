@@ -8,11 +8,11 @@ import FunctionalTest from "./FunctionalTest";
 /**
  *
  */
-describe('Click', () => {
+describe('Interact', () => {
     const repository = FunctionalTest.createRepository();
     const indexUUID = IndexUUID.createById('default');
 
-    it('should properly make a click', async () => {
+    it('should properly make an interaction', async () => {
         try {
             await repository.deleteIndex(indexUUID);
         } catch(e) {}
@@ -28,7 +28,7 @@ describe('Click', () => {
         const nItem0 = items[0];
         const nItem1 = items[1];
 
-        await repository.click(nItem0.getAppUUID().composedUUID(), nItem0.getIndexUUID().composedUUID(), nItem0.getUUID().composedUUID(), 'user1234');
-        await repository.click(nItem1.getAppUUID().composedUUID(), nItem1.getIndexUUID().composedUUID(), nItem1.getUUID().composedUUID(), 'user5678');
+        await repository.pushInteraction(nItem0.getIndexUUID(), nItem0.getUUID(), 'user1234', 'search1', 'cli');
+        await repository.pushInteraction(nItem1.getIndexUUID(), nItem1.getUUID(), 'user5678', 'search2', 'cli');
     });
 });

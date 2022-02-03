@@ -150,4 +150,22 @@ export declare abstract class Repository {
      * @return {Promise<void>}
      */
     abstract configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
+    /**
+     * @param {IndexUUID} indexUUID
+     * @param {ItemUUID} itemUUID
+     * @param {string} userId
+     * @param {string} interaction
+     * @param {string} queryString
+     *
+     * @return {Promise<void>}
+     */
+    abstract pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string): Promise<void>;
+    /**
+     * @param {IndexUUID} indexUUID
+     * @param {string} userId
+     * @param {ItemUUID[]} itemUUIDs
+     *
+     * @return {Promise<void>}
+     */
+    abstract purchase(indexUUID: IndexUUID, userId: string, itemUUIDs: ItemUUID[]): Promise<void>;
 }

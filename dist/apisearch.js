@@ -4803,8 +4803,9 @@ var Aggregation = /** @class */ (function () {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      */
-    function Aggregation(name, field, applicationType, filterType, subgroup, sort, limit) {
+    function Aggregation(name, field, applicationType, filterType, subgroup, sort, limit, promoted) {
         this.subgroup = [];
         this.name = name;
         this.field = field;
@@ -4813,6 +4814,7 @@ var Aggregation = /** @class */ (function () {
         this.subgroup = subgroup;
         this.sort = sort;
         this.limit = limit;
+        this.promoted = promoted;
     }
     /**
      * Get name
@@ -4871,6 +4873,14 @@ var Aggregation = /** @class */ (function () {
         return this.limit;
     };
     /**
+     * Get promoted
+     *
+     * @return {[]}
+     */
+    Aggregation.prototype.getPromoted = function () {
+        return this.promoted;
+    };
+    /**
      * Create
      *
      * @param name
@@ -4880,14 +4890,16 @@ var Aggregation = /** @class */ (function () {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      *
      * @returns {Aggregation}
      */
-    Aggregation.create = function (name, field, applicationType, filterType, subgroup, sort, limit) {
+    Aggregation.create = function (name, field, applicationType, filterType, subgroup, sort, limit, promoted) {
         if (subgroup === void 0) { subgroup = []; }
         if (sort === void 0) { sort = exports.AGGREGATION_SORT_BY_COUNT_DESC; }
         if (limit === void 0) { limit = exports.AGGREGATION_NO_LIMIT; }
-        return new Aggregation(name, field, applicationType, filterType, subgroup, sort, limit);
+        if (promoted === void 0) { promoted = []; }
+        return new Aggregation(name, field, applicationType, filterType, subgroup, sort, limit, promoted);
     };
     /**
      * To array
@@ -4898,13 +4910,13 @@ var Aggregation = /** @class */ (function () {
         var aggregationAsArray = {
             name: this.name,
         };
-        if (this.field != "uuid.type") {
+        if (this.field !== "uuid.type") {
             aggregationAsArray.field = this.field;
         }
-        if (this.applicationType != Filter_1.FILTER_AT_LEAST_ONE) {
+        if (this.applicationType !== Filter_1.FILTER_AT_LEAST_ONE) {
             aggregationAsArray.application_type = this.applicationType;
         }
-        if (this.filterType != Filter_1.FILTER_TYPE_FIELD) {
+        if (this.filterType !== Filter_1.FILTER_TYPE_FIELD) {
             aggregationAsArray.filter_type = this.filterType;
         }
         if (this.subgroup.length > 0) {
@@ -4913,8 +4925,11 @@ var Aggregation = /** @class */ (function () {
         if (JSON.stringify(this.sort) !== JSON.stringify(exports.AGGREGATION_SORT_BY_COUNT_DESC)) {
             aggregationAsArray.sort = this.sort;
         }
-        if (this.limit != exports.AGGREGATION_NO_LIMIT) {
+        if (this.limit !== exports.AGGREGATION_NO_LIMIT) {
             aggregationAsArray.limit = this.limit;
+        }
+        if (this.promoted.length > 0) {
+            aggregationAsArray.promoted = this.promoted;
         }
         return aggregationAsArray;
     };
@@ -4927,25 +4942,28 @@ var Aggregation = /** @class */ (function () {
      */
     Aggregation.createFromArray = function (array) {
         array = JSON.parse(JSON.stringify(array));
-        if (typeof array.field == "undefined") {
+        if (typeof array.field === "undefined") {
             array.field = "uuid.type";
         }
-        if (typeof array.application_type == "undefined") {
+        if (typeof array.application_type === "undefined") {
             array.application_type = Filter_1.FILTER_AT_LEAST_ONE;
         }
-        if (typeof array.filter_type == "undefined") {
+        if (typeof array.filter_type === "undefined") {
             array.filter_type = Filter_1.FILTER_TYPE_FIELD;
         }
-        if (typeof array.subgroup == "undefined") {
+        if (typeof array.subgroup === "undefined") {
             array.subgroup = [];
         }
-        if (typeof array.sort == "undefined") {
+        if (typeof array.sort === "undefined") {
             array.sort = exports.AGGREGATION_SORT_BY_COUNT_DESC;
         }
-        if (typeof array.limit == "undefined") {
+        if (typeof array.limit === "undefined") {
             array.limit = exports.AGGREGATION_NO_LIMIT;
         }
-        return Aggregation.create(array.name, array.field, array.application_type, array.filter_type, array.subgroup, array.sort, array.limit);
+        if (typeof array.promoted === "undefined") {
+            array.promoted = [];
+        }
+        return Aggregation.create(array.name, array.field, array.application_type, array.filter_type, array.subgroup, array.sort, array.limit, array.promoted);
     };
     return Aggregation;
 }());
@@ -7369,7 +7387,7 @@ var HttpRepository = /** @class */ (function (_super) {
                                 items_uuid: itemUUIDs.map(function (itemUUID) {
                                     return itemUUID.toArray();
                                 }),
-                                similarity: similarity
+                                similarity: similarity,
                             })];
                     case 1:
                         response = _a.sent();
@@ -7483,7 +7501,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "delete", this.getCredentials(), {}, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID(), "delete", this.getCredentials(), {}, {})];
                     case 1:
                         _a.sent();
                         return [3 /*break*/, 3];
@@ -7509,7 +7527,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/reset", "put", this.getCredentials(), {}, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/reset", "put", this.getCredentials(), {}, {})];
                     case 1:
                         _a.sent();
                         return [3 /*break*/, 3];
@@ -7535,7 +7553,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "head", this.getCredentials(), {}, {})];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID(), "head", this.getCredentials(), {}, {})];
                     case 1:
                         response = _a.sent();
                         return [3 /*break*/, 3];
@@ -7592,7 +7610,7 @@ var HttpRepository = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId + "/configure", "put", this.getCredentials(), {}, config.toArray())];
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/configure", "put", this.getCredentials(), {}, config.toArray())];
                     case 1:
                         _a.sent();
                         return [3 /*break*/, 3];
@@ -7605,26 +7623,28 @@ var HttpRepository = /** @class */ (function (_super) {
         });
     };
     /**
-     * @param {string} appId
-     * @param {string} indexId
-     * @param {string} itemId
+     * @param {IndexUUID} indexUUID
+     * @param {ItemUUID} itemUUID
      * @param {string} userId
+     * @param {string} interaction
+     * @param {string} queryString
      *
      * @return {Promise<void>}
      */
-    HttpRepository.prototype.click = function (appId, indexId, itemId, userId) {
+    HttpRepository.prototype.pushInteraction = function (indexUUID, itemUUID, userId, queryString, interaction) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var parameters, response_13;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         parameters = {
+                            query_string: queryString,
                             user_id: userId,
                         };
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, this.httpClient.get("/" + appId + "/indices/" + indexId + "/items/" + itemId + "/click", "post", {
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/items/" + itemUUID.composedUUID() + "/interaction/" + interaction, "post", {
                                 token: this.token,
                             }, parameters, {})];
                     case 2:
@@ -7639,13 +7659,13 @@ var HttpRepository = /** @class */ (function (_super) {
         });
     };
     /**
-     * @param {string} appId
-     * @param {string} indexId
+     * @param {IndexUUID} indexUUID
      * @param {string} userId
+     * @param {ItemUUID[]} itemUUIDs
      *
      * @return {Promise<void>}
      */
-    HttpRepository.prototype.purchase = function (appId, indexId, userId) {
+    HttpRepository.prototype.purchase = function (indexUUID, userId, itemUUIDs) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var parameters, response_14;
             return tslib_1.__generator(this, function (_a) {
@@ -7657,9 +7677,13 @@ var HttpRepository = /** @class */ (function (_super) {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, this.httpClient.get("/" + appId + "/indices/" + indexId + "/purchase", "post", {
+                        return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/purchase", "post", {
                                 token: this.token,
-                            }, parameters, {})];
+                            }, parameters, {
+                                items_uuid: itemUUIDs.map(function (itemUUID) {
+                                    return itemUUID.toArray();
+                                }),
+                            })];
                     case 2:
                         _a.sent();
                         return [3 /*break*/, 4];

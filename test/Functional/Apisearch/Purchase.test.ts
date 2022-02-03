@@ -25,8 +25,8 @@ describe('Purchase', () => {
         const items = result.getItems();
         const nItem0 = items[0];
 
-        await repository.purchase(nItem0.getAppUUID().composedUUID(), nItem0.getIndexUUID().composedUUID(), 'user1234');
-        await repository.purchase(nItem0.getAppUUID().composedUUID(), nItem0.getIndexUUID().composedUUID(), 'user1234');
-        await repository.purchase(nItem0.getAppUUID().composedUUID(), nItem0.getIndexUUID().composedUUID(), 'user5678');
+        await repository.purchase(nItem0.getIndexUUID(), 'user1234', []);
+        await repository.purchase(nItem0.getIndexUUID(), 'user1234', []);
+        await repository.purchase(nItem0.getIndexUUID(), 'user5678', []);
     });
 });
