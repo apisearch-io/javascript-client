@@ -2,6 +2,7 @@
  * Created by mmoreram on 3/07/18.
  */
 import { expect } from 'chai';
+import {AGGREGATION_SORT_BY_COUNT_DESC} from "../../src";
 import {ItemUUID} from "../../src/Model/ItemUUID";
 import {User} from "../../src/Model/User";
 import {Query, NO_MIN_SCORE} from '../../src/Query/Query';
@@ -424,6 +425,22 @@ describe('Query()', () => {
             expect(query.getAggregations().source.toArray()).to.deep.equal({
                 field: 'indexed_metadata.source',
                 name: 'source',
+            });
+
+            query.aggregateBy(
+                'source',
+                'source',
+                FILTER_AT_LEAST_ONE,
+                AGGREGATION_SORT_BY_COUNT_DESC,
+                10, ['p1', 'p2'],
+            );
+
+            expect(query.getAggregations()).to.have.property('source');
+            expect(query.getAggregations().source.toArray()).to.deep.equal({
+                field: 'indexed_metadata.source',
+                name: 'source',
+                limit: 10,
+                promoted: ['p1', 'p2']
             });
         });
 
