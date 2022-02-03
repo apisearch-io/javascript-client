@@ -617,6 +617,7 @@ export class Query {
      * @param applicationType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
@@ -624,7 +625,9 @@ export class Query {
                        field: string,
                        applicationType: number,
                        aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                       limit: number = AGGREGATION_NO_LIMIT): Query {
+                       limit: number = AGGREGATION_NO_LIMIT,
+                       promoted: string[] = [],
+    ): Query {
         this.aggregations = {
             ...this.aggregations,
             [filterName]: Aggregation.create(
@@ -635,6 +638,7 @@ export class Query {
                 [],
                 aggregationSort,
                 limit,
+                promoted,
             ),
         };
 
@@ -651,6 +655,7 @@ export class Query {
      * @param rangeType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
@@ -660,7 +665,9 @@ export class Query {
                             applicationType: number,
                             rangeType: string = FILTER_TYPE_RANGE,
                             aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                            limit: number = AGGREGATION_NO_LIMIT): Query {
+                            limit: number = AGGREGATION_NO_LIMIT,
+                            promoted: string[] = [],
+    ): Query {
         if (ranges.length === 0) {
             return this;
         }
@@ -675,6 +682,7 @@ export class Query {
                 ranges,
                 aggregationSort,
                 limit,
+                promoted,
             ),
         };
 
@@ -690,6 +698,7 @@ export class Query {
      * @param applicationType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
@@ -698,7 +707,8 @@ export class Query {
                                 options: string[],
                                 applicationType: number,
                                 aggregationSort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                                limit: number = AGGREGATION_NO_LIMIT): Query {
+                                limit: number = AGGREGATION_NO_LIMIT,
+                                promoted: string[] = []): Query {
         return this.aggregateByRange(
             filterName,
             field,
@@ -707,6 +717,7 @@ export class Query {
             FILTER_TYPE_DATE_RANGE,
             aggregationSort,
             limit,
+            promoted
         );
     }
 

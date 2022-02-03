@@ -258,10 +258,11 @@ export declare class Query {
      * @param applicationType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
-    aggregateBy(filterName: string, field: string, applicationType: number, aggregationSort?: string[], limit?: number): Query;
+    aggregateBy(filterName: string, field: string, applicationType: number, aggregationSort?: string[], limit?: number, promoted?: string[]): Query;
     /**
      * Aggregate by range
      *
@@ -272,10 +273,11 @@ export declare class Query {
      * @param rangeType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
-    aggregateByRange(filterName: string, field: string, ranges: string[], applicationType: number, rangeType?: string, aggregationSort?: string[], limit?: number): Query;
+    aggregateByRange(filterName: string, field: string, ranges: string[], applicationType: number, rangeType?: string, aggregationSort?: string[], limit?: number, promoted?: string[]): Query;
     /**
      * Aggregate by date range
      *
@@ -285,10 +287,11 @@ export declare class Query {
      * @param applicationType
      * @param aggregationSort
      * @param limit
+     * @param promoted
      *
      * @return {Query}
      */
-    aggregateByDateRange(filterName: string, field: string, options: string[], applicationType: number, aggregationSort?: string[], limit?: number): Query;
+    aggregateByDateRange(filterName: string, field: string, options: string[], applicationType: number, aggregationSort?: string[], limit?: number, promoted?: string[]): Query;
     /**
      * Get aggregations
      *
