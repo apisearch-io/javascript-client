@@ -185,9 +185,8 @@ export class HttpRepository extends Repository {
     public async getSimilarItems(
         query: Query,
         itemUUIDs: ItemUUID[],
-        similarity: number
-    )
-    {
+        similarity: number,
+    ) {
         let response: Response;
         try {
             response = await this.httpClient.get(
@@ -200,7 +199,7 @@ export class HttpRepository extends Repository {
                     items_uuid: itemUUIDs.map((itemUUID) => {
                         return itemUUID.toArray();
                     }),
-                    similarity: similarity
+                    similarity: similarity,
                 },
             );
         } catch (response) {
@@ -218,8 +217,7 @@ export class HttpRepository extends Repository {
      *
      * @return {Promise<Result>}
      */
-    public async getRecommendedItems(query: Query)
-    {
+    public async getRecommendedItems(query: Query) {
         let response: Response;
         try {
             response = await this.httpClient.get(
@@ -300,7 +298,7 @@ export class HttpRepository extends Repository {
     public async deleteIndex(indexUUID: IndexUUID): Promise<void> {
         try {
             await this.httpClient.get(
-                "/" + this.appId + "/indices/" + this.indexId,
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID(),
                 "delete",
                 this.getCredentials(),
                 {},
@@ -321,7 +319,7 @@ export class HttpRepository extends Repository {
     public async resetIndex(indexUUID: IndexUUID): Promise<void> {
         try {
             await this.httpClient.get(
-                "/" + this.appId + "/indices/" + this.indexId + "/reset",
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/reset",
                 "put",
                 this.getCredentials(),
                 {},
@@ -343,7 +341,7 @@ export class HttpRepository extends Repository {
         let response: Response;
         try {
             response = await this.httpClient.get(
-                "/" + this.appId + "/indices/" + this.indexId,
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID(),
                 "head",
                 this.getCredentials(),
                 {},
@@ -396,7 +394,7 @@ export class HttpRepository extends Repository {
     ): Promise<void> {
         try {
             await this.httpClient.get(
-                "/" + this.appId + "/indices/" + this.indexId + "/configure",
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/configure",
                 "put",
                 this.getCredentials(),
                 {},
@@ -408,49 +406,52 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * @param {string} appId
-     * @param {string} indexId
-     * @param {string} itemId
+     * @param {IndexUUID} indexUUID
+     * @param {ItemUUID} itemUUID
      * @param {string} userId
+     * @param {string} interaction
+     * @param {string} queryString
      *
      * @return {Promise<void>}
      */
-     public async click(
-        appId: string,
-        indexId: string,
-        itemId: string,
+    public async pushInteraction(
+        indexUUID: IndexUUID,
+        itemUUID: ItemUUID,
         userId: string,
+        queryString: string,
+        interaction: string,
     ): Promise<void> {
         const parameters = {
+            query_string: queryString,
             user_id: userId,
         };
 
         try {
-             await this.httpClient.get(
-                 "/" + appId + "/indices/" + indexId + "/items/" + itemId + "/click",
-                 "post",
-                 {
+            await this.httpClient.get(
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/items/" + itemUUID.composedUUID() + "/interaction/" + interaction,
+                "post",
+                {
                     token: this.token,
-                 },
-                 parameters,
-                 {},
-             );
-         } catch (response) {
-             throw HttpRepository.createErrorFromResponse(response);
-         }
-     }
+                },
+                parameters,
+                {},
+            );
+        } catch (response) {
+            throw HttpRepository.createErrorFromResponse(response);
+        }
+    }
 
     /**
-     * @param {string} appId
-     * @param {string} indexId
+     * @param {IndexUUID} indexUUID
      * @param {string} userId
+     * @param {ItemUUID[]} itemUUIDs
      *
      * @return {Promise<void>}
      */
     public async purchase(
-        appId: string,
-        indexId: string,
+        indexUUID: IndexUUID,
         userId: string,
+        itemUUIDs: ItemUUID[],
     ): Promise<void> {
         const parameters = {
             user_id: userId,
@@ -458,13 +459,17 @@ export class HttpRepository extends Repository {
 
         try {
             await this.httpClient.get(
-                "/" + appId + "/indices/" + indexId + "/purchase",
+                "/" + this.appId + "/indices/" + indexUUID.composedUUID() + "/purchase",
                 "post",
                 {
                     token: this.token,
                 },
                 parameters,
-                {},
+                {
+                    items_uuid: itemUUIDs.map((itemUUID) => {
+                        return itemUUID.toArray();
+                    }),
+                },
             );
         } catch (response) {
             throw HttpRepository.createErrorFromResponse(response);

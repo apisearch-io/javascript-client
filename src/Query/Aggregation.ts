@@ -24,6 +24,7 @@ export class Aggregation {
     private subgroup: string[] = [];
     private sort: string[];
     private limit: number;
+    private promoted: string[];
 
     /**
      * Construct
@@ -35,6 +36,7 @@ export class Aggregation {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      */
     private constructor(name: string,
                         field: string,
@@ -42,7 +44,8 @@ export class Aggregation {
                         filterType: string,
                         subgroup: string[],
                         sort: string[],
-                        limit: number) {
+                        limit: number,
+                        promoted: string[]) {
         this.name = name;
         this.field = field;
         this.applicationType = applicationType;
@@ -50,6 +53,7 @@ export class Aggregation {
         this.subgroup = subgroup;
         this.sort = sort;
         this.limit = limit;
+        this.promoted = promoted;
     }
 
     /**
@@ -116,6 +120,15 @@ export class Aggregation {
     }
 
     /**
+     * Get promoted
+     *
+     * @return {[]}
+     */
+    public getPromoted(): string[] {
+        return this.promoted;
+    }
+
+    /**
      * Create
      *
      * @param name
@@ -125,6 +138,7 @@ export class Aggregation {
      * @param subgroup
      * @param sort
      * @param limit
+     * @param promoted
      *
      * @returns {Aggregation}
      */
@@ -134,7 +148,8 @@ export class Aggregation {
                          filterType: string,
                          subgroup: string[] = [],
                          sort: string[] = AGGREGATION_SORT_BY_COUNT_DESC,
-                         limit: number = AGGREGATION_NO_LIMIT) {
+                         limit: number = AGGREGATION_NO_LIMIT,
+                         promoted: string[] = []) {
         return new Aggregation(
             name,
             field,
@@ -143,6 +158,7 @@ export class Aggregation {
             subgroup,
             sort,
             limit,
+            promoted,
         );
     }
 
@@ -156,15 +172,15 @@ export class Aggregation {
             name: this.name,
         };
 
-        if (this.field != "uuid.type") {
+        if (this.field !== "uuid.type") {
             aggregationAsArray.field = this.field;
         }
 
-        if (this.applicationType != FILTER_AT_LEAST_ONE) {
+        if (this.applicationType !== FILTER_AT_LEAST_ONE) {
             aggregationAsArray.application_type = this.applicationType;
         }
 
-        if (this.filterType != FILTER_TYPE_FIELD) {
+        if (this.filterType !== FILTER_TYPE_FIELD) {
             aggregationAsArray.filter_type = this.filterType;
         }
 
@@ -176,8 +192,12 @@ export class Aggregation {
             aggregationAsArray.sort = this.sort;
         }
 
-        if (this.limit != AGGREGATION_NO_LIMIT) {
+        if (this.limit !== AGGREGATION_NO_LIMIT) {
             aggregationAsArray.limit = this.limit;
+        }
+
+        if (this.promoted.length > 0) {
+            aggregationAsArray.promoted = this.promoted;
         }
 
         return aggregationAsArray;
@@ -192,27 +212,30 @@ export class Aggregation {
      */
     public static createFromArray(array: any) {
         array = JSON.parse(JSON.stringify(array));
-        if (typeof array.field == "undefined") {
+        if (typeof array.field === "undefined") {
             array.field = "uuid.type";
         }
 
-        if (typeof array.application_type == "undefined") {
+        if (typeof array.application_type === "undefined") {
             array.application_type = FILTER_AT_LEAST_ONE;
         }
 
-        if (typeof array.filter_type == "undefined") {
+        if (typeof array.filter_type === "undefined") {
             array.filter_type = FILTER_TYPE_FIELD;
         }
 
-        if (typeof array.subgroup == "undefined") {
+        if (typeof array.subgroup === "undefined") {
             array.subgroup = [];
         }
 
-        if (typeof array.sort == "undefined") {
+        if (typeof array.sort === "undefined") {
             array.sort = AGGREGATION_SORT_BY_COUNT_DESC;
         }
-        if (typeof array.limit == "undefined") {
+        if (typeof array.limit === "undefined") {
             array.limit = AGGREGATION_NO_LIMIT;
+        }
+        if (typeof array.promoted === "undefined") {
+            array.promoted = [];
         }
 
         return Aggregation.create(
@@ -223,6 +246,7 @@ export class Aggregation {
             array.subgroup,
             array.sort,
             array.limit,
+            array.promoted,
         );
     }
 }
