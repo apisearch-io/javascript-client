@@ -200,32 +200,9 @@ describe('Queries without cache', () => {
                 .setNumberOfSuggestions(10)
             )
             .then(result => {
-                expect(result.getSuggestions()).to.be.deep.equal(['<em>Sug1</em>']);
+                expect(result.getSuggestions()).to.be.deep.equal(['Sug1']);
             });
     });
-
-    it('should be able to work with highlights', async() => {
-        const items = [
-            Item.create(ItemUUID.createByComposedUUID('1~item'), {
-                'name': "item result"
-            }, {}, {
-                'name': 'item result'
-            }),
-        ];
-
-        repository.addItems(items);
-        await repository.flush();
-
-        await repository
-            .query(Query
-                .create('it')
-                .enableHighlights()
-            )
-            .then(result => {
-                expect(result.getFirstItem().getHighlights().name).to.be.equal('<em>item</em> result');
-            });
-    });
-
 
     it('should be able to work with strange characters', async() => {
         const items = [

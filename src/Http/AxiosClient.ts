@@ -157,10 +157,12 @@ export class AxiosClient extends Client implements HttpClient {
             })
             .catch((error) => {
                 const response = error.response;
+
                 if (
                     error.code !== undefined &&
                     error.code !== "ECONNREFUSED" &&
                     error.code !== "ECONNABORTED" &&
+                    error.code !== "ERR_BAD_REQUEST" &&
                     error.message !== "Network Error"
                 ) {
                     return {
