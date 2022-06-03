@@ -8045,11 +8045,13 @@ var HttpRepository = /** @class */ (function (_super) {
      * @param {string} interaction
      * @param {string} queryString
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
-    HttpRepository.prototype.pushInteraction = function (indexUUID, itemUUID, userId, queryString, interaction, site) {
+    HttpRepository.prototype.pushInteraction = function (indexUUID, itemUUID, userId, queryString, interaction, site, device) {
         if (site === void 0) { site = null; }
+        if (device === void 0) { device = null; }
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var parameters, response_13;
             return tslib_1.__generator(this, function (_a) {
@@ -8058,6 +8060,7 @@ var HttpRepository = /** @class */ (function (_super) {
                         parameters = {
                             query_string: queryString,
                             site: site,
+                            device: device,
                             user_id: userId,
                         };
                         _a.label = 1;
@@ -8082,11 +8085,13 @@ var HttpRepository = /** @class */ (function (_super) {
      * @param {string} userId
      * @param {ItemUUID[]} itemUUIDs
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
-    HttpRepository.prototype.purchase = function (indexUUID, userId, itemUUIDs, site) {
+    HttpRepository.prototype.purchase = function (indexUUID, userId, itemUUIDs, site, device) {
         if (site === void 0) { site = null; }
+        if (device === void 0) { device = null; }
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var parameters, response_14;
             return tslib_1.__generator(this, function (_a) {
@@ -8094,6 +8099,7 @@ var HttpRepository = /** @class */ (function (_super) {
                     case 0:
                         parameters = {
                             site: site,
+                            device: device,
                             user_id: userId,
                         };
                         _a.label = 1;
