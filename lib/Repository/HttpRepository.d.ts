@@ -153,19 +153,21 @@ export declare class HttpRepository extends Repository {
      * @param {string} interaction
      * @param {string} queryString
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
-    pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string, site?: string): Promise<void>;
+    pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string, site?: string, device?: string): Promise<void>;
     /**
      * @param {IndexUUID} indexUUID
      * @param {string} userId
      * @param {ItemUUID[]} itemUUIDs
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
-    purchase(indexUUID: IndexUUID, userId: string, itemUUIDs: ItemUUID[], site?: string): Promise<void>;
+    purchase(indexUUID: IndexUUID, userId: string, itemUUIDs: ItemUUID[], site?: string, device?: string): Promise<void>;
     /**
      *
      */

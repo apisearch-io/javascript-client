@@ -244,9 +244,9 @@ describe('Repository/', () => {
             await repository.getSimilarItems(Query.createMatchAll(), [ItemUUID.createByComposedUUID('1~type')], 1).then(_ => counter++);
             await repository.getRecommendedItems(Query.createMatchAll()).then(_ => counter++);
             await repository.pushInteraction(IndexUUID.createById('x'), ItemUUID.createByComposedUUID('1~type'), '123', 'queryX', 'cli').then(_ => counter++);
-            await repository.pushInteraction(IndexUUID.createById('x'), ItemUUID.createByComposedUUID('1~type'), '123', 'queryX', 'cli', 'site2').then(_ => counter++);
+            await repository.pushInteraction(IndexUUID.createById('x'), ItemUUID.createByComposedUUID('1~type'), '123', 'queryX', 'cli', 'site2', 'desktop').then(_ => counter++);
             await repository.purchase(IndexUUID.createById('x'), '123', []).then(_ => counter++);
-            await repository.purchase(IndexUUID.createById('x'), '123', [], 'site2').then(_ => counter++);
+            await repository.purchase(IndexUUID.createById('x'), '123', [], 'site2', 'desktop').then(_ => counter++);
             await repository.purchase(IndexUUID.createById('x'), '123', [
                 ItemUUID.createByComposedUUID('2~type'),
                 ItemUUID.createByComposedUUID('3~type')

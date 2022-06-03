@@ -412,6 +412,7 @@ export class HttpRepository extends Repository {
      * @param {string} interaction
      * @param {string} queryString
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
@@ -422,10 +423,12 @@ export class HttpRepository extends Repository {
         queryString: string,
         interaction: string,
         site: string = null,
+        device: string = null,
     ): Promise<void> {
         const parameters = {
             query_string: queryString,
             site: site,
+            device: device,
             user_id: userId,
         };
 
@@ -449,6 +452,7 @@ export class HttpRepository extends Repository {
      * @param {string} userId
      * @param {ItemUUID[]} itemUUIDs
      * @param {string} site
+     * @param {string} device
      *
      * @return {Promise<void>}
      */
@@ -457,9 +461,11 @@ export class HttpRepository extends Repository {
         userId: string,
         itemUUIDs: ItemUUID[],
         site: string = null,
+        device: string = null,
     ): Promise<void> {
         const parameters = {
             site: site,
+            device: device,
             user_id: userId,
         };
 
