@@ -13,7 +13,7 @@ export class AxiosClient extends Client implements HttpClient {
     private host: string;
     private timeout: number;
     private overrideQueries: boolean;
-    private cancelToken: any;
+    private abortControllers: any;
 
     /**
      * Constructor
@@ -34,19 +34,15 @@ export class AxiosClient extends Client implements HttpClient {
         this.host = host;
         this.timeout = timeout;
         this.overrideQueries = overrideQueries;
-        this.cancelToken = {};
+        this.abortControllers = {};
     }
 
     /**
-     * Get
-     *
      * @param url
      * @param method
      * @param credentials
      * @param parameters
      * @param data
-     *
-     * @return {Promise<Response>}
      */
     public async get(
         url: string,
@@ -63,7 +59,7 @@ export class AxiosClient extends Client implements HttpClient {
             "get" === method &&
             this.overrideQueries
         ) {
-            this.abort(url);
+            this.abort(url, true);
         }
 
         const headers = "get" === method
@@ -88,13 +84,12 @@ export class AxiosClient extends Client implements HttpClient {
             }).replace(/#/g, "%23"),
     };
 
-        if (typeof this.cancelToken[url] !== "undefined") {
-            axiosRequestConfig.cancelToken = this.cancelToken[url].token;
+        if (typeof this.abortControllers[url] !== "undefined") {
+            axiosRequestConfig.signal = this.abortControllers[url].signal;
         }
 
         try {
             const axiosResponse = await this.fetch(url, axiosRequestConfig, 3);
-
             return new Response(
                 axiosResponse.status,
                 axiosResponse.data,
@@ -123,13 +118,22 @@ export class AxiosClient extends Client implements HttpClient {
      * And regenerate the cancellation token
      *
      * @param url
+     * @param urlIsFormatted
      */
-    public abort(url: string) {
-        if (typeof this.cancelToken[url] !== "undefined") {
-            this.cancelToken[url].cancel();
+    public abort(
+        url: string,
+        urlIsFormatted: boolean,
+    ) {
+        if (!urlIsFormatted) {
+            url = url.replace(/^\/*|\/*$/g, "");
+            url = "/" + (this.version + "/" + url).replace(/^\/*|\/*$/g, "");
         }
 
-        this.generateCancelToken(url);
+        if (typeof this.abortControllers[url] !== "undefined") {
+            this.abortControllers[url].abort();
+        }
+
+        this.generateAbortController(url);
     }
 
     /**
@@ -137,8 +141,8 @@ export class AxiosClient extends Client implements HttpClient {
      *
      * @param url
      */
-    public generateCancelToken(url: string) {
-        this.cancelToken[url] = Axios.CancelToken.source();
+    public generateAbortController(url: string) {
+        this.abortControllers[url] = new AbortController();
     }
 
     /**

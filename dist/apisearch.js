@@ -3669,19 +3669,15 @@ var AxiosClient = /** @class */ (function (_super) {
         _this.host = host;
         _this.timeout = timeout;
         _this.overrideQueries = overrideQueries;
-        _this.cancelToken = {};
+        _this.abortControllers = {};
         return _this;
     }
     /**
-     * Get
-     *
      * @param url
      * @param method
      * @param credentials
      * @param parameters
      * @param data
-     *
-     * @return {Promise<Response>}
      */
     AxiosClient.prototype.get = function (url, method, credentials, parameters, data) {
         if (parameters === void 0) { parameters = {}; }
@@ -3696,7 +3692,7 @@ var AxiosClient = /** @class */ (function (_super) {
                         method = method.toLowerCase();
                         if ("get" === method &&
                             this.overrideQueries) {
-                            this.abort(url);
+                            this.abort(url, true);
                         }
                         headers = "get" === method
                             ? {}
@@ -3715,8 +3711,8 @@ var AxiosClient = /** @class */ (function (_super) {
                                 token: credentials.token,
                             })).replace(/#/g, "%23"),
                         };
-                        if (typeof this.cancelToken[url] !== "undefined") {
-                            axiosRequestConfig.cancelToken = this.cancelToken[url].token;
+                        if (typeof this.abortControllers[url] !== "undefined") {
+                            axiosRequestConfig.signal = this.abortControllers[url].signal;
                         }
                         _a.label = 1;
                     case 1:
@@ -3747,20 +3743,25 @@ var AxiosClient = /** @class */ (function (_super) {
      * And regenerate the cancellation token
      *
      * @param url
+     * @param urlIsFormatted
      */
-    AxiosClient.prototype.abort = function (url) {
-        if (typeof this.cancelToken[url] !== "undefined") {
-            this.cancelToken[url].cancel();
+    AxiosClient.prototype.abort = function (url, urlIsFormatted) {
+        if (!urlIsFormatted) {
+            url = url.replace(/^\/*|\/*$/g, "");
+            url = "/" + (this.version + "/" + url).replace(/^\/*|\/*$/g, "");
         }
-        this.generateCancelToken(url);
+        if (typeof this.abortControllers[url] !== "undefined") {
+            this.abortControllers[url].abort();
+        }
+        this.generateAbortController(url);
     };
     /**
      * Generate a new cancellation token for a query
      *
      * @param url
      */
-    AxiosClient.prototype.generateCancelToken = function (url) {
-        this.cancelToken[url] = axios_1["default"].CancelToken.source();
+    AxiosClient.prototype.generateAbortController = function (url) {
+        this.abortControllers[url] = new AbortController();
     };
     /**
      * @param url
@@ -3865,7 +3866,7 @@ var CacheClient = /** @class */ (function () {
                             'u': url,
                             'c': credentials,
                             'p': parameters,
-                            'd': data
+                            'd': data,
                         })).toString();
                         if (!!this.cache[cacheUID]) return [3 /*break*/, 2];
                         _a = this.cache;
@@ -3875,6 +3876,7 @@ var CacheClient = /** @class */ (function () {
                         _a[_b] = _c.sent();
                         return [3 /*break*/, 3];
                     case 2:
+                        this.httpClient.abort(url, false);
                         this.hits++;
                         _c.label = 3;
                     case 3: return [2 /*return*/, this.cache[cacheUID]];
@@ -3883,19 +3885,13 @@ var CacheClient = /** @class */ (function () {
         });
     };
     /**
-     * Generate a new cancellation token for a query
-     *
-     * @param url
-     */
-    CacheClient.prototype.generateCancelToken = function (url) {
-    };
-    /**
      * Abort current request
      * And regenerate the cancellation token
      *
      * @param url
+     * @param urlIsFormatted
      */
-    CacheClient.prototype.abort = function (url) {
+    CacheClient.prototype.abort = function (url, urlIsFormatted) {
     };
     return CacheClient;
 }());
