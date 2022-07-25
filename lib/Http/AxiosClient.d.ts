@@ -8,7 +8,7 @@ export declare class AxiosClient extends Client implements HttpClient {
     private host;
     private timeout;
     private overrideQueries;
-    private cancelToken;
+    private abortControllers;
     /**
      * Constructor
      *
@@ -19,15 +19,11 @@ export declare class AxiosClient extends Client implements HttpClient {
      */
     constructor(host: string, version: string, timeout: number, overrideQueries: boolean);
     /**
-     * Get
-     *
      * @param url
      * @param method
      * @param credentials
      * @param parameters
      * @param data
-     *
-     * @return {Promise<Response>}
      */
     get(url: string, method: string, credentials: any, parameters?: any, data?: any): Promise<Response>;
     /**
@@ -35,14 +31,15 @@ export declare class AxiosClient extends Client implements HttpClient {
      * And regenerate the cancellation token
      *
      * @param url
+     * @param urlIsFormatted
      */
-    abort(url: string): void;
+    abort(url: string, urlIsFormatted: boolean): void;
     /**
      * Generate a new cancellation token for a query
      *
      * @param url
      */
-    generateCancelToken(url: string): void;
+    generateAbortController(url: string): void;
     /**
      * @param url
      * @param options

@@ -52,6 +52,26 @@ describe('Query()', () => {
         });
     });
 
+    describe('-> basics...()', () => {
+        it('should work basics()', () => {
+            let query = Query.create(
+                'Hola!',
+                QUERY_DEFAULT_PAGE,
+                QUERY_DEFAULT_SIZE
+            );
+
+            expect(query.getQueryText()).to.be.equal('Hola!');
+
+            let queryAsArray = {
+                q: 'Hola!',
+                metadata: {'a': '1', 'bn': 'A', 'c': 'AA'},
+                user: {id: '123434'},
+            };
+            query = Query.createFromArray(queryAsArray);
+            expect(query.getQueryText()).to.be.equal('Hola!');
+        });
+    });
+
     describe('-> filterBy...()', () => {
         let query = Query.create(
             '',

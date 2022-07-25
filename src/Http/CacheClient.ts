@@ -59,7 +59,7 @@ export class CacheClient implements HttpClient {
             'u': url,
             'c': credentials,
             'p': parameters,
-            'd': data
+            'd': data,
         })).toString();
 
         if (!this.cache[cacheUID]) {
@@ -68,9 +68,10 @@ export class CacheClient implements HttpClient {
                 method,
                 credentials,
                 parameters,
-                data
+                data,
             );
         } else {
+            this.httpClient.abort(url, false);
             this.hits++;
         }
 
@@ -78,22 +79,16 @@ export class CacheClient implements HttpClient {
     }
 
     /**
-     * Generate a new cancellation token for a query
-     *
-     * @param url
-     */
-    public generateCancelToken(url: string)
-    {
-
-    }
-
-    /**
      * Abort current request
      * And regenerate the cancellation token
      *
      * @param url
+     * @param urlIsFormatted
      */
-    public abort(url: string)
+    public abort(
+        url: string,
+        urlIsFormatted: boolean,
+    )
     {
 
     }
