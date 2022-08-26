@@ -8504,13 +8504,12 @@ var Result = /** @class */ (function () {
         this.autocomplete = null;
         this.suggestions = [];
         this.subresults = {};
+        this.metadata = {};
         this.queryUUID = queryUUID;
         this.totalItems = totalItems;
         this.totalHits = totalHits;
     }
     /**
-     * Create
-     *
      * @param queryUUID
      * @param totalItems
      * @param totalHits
@@ -8518,16 +8517,17 @@ var Result = /** @class */ (function () {
      * @param suggestions
      * @param items
      * @param autocomplete
-     *
-     * @returns {Result}
+     * @param metadata
      */
-    Result.create = function (queryUUID, totalItems, totalHits, aggregations, suggestions, items, autocomplete) {
+    Result.create = function (queryUUID, totalItems, totalHits, aggregations, suggestions, items, autocomplete, metadata) {
         if (autocomplete === void 0) { autocomplete = null; }
+        if (metadata === void 0) { metadata = {}; }
         var result = new Result(queryUUID, totalItems, totalHits);
         result.aggregations = aggregations;
         result.suggestions = suggestions;
         result.items = items;
         result.autocomplete = autocomplete;
+        result.metadata = metadata;
         return result;
     };
     /**
@@ -8701,6 +8701,19 @@ var Result = /** @class */ (function () {
         return this.subresults;
     };
     /**
+     * @return any
+     */
+    Result.prototype.getMetadata = function () {
+        return this.metadata;
+    };
+    /**
+     * @param name
+     */
+    Result.prototype.getMetadataValue = function (name) {
+        var _a;
+        return (_a = this.metadata[name]) !== null && _a !== void 0 ? _a : null;
+    };
+    /**
      * to array
      *
      * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggestions: string[]}}
@@ -8718,6 +8731,7 @@ var Result = /** @class */ (function () {
             autocomplete: this.autocomplete === null
                 ? undefined
                 : this.autocomplete,
+            metadata: this.metadata,
         };
         if (this.subresults instanceof Object &&
             Object.keys(this.subresults).length) {
@@ -8751,7 +8765,9 @@ var Result = /** @class */ (function () {
             ? array.items.map(function (itemAsArray) { return Item_1.Item.createFromArray(itemAsArray); })
             : [], array.autocomplete === undefined
             ? null
-            : array.autocomplete);
+            : array.autocomplete, array.metadata === undefined
+            ? {}
+            : array.metadata);
         /**
          * Subqueries
          */

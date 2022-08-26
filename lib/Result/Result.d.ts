@@ -14,6 +14,7 @@ export declare class Result {
     private totalHits;
     private itemsGroupedByTypeCache;
     private subresults;
+    private metadata;
     /**
      * Constructor
      *
@@ -23,8 +24,6 @@ export declare class Result {
      */
     constructor(queryUUID: string, totalItems: number, totalHits: number);
     /**
-     * Create
-     *
      * @param queryUUID
      * @param totalItems
      * @param totalHits
@@ -32,10 +31,9 @@ export declare class Result {
      * @param suggestions
      * @param items
      * @param autocomplete
-     *
-     * @returns {Result}
+     * @param metadata
      */
-    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggestions: string[], items: Item[], autocomplete?: string | null): Result;
+    static create(queryUUID: string, totalItems: number, totalHits: number, aggregations: ResultAggregations, suggestions: string[], items: Item[], autocomplete?: string | null, metadata?: any): Result;
     /**
      * Create multi results
      *
@@ -146,6 +144,14 @@ export declare class Result {
      * @return Object
      */
     getSubresults(): Object;
+    /**
+     * @return any
+     */
+    getMetadata(): any;
+    /**
+     * @param name
+     */
+    getMetadataValue(name: string): any;
     /**
      * to array
      *

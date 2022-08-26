@@ -27,6 +27,7 @@ describe('Result/', () => {
                 expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
                 expect(result.getAutocomplete()).to.be.null;
+                expect(result.getMetadata()).to.be.deep.equal({});
 
                 result = HttpHelper.emulateHttpTransport(result);
                 expect(result.getQueryUUID()).to.be.equal('123');
@@ -37,6 +38,7 @@ describe('Result/', () => {
                 expect(result.getSuggestions().length).to.be.equal(0);
                 expect(result.getAggregations()).to.be.null;
                 expect(result.getAutocomplete()).to.be.null;
+                expect(result.getMetadata()).to.be.deep.equal({});
             });
         });
 
@@ -212,7 +214,11 @@ describe('Result/', () => {
                             'type': 'product'
                         },
                     }
-                ]
+                ],
+                'metadata': {
+                    'a': 'b',
+                    'c': 123
+                },
             };
             let result = Result.createFromArray(resultAsArray);
             expect(result.getQueryUUID()).to.be.equal('123');
@@ -222,6 +228,11 @@ describe('Result/', () => {
             expect(result.getSuggestions()).to.be.deep.equal(['sug1', 'sug2']);
             expect(result.getItems().length).to.be.equal(2);
             expect(result.getFirstItem().getType()).to.be.equal('product');
+            expect(result.getMetadata()).to.be.deep.equal({'a': 'b', 'c': 123});
+            expect(result.getMetadataValue('a')).to.be.equal('b');
+            expect(result.getMetadataValue('c')).to.be.equal(123);
+            expect(result.getMetadataValue('X')).to.be.null;
+
             result = HttpHelper.emulateHttpTransport(result);
             expect(result.getQueryUUID()).to.be.equal('123');
             expect(result.getTotalItems()).to.be.equal(10);
@@ -230,6 +241,10 @@ describe('Result/', () => {
             expect(result.getSuggestions()).to.be.deep.equal(['sug1', 'sug2']);
             expect(result.getItems().length).to.be.equal(2);
             expect(result.getFirstItem().getType()).to.be.equal('product');
+            expect(result.getMetadata()).to.be.deep.equal({'a': 'b', 'c': 123});
+            expect(result.getMetadataValue('a')).to.be.equal('b');
+            expect(result.getMetadataValue('c')).to.be.equal(123);
+            expect(result.getMetadataValue('X')).to.be.null;
         });
     });
 
