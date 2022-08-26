@@ -15,6 +15,7 @@ export class Result {
     private totalHits: number;
     private itemsGroupedByTypeCache: any;
     private subresults: any = {};
+    private metadata: any = {};
 
     /**
      * Constructor
@@ -34,8 +35,6 @@ export class Result {
     }
 
     /**
-     * Create
-     *
      * @param queryUUID
      * @param totalItems
      * @param totalHits
@@ -43,8 +42,7 @@ export class Result {
      * @param suggestions
      * @param items
      * @param autocomplete
-     *
-     * @returns {Result}
+     * @param metadata
      */
     public static create(
         queryUUID: string,
@@ -54,6 +52,7 @@ export class Result {
         suggestions: string[],
         items: Item[],
         autocomplete: string|null = null,
+        metadata: any = {},
     ): Result {
         const result = new Result(
             queryUUID,
@@ -65,6 +64,7 @@ export class Result {
         result.suggestions = suggestions;
         result.items = items;
         result.autocomplete = autocomplete;
+        result.metadata = metadata;
 
         return result;
     }
@@ -266,6 +266,22 @@ export class Result {
     }
 
     /**
+     * @return any
+     */
+    public getMetadata(): any
+    {
+        return this.metadata;
+    }
+
+    /**
+     * @param name
+     */
+    public getMetadataValue(name: string): any
+    {
+        return this.metadata[name] ?? null;
+    }
+
+    /**
      * to array
      *
      * @return {{query: any, total_items: number, total_hits: number, items:any[], aggregations: any, suggestions: string[]}}
@@ -283,6 +299,7 @@ export class Result {
             autocomplete: this.autocomplete === null
                 ? undefined
                 : this.autocomplete,
+            metadata: this.metadata,
         };
 
         if (
@@ -329,6 +346,9 @@ export class Result {
             array.autocomplete === undefined
                 ? null
                 : array.autocomplete,
+            array.metadata === undefined
+                ? {}
+                : array.metadata,
         );
 
         /**
