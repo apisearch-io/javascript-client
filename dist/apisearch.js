@@ -7580,16 +7580,18 @@ var SortBy = /** @class */ (function () {
         var newSortBy = SortBy.create();
         for (var i in this.sortsBy) {
             var sortBy = this.sortsBy[i];
-            var sortByAsArray = JSON.parse(JSON.stringify(sortBy));
-            if (typeof sortBy.filter === typeof {} &&
-                sortBy.filter != null) {
-                sortByAsArray.filter = Filter_1.Filter.createFromArray(sortBy.filter.toArray());
+            if (typeof sortBy !== "function") {
+                var sortByAsArray = JSON.parse(JSON.stringify(sortBy));
+                if (typeof sortBy.filter === typeof {} &&
+                    sortBy.filter != null) {
+                    sortByAsArray.filter = Filter_1.Filter.createFromArray(sortBy.filter.toArray());
+                }
+                if (sortBy.coordinate != null &&
+                    typeof sortBy.coordinate == typeof {}) {
+                    sortByAsArray.coordinate = __1.Coordinate.createFromArray(sortBy.coordinate.toArray());
+                }
+                newSortBy.sortsBy.push(sortByAsArray);
             }
-            if (sortBy.coordinate != null &&
-                typeof sortBy.coordinate == typeof {}) {
-                sortByAsArray.coordinate = __1.Coordinate.createFromArray(sortBy.coordinate.toArray());
-            }
-            newSortBy.sortsBy.push(sortByAsArray);
         }
         return newSortBy;
     };
@@ -9027,8 +9029,10 @@ var ResultAggregation = /** @class */ (function () {
             : [];
         for (var i in countersAsArray) {
             var counterAsArray = countersAsArray[i];
-            var counter = Counter_1.Counter.createFromArray(counterAsArray);
-            aggregation.counters['_' + counter.getId()] = counter;
+            if (typeof counterAsArray !== "function") {
+                var counter = Counter_1.Counter.createFromArray(counterAsArray);
+                aggregation.counters['_' + counter.getId()] = counter;
+            }
         }
         aggregation.highestActiveElement = typeof array.highest_active_level === "number"
             ? array.highest_active_level

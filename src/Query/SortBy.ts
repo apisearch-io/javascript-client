@@ -357,23 +357,25 @@ export class SortBy {
         const newSortBy = SortBy.create();
         for (const i in this.sortsBy) {
             const sortBy = this.sortsBy[i];
-            const sortByAsArray = JSON.parse(JSON.stringify(sortBy));
+            if (typeof sortBy !== "function") {
+                const sortByAsArray = JSON.parse(JSON.stringify(sortBy));
 
-            if (
-                typeof sortBy.filter === typeof {} &&
-                sortBy.filter != null
-            ) {
-                sortByAsArray.filter = Filter.createFromArray(sortBy.filter.toArray());
+                if (
+                    typeof sortBy.filter === typeof {} &&
+                    sortBy.filter != null
+                ) {
+                    sortByAsArray.filter = Filter.createFromArray(sortBy.filter.toArray());
+                }
+
+                if (
+                    sortBy.coordinate != null &&
+                    typeof sortBy.coordinate == typeof {}
+                ) {
+                    sortByAsArray.coordinate = Coordinate.createFromArray(sortBy.coordinate.toArray());
+                }
+
+                newSortBy.sortsBy.push(sortByAsArray);
             }
-
-            if (
-                sortBy.coordinate != null &&
-                typeof sortBy.coordinate == typeof {}
-            ) {
-                sortByAsArray.coordinate = Coordinate.createFromArray(sortBy.coordinate.toArray());
-            }
-
-            newSortBy.sortsBy.push(sortByAsArray);
         }
 
         return newSortBy;
