@@ -151,15 +151,16 @@ export declare abstract class Repository {
      */
     abstract configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
     /**
-     * @param {IndexUUID} indexUUID
-     * @param {ItemUUID} itemUUID
-     * @param {string} userId
-     * @param {string} interaction
-     * @param {string} queryString
-     *
-     * @return {Promise<void>}
+     * @param indexUUID
+     * @param itemUUID
+     * @param userId
+     * @param queryString
+     * @param interaction
+     * @param site
+     * @param device
+     * @param position
      */
-    abstract pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string): Promise<void>;
+    abstract pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string, site: string, device: string, position: number): Promise<void>;
     /**
      * @param {IndexUUID} indexUUID
      * @param {string} userId
