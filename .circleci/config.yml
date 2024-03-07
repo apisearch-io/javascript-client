@@ -3,14 +3,15 @@ jobs:
     build:
         docker:
             - image: circleci/node:latest
-
-            - image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+            - image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
               environment:
-                ES_JAVA_OPTS: "-Xms256m -Xmx256m"
-                discovery.type: single-node
-                action.auto_create_index: "-apisearch*,+*"
+                - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+                - "discovery.type=single-node"
+                - "action.auto_create_index=-apisearch*,+*"
+                - "xpack.security.enabled=false"
+                - "indices.id_field_data.enabled=true"
 
-            - image: apisearchio/search-server:commit-3dce300a
+            - image: apisearchio/search-server:commit-3aa3b8f6
               environment:
                 APISEARCH_GOD_TOKEN: 0e4d75ba-c640-44c1-a745-06ee51db4e93
                 APISEARCH_ENABLED_PLUGINS: elasticsearch
