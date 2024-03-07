@@ -406,15 +406,14 @@ export class HttpRepository extends Repository {
     }
 
     /**
-     * @param {IndexUUID} indexUUID
-     * @param {ItemUUID} itemUUID
-     * @param {string} userId
-     * @param {string} interaction
-     * @param {string} queryString
-     * @param {string} site
-     * @param {string} device
-     *
-     * @return {Promise<void>}
+     * @param indexUUID
+     * @param itemUUID
+     * @param userId
+     * @param queryString
+     * @param interaction
+     * @param site
+     * @param device
+     * @param position
      */
     public async pushInteraction(
         indexUUID: IndexUUID,
@@ -424,12 +423,14 @@ export class HttpRepository extends Repository {
         interaction: string,
         site: string = null,
         device: string = null,
+        position: number = 0,
     ): Promise<void> {
         const parameters = {
             query_string: queryString,
             site: site,
             device: device,
             user_id: userId,
+            position: position,
         };
 
         try {

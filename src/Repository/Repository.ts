@@ -166,7 +166,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async flushUpdateItems(itemsToUpdate: Item[]): Promise<void>;
+    public abstract flushUpdateItems(itemsToUpdate: Item[]): Promise<void>;
 
     /**
      * Flush delete items
@@ -175,7 +175,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
+    public abstract flushDeleteItems(itemsToDelete: ItemUUID[]): Promise<void>;
 
     /**
      * Query
@@ -184,7 +184,7 @@ export abstract class Repository {
      *
      * @return {Promise<Result>}
      */
-    public abstract async query(query: Query): Promise<Result>;
+    public abstract query(query: Query): Promise<Result>;
 
     /**
      * Update items
@@ -194,7 +194,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async updateItems(
+    public abstract updateItems(
         query: Query,
         changes: Changes,
     ): Promise<void>;
@@ -207,7 +207,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async createIndex(
+    public abstract createIndex(
         indexUUID: IndexUUID,
         config: Config,
     ): Promise<void>;
@@ -219,7 +219,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async deleteIndex(indexUUID: IndexUUID): Promise<void>;
+    public abstract deleteIndex(indexUUID: IndexUUID): Promise<void>;
 
     /**
      * Reset index
@@ -228,7 +228,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async resetIndex(indexUUID: IndexUUID): Promise<void>;
+    public abstract resetIndex(indexUUID: IndexUUID): Promise<void>;
 
     /**
      * Check index
@@ -237,14 +237,14 @@ export abstract class Repository {
      *
      * @return {Promise<boolean>}
      */
-    public abstract async checkIndex(indexUUID: IndexUUID): Promise<boolean>;
+    public abstract checkIndex(indexUUID: IndexUUID): Promise<boolean>;
 
     /**
      * Check index
      *
      * @return {Promise<Index[]>}
      */
-    public abstract async getIndices(): Promise<Index[]>;
+    public abstract getIndices(): Promise<Index[]>;
 
     /**
      * Configure index
@@ -254,26 +254,30 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async configureIndex(
+    public abstract configureIndex(
         indexUUID: IndexUUID,
         config: Config,
     ): Promise<void>;
 
     /**
-     * @param {IndexUUID} indexUUID
-     * @param {ItemUUID} itemUUID
-     * @param {string} userId
-     * @param {string} interaction
-     * @param {string} queryString
-     *
-     * @return {Promise<void>}
+     * @param indexUUID
+     * @param itemUUID
+     * @param userId
+     * @param queryString
+     * @param interaction
+     * @param site
+     * @param device
+     * @param position
      */
-    public abstract async pushInteraction(
+    public abstract pushInteraction(
         indexUUID: IndexUUID,
         itemUUID: ItemUUID,
         userId: string,
         queryString: string,
         interaction: string,
+        site: string,
+        device: string,
+        position: number,
     ): Promise<void>;
 
     /**
@@ -283,7 +287,7 @@ export abstract class Repository {
      *
      * @return {Promise<void>}
      */
-    public abstract async purchase(
+    public abstract purchase(
         indexUUID: IndexUUID,
         userId: string,
         itemUUIDs: ItemUUID[],
