@@ -147,17 +147,16 @@ export declare class HttpRepository extends Repository {
      */
     configureIndex(indexUUID: IndexUUID, config: Config): Promise<void>;
     /**
-     * @param {IndexUUID} indexUUID
-     * @param {ItemUUID} itemUUID
-     * @param {string} userId
-     * @param {string} interaction
-     * @param {string} queryString
-     * @param {string} site
-     * @param {string} device
-     *
-     * @return {Promise<void>}
+     * @param indexUUID
+     * @param itemUUID
+     * @param userId
+     * @param queryString
+     * @param interaction
+     * @param site
+     * @param device
+     * @param position
      */
-    pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string, site?: string, device?: string): Promise<void>;
+    pushInteraction(indexUUID: IndexUUID, itemUUID: ItemUUID, userId: string, queryString: string, interaction: string, site?: string, device?: string, position?: number): Promise<void>;
     /**
      * @param {IndexUUID} indexUUID
      * @param {string} userId
