@@ -168,9 +168,20 @@ export class HttpRepository extends Repository {
         } catch (response) {
             throw HttpRepository.createErrorFromResponse(response);
         }
-        const result = Result.createFromArray(response.getBody());
+        let result = Result.createFromArray(response.getBody());
+        result = this.applyTransformersToResult(result);
 
-        return this.applyTransformersToResult(result);
+        /**
+         * Custom transformation function
+         */
+        if (
+            typeof globalThis !== "undefined" &&
+            typeof globalThis.apisearchItemsTransformation === "function"
+        ) {
+            result.withItems(await globalThis.apisearchItemsTransformation(result.getItems()));
+        }
+
+        return result;
     }
 
     /**

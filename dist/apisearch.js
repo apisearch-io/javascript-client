@@ -7758,24 +7758,32 @@ var HttpRepository = /** @class */ (function (_super) {
      */
     HttpRepository.prototype.query = function (query) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var response, response_3, result;
-            return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
+            var response, response_3, result, _a, _b;
+            return tslib_1.__generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
+                        _c.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.httpClient.get("/" + this.appId + "/indices/" + this.indexId, "get", this.getCredentials(), {
                                 query: JSON.stringify(query.toArray())
                                     .replace(/&/g, "%26"),
                             }, {})];
                     case 1:
-                        response = _a.sent();
+                        response = _c.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        response_3 = _a.sent();
+                        response_3 = _c.sent();
                         throw HttpRepository.createErrorFromResponse(response_3);
                     case 3:
                         result = Result_1.Result.createFromArray(response.getBody());
-                        return [2 /*return*/, this.applyTransformersToResult(result)];
+                        result = this.applyTransformersToResult(result);
+                        if (!(typeof globalThis !== "undefined" &&
+                            typeof globalThis.apisearchItemsTransformation === "function")) return [3 /*break*/, 5];
+                        _b = (_a = result).withItems;
+                        return [4 /*yield*/, globalThis.apisearchItemsTransformation(result.getItems())];
+                    case 4:
+                        _b.apply(_a, [_c.sent()]);
+                        _c.label = 5;
+                    case 5: return [2 /*return*/, result];
                 }
             });
         });
@@ -8560,6 +8568,12 @@ var Result = /** @class */ (function () {
      */
     Result.prototype.getItems = function () {
         return this.items;
+    };
+    /**
+     * @param items
+     */
+    Result.prototype.withItems = function (items) {
+        this.items = items;
     };
     /**
      * Get items grouped by types

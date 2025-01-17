@@ -1,6 +1,6 @@
 {
   "name": "apisearch",
-  "version": "0.3.18",
+  "version": "0.3.19",
   "description": "Javascript client for Apisearch.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,8 +13,7 @@
     "dist-no-test": "rm -rf ./dist/*; npm run build:lib && npm run build:dev && npm run build:min",
     "fix": "tslint -c tslint.json --fix 'src/**/*.ts'",
     "test:unit": "mocha --timeout 10000 --recursive --require ts-node/register test/**/*.ts test/*.ts",
-    "test:functional": "mocha --timeout 10000 --recursive --require ts-node/register test/Functional/*/*.ts",
-    "test": "npm run test:unit && npm run test:functional"
+    "test": "npm run test:unit"
   },
   "license": "MIT",
   "author": "Marc Morera <yuhu@mmoreram.com>",

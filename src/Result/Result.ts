@@ -102,6 +102,13 @@ export class Result {
     }
 
     /**
+     * @param items
+     */
+    public withItems(items: Item[]) {
+        this.items = items;
+    }
+
+    /**
      * Get items grouped by types
      *
      * @return {any[]}
