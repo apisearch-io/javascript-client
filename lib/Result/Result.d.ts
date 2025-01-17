@@ -55,6 +55,10 @@ export declare class Result {
      */
     getItems(): Item[];
     /**
+     * @param items
+     */
+    withItems(items: Item[]): void;
+    /**
      * Get items grouped by types
      *
      * @return {any[]}
