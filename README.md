@@ -1,5 +1,7 @@
 # Apisearch - Javascript Client
 
+** Repository migrated to https://github.com/empathyco/apisearch-javascript-client ** 
+
 This library is part of the Apisearch project.
 
 [![CircleCI](https://circleci.com/gh/apisearch-io/javascript-client.svg?style=svg)](https://circleci.com/gh/apisearch-io/javascript-client)
